@@ -1,0 +1,755 @@
+/**
+ * SettleMint Component System: Evidentiary Brutalism
+ */
+
+/* 1. Typography Utility Classes */
+.label-caps {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-caps);
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-tertiary-light);
+}
+
+.label-code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-code);
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+}
+
+.text-danger {
+  color: var(--color-secondary) !important;
+}
+
+.highlight-danger {
+  color: var(--color-secondary) !important;
+  font-weight: 700 !important;
+}
+
+/* 2. Specimen Status Tags & Chips */
+.specimen-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 6px;
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background-color: #ffffff;
+  border: 1px solid var(--color-primary-slate);
+  color: var(--color-primary-slate);
+}
+
+.chip-compliant {
+  background-color: #ffffff;
+  border-color: var(--color-primary-slate);
+  color: var(--color-primary-slate);
+}
+
+.chip-subpoena,
+.chip-violation {
+  background-color: var(--color-secondary-container);
+  border-color: var(--color-secondary);
+  color: var(--color-secondary-deep);
+}
+
+.status-indicator-dot {
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  background-color: #10b981;
+}
+
+.status-indicator-dot.warning {
+  background-color: var(--color-secondary);
+}
+
+/* 3. Action Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-caps);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all 0.1s ease;
+}
+
+/* Primary Clinical Action */
+.btn-primary {
+  background-color: var(--color-primary-slate);
+  color: #ffffff;
+  border: 1px solid var(--color-primary-slate);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-tertiary);
+}
+
+/* Emergency Flag Action */
+.btn-emergency {
+  background-color: var(--color-secondary);
+  color: #ffffff;
+  border: 1px solid var(--color-secondary-dark);
+}
+
+.btn-emergency:hover {
+  background-color: var(--color-secondary-deep);
+}
+
+/* Secondary / Evidentiary */
+.btn-secondary-evidentiary {
+  background-color: #ffffff;
+  color: var(--color-primary-slate);
+  border: 1px solid var(--color-border-medium);
+}
+
+.btn-secondary-evidentiary:hover {
+  border-color: var(--color-primary-slate);
+}
+
+/* 4. Form Controls & Inputs */
+.input-field {
+  width: 100%;
+  padding: 8px 10px;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-inset);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-body-md);
+  color: var(--color-on-surface);
+  outline: none;
+  border-radius: 0;
+}
+
+.input-field:focus {
+  border: 2px solid var(--color-primary-slate);
+  padding: 7px 9px;
+}
+
+.input-field.label-code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-code);
+}
+
+.text-area {
+  resize: vertical;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: var(--space-sm);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.form-cols-2 > * {
+  flex: 1;
+}
+
+/* 5. Statutory Modules (Right Pane) */
+.statutory-module {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-standard);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border-standard);
+  padding-bottom: var(--space-xs);
+}
+
+/* Countdown Card */
+.countdown-module {
+  border: 1px solid var(--color-secondary);
+  border-left: 3px solid var(--color-secondary);
+}
+
+.countdown-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-xs) 0;
+}
+
+.countdown-metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.countdown-value {
+  font-family: var(--font-family-mono);
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-secondary);
+}
+
+.countdown-unit {
+  font-family: var(--font-family-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-tertiary-light);
+}
+
+.countdown-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-tertiary-light);
+}
+
+.progress-bar-container {
+  height: 6px;
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-border-standard);
+  width: 100%;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--color-secondary);
+}
+
+.module-caption {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-on-surface-variant);
+  line-height: 1.3;
+}
+
+/* SOL Module */
+.kv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xs) var(--space-sm);
+  background-color: var(--color-surface-container-low);
+  padding: var(--space-xs);
+  border: 1px solid var(--color-border-standard);
+}
+
+.kv-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.kv-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-tertiary-light);
+}
+
+.hazard-notice {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  background-color: var(--color-secondary-container);
+  border-left: 2px solid var(--color-secondary);
+  font-size: 11px;
+  color: var(--color-secondary-deep);
+  margin-top: 4px;
+}
+
+.hazard-icon {
+  color: var(--color-secondary);
+  font-size: 12px;
+}
+
+/* Damages Module */
+.damages-amount-card {
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-border-authoritative);
+  padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.damages-sub {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-tertiary-light);
+}
+
+.damages-value {
+  font-family: var(--font-family-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary-slate);
+}
+
+.damages-count {
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+  color: var(--color-secondary-deep);
+  font-weight: 600;
+}
+
+.damages-violation-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.damages-violation-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 6px;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-standard);
+  font-size: 11px;
+}
+
+/* Certified Mail Tracking */
+.tracking-input-group {
+  display: flex;
+  gap: 6px;
+}
+
+.tracking-timeline-step {
+  padding: 6px;
+  background-color: var(--color-surface-container-low);
+  border-left: 2px solid var(--color-primary-slate);
+  display: flex;
+  flex-direction: column;
+}
+
+.step-time {
+  font-size: 10px;
+  color: var(--color-tertiary-light);
+}
+
+.step-desc {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* 6. Case List Cards (Left Pane) */
+.case-card {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border-standard);
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 0.1s ease;
+  border-left: 3px solid transparent;
+}
+
+.case-card:hover {
+  background-color: var(--color-surface-container-low);
+}
+
+.case-card.active {
+  background-color: #ffffff;
+  border-left: 3px solid var(--color-primary-slate);
+  border-top: 1px solid var(--color-border-standard);
+  border-bottom: 1px solid var(--color-border-standard);
+}
+
+.case-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.case-id-tag {
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-primary-slate);
+}
+
+.case-patient-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary-slate);
+}
+
+.case-provider-name {
+  font-size: 11px;
+  color: var(--color-tertiary-light);
+  margin-bottom: 4px;
+}
+
+.case-financial-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+}
+
+.case-balance {
+  font-weight: 700;
+}
+
+/* 7. Workbench View Styles */
+.overview-dossier-card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-standard);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.dossier-header-band {
+  background-color: var(--color-surface-container-low);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-border-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.state-machine-track {
+  display: flex;
+  gap: 4px;
+  margin: var(--space-md) 0;
+  overflow-x: auto;
+}
+
+.state-node {
+  flex: 1;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--color-border-standard);
+  background-color: var(--color-surface-container-low);
+  color: var(--color-tertiary-light);
+  white-space: nowrap;
+}
+
+.state-node.completed {
+  background-color: #ffffff;
+  border-color: var(--color-primary-slate);
+  color: var(--color-primary-slate);
+}
+
+.state-node.current {
+  background-color: var(--color-primary-slate);
+  color: #ffffff;
+  border-color: var(--color-primary-slate);
+}
+
+/* Interaction Stream */
+.stream-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.interaction-item {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-standard);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.interaction-item.has-violation {
+  border-left: 3px solid var(--color-secondary);
+}
+
+.interaction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.interaction-meta {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.interaction-notes {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-on-surface);
+  background-color: var(--color-surface-container-low);
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-standard);
+  margin-top: 6px;
+}
+
+/* Letter Studio Side-by-Side */
+.studio-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  height: 100%;
+}
+
+.studio-form-pane,
+.studio-preview-pane {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-standard);
+  display: flex;
+  flex-direction: column;
+}
+
+.studio-pane-header {
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--color-surface-container-low);
+  border-bottom: 1px solid var(--color-border-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.studio-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+}
+
+.legal-document-paper {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-authoritative);
+  padding: 24px;
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #000000;
+  position: relative;
+  box-shadow: none;
+}
+
+.watermark-bates {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+  color: var(--color-tertiary-light);
+  border: 1px solid var(--color-border-medium);
+  padding: 2px 6px;
+}
+
+/* Evidence Vault Grid */
+.vault-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.vault-item-card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-standard);
+  padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vault-thumb {
+  height: 120px;
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-border-standard);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  color: var(--color-tertiary-light);
+}
+
+.vault-hash {
+  font-family: var(--font-family-mono);
+  font-size: 9px;
+  color: var(--color-tertiary-light);
+  word-break: break-all;
+  background-color: var(--color-surface-container-low);
+  padding: 3px;
+}
+
+/* Credit Delta Auditing */
+.credit-audit-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.tradeline-card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-standard);
+  padding: var(--space-md);
+}
+
+.tradeline-card.dispute-inaccurate {
+  border-left: 3px solid var(--color-secondary);
+}
+
+/* 8. Modals & Dialogs (High-Contrast Evidentiary) */
+.modal-dialog {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: auto;
+}
+
+.modal-dialog::backdrop {
+  background-color: rgba(15, 23, 42, 0.7);
+}
+
+.modal-box {
+  width: 580px;
+  background-color: #ffffff;
+  border: 2px solid var(--color-primary-slate);
+  box-shadow: var(--border-shadow-hard);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-lg {
+  width: 720px;
+}
+
+.modal-header {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-surface-container-low);
+  border-bottom: 2px solid var(--color-primary-slate);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.modal-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.btn-close {
+  background: none;
+  border: 1px solid var(--color-border-medium);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.btn-close:hover {
+  background-color: var(--color-primary-slate);
+  color: #ffffff;
+}
+
+.modal-body {
+  padding: var(--space-md);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-surface-container-low);
+  border-top: 1px solid var(--color-border-standard);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.violation-checkers-box {
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-border-standard);
+  padding: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.checkbox-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.check-item input[type="checkbox"] {
+  accent-color: var(--color-secondary);
+  margin-top: 2px;
+}
+
+/* Call Script Styles */
+.script-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.script-card {
+  border: 1px solid var(--color-border-standard);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-surface-container-low);
+}
+
+.script-card.alert-card {
+  border-left: 3px solid var(--color-secondary);
+  background-color: var(--color-secondary-container);
+}
+
+.legal-quote {
+  font-family: var(--font-family-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-primary-slate);
+  margin-top: 6px;
+  padding-left: var(--space-sm);
+  border-left: 2px solid var(--color-primary-slate);
+}
+
+.script-warnings {
+  margin-top: 6px;
+  padding-left: var(--space-md);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-secondary-deep);
+}

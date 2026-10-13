@@ -1,0 +1,20 @@
+# Rust & Cargo
+/target/
+src-tauri/target/
+**/*.rs.bk
+Cargo.lock
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# SettleMint Local Application Data & DBs
+*.db
+*.db-wal
+*.db-shm
+/evidence_vault/
+/exports/
+
+# Internal Non-Committed Documentation & Checklists
+/markdown/
+

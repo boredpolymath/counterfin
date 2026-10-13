@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability Reporting
+    url: https://github.com/boredpolymath/settlemint/security/advisories/new
+    about: Please report security vulnerabilities privately via GitHub Security Advisories.
+  - name: Community Code of Conduct
+    url: https://github.com/boredpolymath/settlemint/blob/main/CODE_OF_CONDUCT.md
+    about: Read our community standards and code of conduct.

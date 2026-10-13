@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+  <title>SettleMint — Consumer Credit Shield & Debt Collector Dispute Console</title>
+  
+  <!-- Typography: Public Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body class="clinical-theme">
+  <!-- Persistent Statutory & Disclaimer Banner -->
+  <aside class="legal-disclaimer-banner" id="legalDisclaimerBanner">
+    <div class="disclaimer-content">
+      <span class="disclaimer-badge">LEGAL NOTICE</span>
+      <p class="disclaimer-text">
+        <strong>PROCEDURAL SELF-ADVOCACY CONSOLE:</strong> SettleMint is a local-first recordkeeping and procedural workflow utility. It does not provide formal legal representation or legal advice pursuant to 15 U.S.C. § 1692. All records remain encrypted locally at rest.
+      </p>
+    </div>
+    <div class="disclaimer-meta">
+      <span class="label-code">ENCRYPTION: AES-256-WAL</span>
+      <span class="label-code telemetry-status">● ZERO TELEMETRY</span>
+    </div>
+  </aside>
+
+  <!-- Application Shell Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-mark">SM</div>
+      <div class="brand-titles">
+        <h1 class="brand-name">SETTLEMINT</h1>
+        <span class="brand-sub">CONSUMER CREDIT SHIELD & FORENSIC DISPUTE CONSOLE</span>
+      </div>
+    </div>
+
+    <!-- Bates & System State Reference -->
+    <div class="header-bates">
+      <span class="bates-label">SERIES DOCKET:</span>
+      <span class="bates-stamp" id="activeBatesStamp">BATES-SM-2026-0042</span>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="header-controls">
+      <button class="btn btn-secondary-evidentiary" id="callScriptBtn" title="Display FDCPA Collector Phone Script">
+        <span class="icon">▤</span> CALL SCRIPT
+      </button>
+      <button class="btn btn-emergency" id="quickLogCallBtn" title="Instant intake for collector incoming call">
+        <span class="icon">■</span> QUICK-LOG CALL
+      </button>
+      <button class="btn btn-primary" id="newCaseBtn">
+        + NEW DOSSIER
+      </button>
+    </div>
+  </header>
+
+  <!-- Main 12-Column Layout -->
+  <main class="app-workbench">
+    <!-- Left Pane: Case Registry & Docket Navigation (3 cols) -->
+    <section class="pane pane-case-registry" id="caseRegistryPane">
+      <div class="pane-header">
+        <div class="pane-title-group">
+          <span class="label-caps">CASE DOSSIER REGISTRY</span>
+          <span class="specimen-chip" id="caseCountChip">3 ACTIVE</span>
+        </div>
+        <div class="search-box">
+          <input type="text" id="caseSearchInput" placeholder="Filter cases, agencies, accounts..." class="input-field">
+        </div>
+      </div>
+
+      <!-- Case List -->
+      <div class="case-list-stream" id="caseListContainer">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Center Pane: Active Record & Workbench (6 cols) -->
+    <section class="pane pane-workspace" id="workspacePane">
+      <!-- Navigation Tabs -->
+      <nav class="workbench-tabs" id="viewNavTabs">
+        <button class="tab-item active" data-view="dashboard">OVERVIEW</button>
+        <button class="tab-item" data-view="interactions">INTERACTION STREAM</button>
+        <button class="tab-item" data-view="letters">LETTER STUDIO</button>
+        <button class="tab-item" data-view="evidence">EVIDENCE VAULT</button>
+        <button class="tab-item" data-view="credit">CREDIT DELTA AUDIT</button>
+      </nav>
+
+      <!-- View Containers -->
+      <div class="view-viewport" id="viewViewport">
+        <!-- 1. Case Dashboard View -->
+        <div class="view-panel active" id="viewDashboard"></div>
+
+        <!-- 2. Interaction Stream View -->
+        <div class="view-panel" id="viewInteractions"></div>
+
+        <!-- 3. Letter Studio View -->
+        <div class="view-panel" id="viewLetters"></div>
+
+        <!-- 4. Evidence Vault View -->
+        <div class="view-panel" id="viewEvidence"></div>
+
+        <!-- 5. Credit Delta Audit View -->
+        <div class="view-panel" id="viewCredit"></div>
+      </div>
+    </section>
+
+    <!-- Right Pane: Forensic Audit & Statutory Panel (3 cols) -->
+    <aside class="pane pane-forensic-audit" id="forensicAuditPane">
+      <div class="pane-header">
+        <span class="label-caps">STATUTORY COMPLIANCE & TIMELINE</span>
+        <span class="label-code">15 U.S.C. § 1692</span>
+      </div>
+
+      <div class="audit-panel-scroll">
+        <!-- 30-Day FDCPA Validation Clock -->
+        <div class="statutory-module countdown-module" id="statutoryCountdownWidget">
+          <div class="module-header">
+            <span class="label-caps">FDCPA § 1692g VALIDATION WINDOW</span>
+            <span class="status-indicator-dot warning"></span>
+          </div>
+          <div class="countdown-display">
+            <div class="countdown-metric">
+              <span class="countdown-value" id="daysRemainingVal">18</span>
+              <span class="countdown-unit">DAYS REMAINING</span>
+            </div>
+            <div class="countdown-dates">
+              <div class="date-row">
+                <span class="date-label">INITIAL NOTICE:</span>
+                <span class="date-value label-code" id="statuteNoticeDate">2026-09-25</span>
+              </div>
+              <div class="date-row">
+                <span class="date-label">EXPIRATION DATE:</span>
+                <span class="date-value label-code highlight-danger" id="statuteExpiryDate">2026-10-25</span>
+              </div>
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: 40%;"></div>
+          </div>
+          <p class="module-caption">Collector must cease all collection efforts until debt verification is supplied.</p>
+        </div>
+
+        <!-- Statute of Limitations Module -->
+        <div class="statutory-module sol-module" id="statuteOfLimitationsModule">
+          <div class="module-header">
+            <span class="label-caps">STATUTE OF LIMITATIONS (SOL)</span>
+            <span class="specimen-chip chip-compliant">ACTIVE JURISDICTION</span>
+          </div>
+          <div class="sol-body">
+            <div class="kv-grid">
+              <div class="kv-item">
+                <span class="kv-label">DEBTOR STATE:</span>
+                <span class="kv-val label-code">NEW YORK (NY)</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">DEBT CATEGORY:</span>
+                <span class="kv-val label-code">MEDICAL (OPEN ACCT)</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">STATUTORY LIMIT:</span>
+                <span class="kv-val label-code">3 YEARS (CPLR 214-i)</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">STATUS:</span>
+                <span class="kv-val label-code text-danger">EXPIRES IN 142 DAYS</span>
+              </div>
+            </div>
+            <div class="hazard-notice">
+              <span class="hazard-icon">▲</span>
+              <span><strong>CAUTION:</strong> Making any partial payment resets the statutory clock in this jurisdiction.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statutory Damages Accumulator -->
+        <div class="statutory-module damages-module" id="statutoryDamagesModule">
+          <div class="module-header">
+            <span class="label-caps">POTENTIAL STATUTORY DAMAGES</span>
+            <span class="label-code">15 U.S.C. § 1692k</span>
+          </div>
+          <div class="damages-amount-card">
+            <span class="damages-sub">TOTAL POTENTIAL CLAIM</span>
+            <span class="damages-value" id="damagesTotalVal">$2,000.00</span>
+            <span class="damages-count" id="damagesCountVal">2 FLAGGED VIOLATIONS + ACTUAL</span>
+          </div>
+          <ul class="damages-violation-list" id="damagesViolationList">
+            <!-- Populated via JS -->
+          </ul>
+        </div>
+
+        <!-- Certified Mail Delivery Tracker -->
+        <div class="statutory-module mail-module" id="certifiedMailModule">
+          <div class="module-header">
+            <span class="label-caps">USPS CERTIFIED MAIL STATUS</span>
+            <span class="label-code">TRACKING</span>
+          </div>
+          <div class="tracking-input-group">
+            <input type="text" class="input-field label-code" placeholder="7021 0950 0001 2345 6789" value="7021 0950 0001 8492 1104" readonly>
+            <span class="specimen-chip chip-compliant">DELIVERED</span>
+          </div>
+          <div class="tracking-timeline-step">
+            <span class="step-time label-code">2026-10-02 10:14 AM</span>
+            <span class="step-desc">Signed by Agent J. DOE at Apex Recovery LLC</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Modals & Overlays -->
+  <!-- 1. Quick-Log Call Modal -->
+  <dialog class="modal-dialog" id="quickLogModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="specimen-chip chip-subpoena">■ LIVE INTAKE</span>
+          <h2 class="modal-title">INCOMING COLLECTOR CALL AUDIT</h2>
+        </div>
+        <button class="btn-close" id="closeQuickLogModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="quickLogForm" class="forensic-form">
+          <div class="form-row form-cols-2">
+            <div class="form-group">
+              <label class="label-caps">SELECT CASE DOSSIER</label>
+              <select class="input-field" id="quickLogCaseSelect" required>
+                <!-- Populated via JS -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="label-caps">CALLER / AGENT NAME</label>
+              <input type="text" class="input-field" id="quickLogAgentName" placeholder="e.g. Officer Smith / Badge #402" required>
+            </div>
+          </div>
+
+          <div class="form-row form-cols-2">
+            <div class="form-group">
+              <label class="label-caps">CALL TIMESTAMP</label>
+              <input type="datetime-local" class="input-field label-code" id="quickLogTimestamp" required>
+            </div>
+            <div class="form-group">
+              <label class="label-caps">CALLER PHONE NUMBER</label>
+              <input type="tel" class="input-field label-code" id="quickLogPhone" placeholder="(800) 555-0199">
+            </div>
+          </div>
+
+          <!-- Live FDCPA Violation Checkers -->
+          <div class="violation-checkers-box">
+            <span class="label-caps">INSTANT VIOLATION AUDIT CHECKLIST:</span>
+            <div class="checkbox-grid">
+              <label class="check-item">
+                <input type="checkbox" id="vHourCheck">
+                <span>Outside 8:00 AM - 9:00 PM local time (§ 1692c(a)(1))</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="vWorkCheck">
+                <span>Called at employer after prohibition (§ 1692c(a)(3))</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="vThreatCheck">
+                <span>Threat of immediate arrest or asset seizure (§ 1692e(4))</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="vProfanityCheck">
+                <span>Abusive, harassing, or profanity language (§ 1692d(2))</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="vPostDvlCheck">
+                <span>Collection continued after timely DVL sent (§ 1692g(b))</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="label-caps">TRANSCRIPTION / CALL NOTES</label>
+            <textarea class="input-field text-area" id="quickLogNotes" rows="4" placeholder="Record exact statements made, settlement demands, or procedural violations..."></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary-evidentiary" id="cancelQuickLogBtn">CANCEL</button>
+            <button type="submit" class="btn btn-emergency">SAVE & LOG VIOLATION ENTRY</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 2. Phone Call Legal Script Reference Modal -->
+  <dialog class="modal-dialog" id="callScriptModal">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="specimen-chip chip-compliant">STATUTORY SCRIPT</span>
+          <h2 class="modal-title">FDCPA CONSUMER PHONE DEFENSE REFERENCE</h2>
+        </div>
+        <button class="btn-close" id="closeCallScriptModal">✕</button>
+      </div>
+      <div class="modal-body script-body">
+        <div class="script-card">
+          <span class="label-caps">MANDATORY OPENING STATEMENT:</span>
+          <blockquote class="legal-quote">
+            "Before we begin, please be advised that this call is being documented. State your full legal name, the corporate name of your agency, your physical corporate address, and the original creditor's account number."
+          </blockquote>
+        </div>
+
+        <div class="script-card">
+          <span class="label-caps">DEMAND FOR WRITTEN VALIDATION:</span>
+          <blockquote class="legal-quote">
+            "Pursuant to the Fair Debt Collection Practices Act, 15 U.S.C. § 1692g, I dispute this alleged debt in its entirety. I demand formal verification in writing, including the original itemized hospital accounting and proof of your authority to collect. You must cease further telephone contact."
+          </blockquote>
+        </div>
+
+        <div class="script-card alert-card">
+          <span class="label-caps">WHAT NEVER TO SAY:</span>
+          <ul class="script-warnings">
+            <li><strong>DO NOT</strong> admit or acknowledge owning the debt.</li>
+            <li><strong>DO NOT</strong> make a 'good faith' token payment (this resets the Statute of Limitations).</li>
+            <li><strong>DO NOT</strong> provide banking details, debit cards, or Social Security information.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="dismissCallScriptBtn">DISMISS</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Core Application Scripts -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+[package]
+name = "settlemint"
+version = "0.1.0"
+description = "SettleMint: Consumer Credit Shield & Debt Collector Dispute Console"
+authors = ["Bored Polymath Studios"]
+edition = "2024"
+rust-version = "1.90"
+license = "MIT"
+repository = "https://github.com/boredpolymath/settlemint"
+
+[lib]
+name = "settlemint_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.7.1" }
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+log = "0.4"
+tauri = { version = "2.12.1", features = ["tray-icon"] }
+tauri-plugin-log = "2"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.8", features = ["v4", "serde"] }
+rusqlite = { version = "0.31", features = ["bundled", "chrono", "uuid"] }
+sha2 = "0.10"
+thiserror = "1.0"

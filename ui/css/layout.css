@@ -1,0 +1,283 @@
+/**
+ * SettleMint Layout System: 12-Column Evidentiary Multi-Pane Grid
+ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--radius-none) !important;
+}
+
+body.clinical-theme {
+  font-family: var(--font-family-sans);
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 1. Legal Disclaimer Banner */
+.legal-disclaimer-banner {
+  background-color: var(--color-primary-slate);
+  color: #ffffff;
+  padding: var(--space-xs) var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-primary);
+  font-size: var(--font-size-body-sm);
+}
+
+.disclaimer-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.disclaimer-badge {
+  background-color: var(--color-secondary);
+  color: #ffffff;
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  letter-spacing: 0.08em;
+}
+
+.disclaimer-text {
+  color: #cbd5e1;
+}
+
+.disclaimer-text strong {
+  color: #ffffff;
+}
+
+.disclaimer-meta {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.telemetry-status {
+  color: #10b981;
+}
+
+/* 2. Application Shell Header */
+.app-header {
+  height: 56px;
+  background-color: var(--color-surface-container-lowest);
+  border-bottom: 2px solid var(--color-border-authoritative);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-md);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.brand-mark {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-family: var(--font-family-mono);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-primary);
+}
+
+.brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.brand-sub {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-tertiary-light);
+}
+
+.header-bates {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: var(--color-surface-container-low);
+  padding: 4px 10px;
+  border: 1px solid var(--color-border-medium);
+}
+
+.bates-label {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-caps);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-tertiary-light);
+}
+
+.bates-stamp {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-code);
+  font-weight: 600;
+  color: var(--color-primary-slate);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* 3. Main Workbench (Desktop 12-Column Multi-Pane Grid) */
+.app-workbench {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr 340px;
+  height: calc(100vh - 84px);
+  overflow: hidden;
+  background-color: var(--color-surface);
+}
+
+/* Common Pane Styling */
+.pane {
+  background-color: var(--color-surface-container-lowest);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pane-header {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-surface-container-low);
+  border-bottom: 1px solid var(--color-border-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* Pane 1: Case Registry (Left, 3 cols) */
+.pane-case-registry {
+  border-right: 1px solid var(--color-border-standard);
+}
+
+.pane-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.search-box {
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--color-border-standard);
+  background-color: var(--color-surface-container-lowest);
+}
+
+.case-list-stream {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Pane 2: Center Workspace (6 cols) */
+.pane-workspace {
+  background-color: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.workbench-tabs {
+  display: flex;
+  background-color: var(--color-surface-container-low);
+  border-bottom: 1px solid var(--color-border-medium);
+  overflow-x: auto;
+}
+
+.tab-item {
+  padding: 10px 18px;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-caps);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: none;
+  border: none;
+  border-right: 1px solid var(--color-border-medium);
+  border-bottom: 2px solid transparent;
+  color: var(--color-tertiary-light);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  white-space: nowrap;
+}
+
+.tab-item:hover {
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-primary);
+}
+
+.tab-item.active {
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.view-viewport {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+  background-color: var(--color-surface);
+}
+
+.view-panel {
+  display: none;
+  height: 100%;
+}
+
+.view-panel.active {
+  display: block;
+}
+
+/* Pane 3: Forensic Audit & Statutory Panel (Right, 3 cols) */
+.pane-forensic-audit {
+  border-left: 1px solid var(--color-border-standard);
+  background-color: var(--color-surface-container-lowest);
+}
+
+.audit-panel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Responsive Rules */
+@media (max-width: 1024px) {
+  .app-workbench {
+    grid-template-columns: 240px 1fr;
+  }
+  .pane-forensic-audit {
+    display: none; /* Collapses into drawer on tablet */
+  }
+}
+
+@media (max-width: 768px) {
+  .app-workbench {
+    grid-template-columns: 1fr;
+  }
+  .pane-case-registry {
+    display: none;
+  }
+}

@@ -1,0 +1,40 @@
+name: Statutory or Legal Rule Update
+description: Report a change to federal debt collection statutes, CFPB rules, or state limitation laws
+title: "[STATUTE]: "
+labels: ["compliance", "statute", "legal-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to propose updates to statutory rule tables (e.g. state Statute of Limitations changes, CFPB Regulation F advisory changes, or appellate FDCPA precedents).
+  - type: dropdown
+    id: jurisdiction
+    attributes:
+      label: Jurisdiction Level
+      options:
+        - Federal (FDCPA / FCRA / CFPB)
+        - State Legislative Code (Statute of Limitations)
+        - Judicial Precedent (Federal Circuit Court of Appeals)
+    validations:
+      required: true
+  - type: input
+    id: citation
+    attributes:
+      label: Official Statutory Citation
+      placeholder: "e.g., N.Y. C.P.L.R. § 214-i, 12 CFR Part 1006 (Reg F)"
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary of Statutory Change
+      description: What changed, what is the effective date, and what rule logic in SettleMint is impacted?
+    validations:
+      required: true
+  - type: textarea
+    id: official-source
+    attributes:
+      label: Official Primary Source Link / Reference
+      description: Provide official government legislative link, CFPB bulletin, or court slip opinion.
+    validations:
+      required: true

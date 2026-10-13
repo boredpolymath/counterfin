@@ -1,0 +1,82 @@
+/**
+ * SettleMint Design Tokens: Clinical Forensic Defense System
+ * Movement: Clinical High-Contrast & Evidentiary Brutalism
+ */
+
+:root {
+  /* Surfaces & Baselines */
+  --color-surface: #f7f9fb;
+  --color-surface-dim: #d8dadc;
+  --color-surface-bright: #f7f9fb;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f6;
+  --color-surface-container: #eceef0;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-highest: #e0e3e5;
+
+  /* On-Surface & Text Hierarchy */
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #45464d;
+  --color-inverse-surface: #2d3133;
+  --color-inverse-on-surface: #eff1f3;
+
+  /* Evidentiary Primaries (Obsidian & Pitch Black) */
+  --color-primary: #000000;
+  --color-primary-slate: #0f172a;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #131b2e;
+  --color-on-primary-container: #7c839b;
+
+  /* Emergency Crimson Signalry */
+  --color-secondary: #dc2626;
+  --color-secondary-dark: #b91c1c;
+  --color-secondary-deep: #991b1b;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fef2f2;
+  --color-on-secondary-container: #991b1b;
+
+  /* Tertiary Legal Slate */
+  --color-tertiary: #1e293b;
+  --color-tertiary-medium: #334155;
+  --color-tertiary-light: #475569;
+  --color-on-tertiary: #ffffff;
+
+  /* Structural Evidentiary Borders & Hairlines */
+  --color-border-standard: #e2e8f0;
+  --color-border-medium: #cbd5e1;
+  --color-border-inset: #94a3b8;
+  --color-border-authoritative: #0f172a;
+  --color-border-danger: #dc2626;
+
+  /* Typography Stacks */
+  --font-family-sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
+
+  /* Type Scales */
+  --font-size-display-lg: 40px;
+  --font-size-headline-lg: 28px;
+  --font-size-headline-md: 22px;
+  --font-size-headline-sm: 18px;
+  --font-size-body-lg: 16px;
+  --font-size-body-md: 14px;
+  --font-size-body-sm: 12px;
+  --font-size-code: 12px;
+  --font-size-caps: 11px;
+
+  /* Spacing Rhythms */
+  --space-2xs: 0.125rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --gutter-desktop: 1.5rem;
+  --margin-desktop: 2rem;
+
+  /* Geometry & Elevation */
+  --radius-none: 0px; /* Zero-radius geometry */
+  --elevation-none: none;
+  --border-shadow-hard: 4px 4px 0px #0f172a;
+  --border-shadow-subtle: 2px 2px 0px #0f172a;
+}
