@@ -6,36 +6,76 @@
 export function renderEvidenceVault(evidenceList, activeCase) {
   const caseEvidence = evidenceList.filter(e => e.caseId === activeCase.id);
 
-  const cards = caseEvidence.map(item => `
+  const cards = caseEvidence.length > 0 ? caseEvidence.map(item => `
     <div class="vault-item-card">
       <div class="vault-thumb">
-        <span>📄 [${item.docType.toUpperCase()}]</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>${item.docType ? item.docType.toUpperCase() : 'DOCUMENT'}</span>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span class="label-code" style="font-weight:700;">${item.batesStamp}</span>
-        <span class="label-code" style="color:var(--color-tertiary-light);">${item.fileSize}</span>
+        <span class="status-pill status-pill-mint" style="font-weight:700; font-family:var(--font-family-mono); font-size:11px;">${item.batesStamp}</span>
+        <span style="font-family:var(--font-family-mono); font-size:11.5px; color:#64748b;">${item.fileSize}</span>
       </div>
-      <div style="font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-        ${item.title}
+      <div>
+        <div style="font-size:13.5px; font-weight:700; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${item.title}">
+          ${item.title}
+        </div>
+        <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Uploaded: ${item.uploadedDate}</div>
       </div>
-      <div class="vault-hash" title="SHA-256 Cryptographic Hash">
-        SHA-256: ${item.sha256Hash}
+      <div class="vault-hash-box" title="SHA-256 Cryptographic Hash: ${item.sha256Hash}">
+        <span style="font-weight:600; color:#006948;">SHA-256:</span> ${item.sha256Hash}
       </div>
-      <div style="display:flex; justify-content:space-between; margin-top:4px;">
-        <span class="label-code" style="font-size:10px;">${item.uploadedDate}</span>
-        <button class="btn btn-secondary-evidentiary" style="padding:2px 6px; font-size:10px;">INSPECT</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+        <span class="status-pill status-pill-neutral" style="font-size:10px;">AES-256 Encrypted</span>
+        <button class="btn-pill-outline btn-sm" style="font-size:11px; padding:4px 10px;">Inspect Artifact ›</button>
       </div>
     </div>
-  `).join("");
+  `).join("") : `
+    <div style="grid-column: 1 / -1; background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:40px 24px; text-align:center;">
+      <div style="width:48px; height:48px; border-radius:50%; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:12px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:4px;">No Evidence Artifacts Vaulted Yet</div>
+      <div style="font-size:12.5px; color:#64748b; max-width:440px; margin:0 auto 16px auto;">Ingest dunning notices, collection letters, envelope postmarks, and audio files to secure cryptographic proof.</div>
+      <button class="btn-pill-primary btn-sm" id="emptyIngestEvidenceBtn" onclick="document.getElementById('ingestEvidenceBtn')?.click()">+ Ingest First Evidence File</button>
+    </div>
+  `;
 
   return `
     <div style="display: flex; flex-direction: column; gap: var(--space-md);">
-      <div style="display: flex; justify-content: space-between; align-items: center; background-color: var(--color-surface-container-low); padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-border-medium);">
-        <div>
-          <span class="label-caps">LOCAL ENCRYPTED EVIDENCE VAULT</span>
-          <span class="label-code" style="margin-left: 8px;">${caseEvidence.length} CRYPTOGRAPHICALLY SECURED ARTIFACTS</span>
+      <div class="orderly-view-header">
+        <div class="view-header-left">
+          <div class="view-header-icon-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="view-header-title">
+              Local Encrypted Evidence Vault
+              <span class="status-pill status-pill-mint" style="font-size:11px; margin-left:8px;">${caseEvidence.length} Secured Artifacts</span>
+            </div>
+            <div class="view-header-subtitle">
+              <span>Active Dossier:</span>
+              <strong style="color: #334155;">${activeCase.originalProvider || activeCase.collectionAgency}</strong>
+              <span>•</span>
+              <span class="label-code" style="font-size: 11px;">${activeCase.docketNumber || activeCase.id}</span>
+              <span>•</span>
+              <span>Collector: ${activeCase.collectionAgency}</span>
+            </div>
+          </div>
         </div>
-        <button class="btn btn-primary" id="ingestEvidenceBtn">+ INGEST EVIDENCE FILE</button>
+        <div class="view-header-actions">
+          <button class="btn-pill-primary btn-sm" id="ingestEvidenceBtn">+ Ingest Evidence File</button>
+        </div>
       </div>
 
       <div class="vault-gallery">

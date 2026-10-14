@@ -172,10 +172,6 @@
       </div>
       <span class="footer-divider">•</span>
       <span class="footer-meta-text">Consumer Debt Defense Console</span>
-      <span class="footer-divider">•</span>
-      <button class="footer-disclaimer-btn" id="footerDisclaimerBtn" title="View Mandatory Legal & Statutory Disclaimer">
-        ⚖️ Legal Disclaimer (Not Legal Advice)
-      </button>
     </div>
 
     <div class="footer-right">
@@ -332,7 +328,7 @@
           <div class="form-row form-cols-2">
             <div class="form-group">
               <label class="form-label">Debt Classification (FDCPA Covered)</label>
-              <select class="input-rounded" id="newDebtType">
+              <select class="input-rounded studio-select" id="newDebtType">
                 <option value="credit_card" selected>Credit Card (Revolving / Charge-Off)</option>
                 <option value="medical">Medical Debt (Hospital / Specialist / Clinic)</option>
                 <option value="auto_deficiency">Auto Loan Deficiency (Vehicle Repossession)</option>
@@ -344,7 +340,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">Specific Category / Subtype</label>
-              <select class="input-rounded" id="newCategory">
+              <select class="input-rounded studio-select" id="newCategory">
                 <option value="Credit Card (Revolving)">Revolving Consumer Credit Card</option>
                 <option value="Emergency Department">Emergency Room (ER Visit)</option>
                 <option value="Specialist Consultation">Medical Specialist / Surgery</option>
@@ -386,65 +382,155 @@
     </div>
   </dialog>
 
-  <!-- 4. Mandatory Legal & Statutory Disclaimer Modal -->
-  <dialog class="modal-dialog" id="legalDisclaimerModal">
-    <div class="modal-card modal-lg">
+  <!-- 4. Mandatory Legal & Statutory Disclaimer Splash Screen / Modal -->
+  <dialog class="modal-dialog disclaimer-splash-dialog" id="legalDisclaimerModal">
+    <div class="modal-card modal-lg disclaimer-splash-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
-          <div class="modal-icon-badge" style="background-color: #fef3c7; color: #92400e;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div class="modal-icon-badge disclaimer-icon-badge" id="disclaimerIconBadge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
               <line x1="12" y1="8" x2="12" y2="12"></line>
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
           </div>
           <div>
-            <h2 class="modal-title">Mandatory Legal & Statutory Compliance Disclaimer</h2>
-            <span class="modal-subtitle">Procedural Self-Advocacy Instrument — Not Attorney Representation</span>
+            <div class="splash-badge-pill" id="disclaimerSplashTag">MANDATORY STATUTORY COMPLIANCE GATE</div>
+            <h2 class="modal-title" id="legalDisclaimerTitle">Legal & Statutory Disclaimer</h2>
+            <span class="modal-subtitle" id="legalDisclaimerSubtitle">Procedural Self-Advocacy Instrument — Not Attorney Representation</span>
           </div>
         </div>
-        <button class="btn-close-modal" id="closeLegalDisclaimerModal">✕</button>
+        <button class="btn-close-modal" id="closeLegalDisclaimerModal" title="Close Disclaimer">✕</button>
       </div>
 
+      <div class="modal-body" id="legalDisclaimerBody">
+        <div class="disclaimer-lead-notice">
+          <div class="disclaimer-lead-header">
+            <div class="disclaimer-lead-title-row">
+              <span class="disclaimer-lead-icon">⚠️</span>
+              <span class="disclaimer-lead-label">MANDATORY STATUTORY NOTICE</span>
+            </div>
+            <span class="compliance-law-pill">15 U.S.C. § 1692</span>
+          </div>
+          <p class="disclaimer-lead-text">
+            SettleMint is an independent desktop administrative casework utility. It is <strong>NOT a law firm</strong>, does <strong>NOT provide legal representation</strong>, and does <strong>NOT provide legal advice</strong>.
+          </p>
+        </div>
+
+        <div class="disclaimer-cards-list">
+          <div class="disclaimer-rule-card">
+            <div class="disclaimer-rule-header">
+              <span class="disclaimer-rule-num">1</span>
+              <h3 class="disclaimer-rule-title">No Attorney-Client Relationship</h3>
+            </div>
+            <p class="disclaimer-rule-desc">
+              Using SettleMint—including generating Debt Validation Letters (DVL), telephone call logs, violation tallies, or statutory deadline trackers—does not create an attorney-client relationship. All generated documents are self-represented administrative instruments.
+            </p>
+          </div>
+
+          <div class="disclaimer-rule-card">
+            <div class="disclaimer-rule-header">
+              <span class="disclaimer-rule-num">2</span>
+              <h3 class="disclaimer-rule-title">Procedural Administrative Self-Advocacy (15 U.S.C. § 1692)</h3>
+            </div>
+            <p class="disclaimer-rule-desc">
+              The software facilitates personal recordkeeping under the Fair Debt Collection Practices Act (15 U.S.C. § 1692), CFPB Regulation F (12 CFR Part 1006), Fair Credit Reporting Act (15 U.S.C. § 1681), and applicable consumer credit statutes to assist consumers in exercising verification rights.
+            </p>
+          </div>
+
+          <div class="disclaimer-rule-card">
+            <div class="disclaimer-rule-header">
+              <span class="disclaimer-rule-num">3</span>
+              <h3 class="disclaimer-rule-title">Statutory Limitation Calculations (SOL)</h3>
+            </div>
+            <p class="disclaimer-rule-desc">
+              All Statutes of Limitations timelines and expiration estimates are calculated based on publicly codified state statutes for informational and planning purposes only, and do not constitute a formal legal opinion on tolling, jurisdiction, or choice-of-law provisions.
+            </p>
+          </div>
+
+          <div class="disclaimer-rule-card">
+            <div class="disclaimer-rule-header">
+              <span class="disclaimer-rule-num">4</span>
+              <h3 class="disclaimer-rule-title">Requirement to Consult Licensed Counsel</h3>
+            </div>
+            <p class="disclaimer-rule-desc">
+              If you have been served with a civil summons, court complaint, or legal lawsuit, you must consult a licensed attorney in your state jurisdiction immediately. Do not ignore court deadlines.
+            </p>
+          </div>
+        </div>
+
+        <!-- Mandatory User Consent Section (Active during Splash Gate) -->
+        <div class="disclaimer-consent-section" id="disclaimerConsentSection">
+          <label class="disclaimer-checkbox-label" for="disclaimerConsentCheckbox">
+            <input type="checkbox" id="disclaimerConsentCheckbox" class="disclaimer-checkbox">
+            <div class="disclaimer-checkbox-content">
+              <strong class="disclaimer-consent-title">Mandatory User Acknowledgment & Consent</strong>
+              <span class="disclaimer-consent-desc">
+                I confirm that I have read and agree to this statutory compliance disclaimer. I acknowledge that SettleMint provides administrative self-advocacy casework tools and does NOT provide legal representation or legal advice.
+              </span>
+            </div>
+          </label>
+          <div class="disclaimer-validation-msg" id="disclaimerValidationMsg" style="display: none;">
+            ⚠️ You must check the acknowledgment box above to agree to the legal terms before accessing SettleMint.
+          </div>
+        </div>
+
+        <!-- Previously Acknowledged Status Box (Active during Voluntary Review Mode) -->
+        <div class="disclaimer-agreed-card" id="disclaimerAgreedCard" style="display: none;">
+          <div class="disclaimer-agreed-info">
+            <span class="status-pill status-pill-success">✓ Acknowledged & Agreed</span>
+            <span class="disclaimer-agreed-meta" id="disclaimerAgreedMeta"></span>
+          </div>
+          <button type="button" class="btn btn-sm btn-pill-outline" id="resetDisclaimerBtn">Reset Agreement</button>
+        </div>
+      </div>
+
+      <div class="modal-footer disclaimer-modal-footer">
+        <div class="disclaimer-footer-left">
+          <button type="button" class="btn btn-pill-outline btn-decline-disclaimer" id="declineDisclaimerBtn">Decline & Exit</button>
+        </div>
+        <div class="disclaimer-footer-right">
+          <button type="button" class="btn btn-pill-outline" id="closeDisclaimerReviewBtn" style="display: none;">Close</button>
+          <button type="button" class="btn btn-pill-primary" id="agreeDisclaimerBtn">
+            <span>I Agree & Enter Application</span>
+            <span aria-hidden="true" style="font-size: 15px;">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Access Restricted (Disclaimer Declined) Modal -->
+  <dialog class="modal-dialog" id="disclaimerDeclinedModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge" style="background-color: #fee2e2; color: #b91c1c;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title">Access Restricted</h2>
+            <span class="modal-subtitle">Legal Agreement Required</span>
+          </div>
+        </div>
+      </div>
       <div class="modal-body">
-        <div class="script-box alert-amber">
-          <span class="script-box-label text-amber">IMPORTANT NOTICE TO ALL CONSUMERS:</span>
-          <p style="font-size: 13px; line-height: 1.5; color: #0f172a;">
-            SettleMint is an independent desktop administrative utility. It is <strong>NOT a law firm</strong>, does <strong>NOT provide legal representation</strong>, and does <strong>NOT give legal advice</strong>.
+        <div class="script-box alert-rose">
+          <span class="script-box-label text-rose">COMPLIANCE POLICY RESTRICTION:</span>
+          <p style="font-size: 13.5px; line-height: 1.55; color: #0f172a; margin-top: 4px;">
+            You have declined the mandatory legal disclaimer. SettleMint cannot be operated without explicit consent to the self-advocacy and non-attorney terms.
           </p>
         </div>
-
-        <div class="guide-item-card">
-          <h3 class="guide-item-title">1. No Attorney-Client Relationship</h3>
-          <p class="guide-item-text">
-            Using SettleMint, including the generation of Debt Validation Letters (DVL), telephone call logs, violation tallies, or statutory deadline trackers, does not create an attorney-client relationship. All generated documents are self-represented administrative instruments.
-          </p>
-        </div>
-
-        <div class="guide-item-card">
-          <h3 class="guide-item-title">2. Procedural Administrative Self-Advocacy (15 U.S.C. § 1692)</h3>
-          <p class="guide-item-text">
-            The software facilitates personal recordkeeping under the Fair Debt Collection Practices Act (15 U.S.C. § 1692), CFPB Regulation F (12 CFR Part 1006), Fair Credit Reporting Act (15 U.S.C. § 1681), and applicable consumer credit statutes. It is designed to assist consumers in exercising their rights to dispute debts and request written verification.
-          </p>
-        </div>
-
-        <div class="guide-item-card">
-          <h3 class="guide-item-title">3. Statutory Limitation Calculations (SOL)</h3>
-          <p class="guide-item-text">
-            All Statutes of Limitations timelines and expiration estimates are calculated based on publicly codified state statutes. These calculations are provided for informational and planning purposes only and do not constitute a formal legal opinion on tolling, jurisdiction, or choice-of-law provisions.
-          </p>
-        </div>
-
-        <div class="guide-item-card">
-          <h3 class="guide-item-title">4. Requirement to Consult Licensed Counsel</h3>
-          <p class="guide-item-text">
-            If you have been served with a civil summons, court complaint, or legal lawsuit, you must consult a licensed attorney in your state jurisdiction immediately. Do not ignore court deadlines.
-          </p>
-        </div>
+        <p style="font-size: 13px; line-height: 1.5; color: #64748b; margin-top: 4px;">
+          To access the dispute console, debt validation generator, and telephone interaction logs, please review and accept the agreement.
+        </p>
       </div>
-
       <div class="modal-footer">
-        <button class="btn btn-pill-primary" id="dismissLegalDisclaimerBtn">I Understand & Acknowledge</button>
+        <button type="button" class="btn btn-pill-primary" id="returnToDisclaimerBtn">Review & Agree</button>
       </div>
     </div>
   </dialog>

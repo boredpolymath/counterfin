@@ -29,12 +29,18 @@ class SettleMintApp {
     this.tradelines = [...INITIAL_CREDIT_TRADELINES];
 
     this.activeCaseId = this.cases[0]?.id || null;
+    this.expandedCaseIds = new Set(this.activeCaseId ? [this.activeCaseId] : []);
     this.currentView = "dashboard";
     this.disputeFilter = "all";
+
+    // Legal compliance & disclaimer gate state
+    this.DISCLAIMER_STORAGE_KEY = "settlemint_legal_disclaimer_agreed_v1";
+    this.hasAgreedDisclaimer = false;
 
     this.initElements();
     this.bindEvents();
     this.render();
+    this.initLegalDisclaimer();
   }
 
   initElements() {
@@ -67,11 +73,26 @@ class SettleMintApp {
     this.cancelNewDisputeBtn = document.getElementById("cancelNewDisputeBtn");
     this.newDisputeForm = document.getElementById("newDisputeForm");
 
-    // Mandatory Legal Disclaimer Modal
+    // Mandatory Legal Disclaimer Splash Screen & Gate
     this.legalDisclaimerModal = document.getElementById("legalDisclaimerModal");
     this.closeLegalDisclaimerModal = document.getElementById("closeLegalDisclaimerModal");
-    this.dismissLegalDisclaimerBtn = document.getElementById("dismissLegalDisclaimerBtn");
+    this.disclaimerSplashTag = document.getElementById("disclaimerSplashTag");
+    this.legalDisclaimerTitle = document.getElementById("legalDisclaimerTitle");
+    this.legalDisclaimerSubtitle = document.getElementById("legalDisclaimerSubtitle");
+    this.disclaimerConsentSection = document.getElementById("disclaimerConsentSection");
+    this.disclaimerConsentCheckbox = document.getElementById("disclaimerConsentCheckbox");
+    this.disclaimerValidationMsg = document.getElementById("disclaimerValidationMsg");
+    this.disclaimerAgreedCard = document.getElementById("disclaimerAgreedCard");
+    this.disclaimerAgreedMeta = document.getElementById("disclaimerAgreedMeta");
+    this.resetDisclaimerBtn = document.getElementById("resetDisclaimerBtn");
+    this.agreeDisclaimerBtn = document.getElementById("agreeDisclaimerBtn");
+    this.declineDisclaimerBtn = document.getElementById("declineDisclaimerBtn");
+    this.closeDisclaimerReviewBtn = document.getElementById("closeDisclaimerReviewBtn");
     this.footerDisclaimerBtn = document.getElementById("footerDisclaimerBtn");
+
+    // Access Restricted (Disclaimer Declined) Modal
+    this.disclaimerDeclinedModal = document.getElementById("disclaimerDeclinedModal");
+    this.returnToDisclaimerBtn = document.getElementById("returnToDisclaimerBtn");
   }
 
   getActiveCase() {
@@ -122,20 +143,70 @@ class SettleMintApp {
       this.newDisputeForm.addEventListener("submit", (e) => this.handleNewDisputeSubmit(e));
     }
 
-    // 4b. Mandatory Legal Disclaimer Modal
-    if (this.footerDisclaimerBtn) {
-      this.footerDisclaimerBtn.addEventListener("click", () => {
-        if (this.legalDisclaimerModal) this.legalDisclaimerModal.showModal();
+    // 4b. Mandatory Legal Disclaimer Splash Screen & Gate
+    if (this.disclaimerConsentCheckbox) {
+      this.disclaimerConsentCheckbox.addEventListener("change", () => this.handleDisclaimerConsentToggle());
+    }
+    if (this.agreeDisclaimerBtn) {
+      this.agreeDisclaimerBtn.addEventListener("click", () => this.handleDisclaimerAgreementSubmit());
+    }
+    if (this.declineDisclaimerBtn) {
+      this.declineDisclaimerBtn.addEventListener("click", () => {
+        if (this.legalDisclaimerModal) this.legalDisclaimerModal.close();
+        if (this.disclaimerDeclinedModal) this.disclaimerDeclinedModal.showModal();
+      });
+    }
+    if (this.returnToDisclaimerBtn) {
+      this.returnToDisclaimerBtn.addEventListener("click", () => {
+        if (this.disclaimerDeclinedModal) this.disclaimerDeclinedModal.close();
+        this.openLegalDisclaimer(true);
+      });
+    }
+    if (this.resetDisclaimerBtn) {
+      this.resetDisclaimerBtn.addEventListener("click", () => {
+        try {
+          localStorage.removeItem(this.DISCLAIMER_STORAGE_KEY);
+        } catch (e) {}
+        this.hasAgreedDisclaimer = false;
+        this.openLegalDisclaimer(true);
       });
     }
     if (this.closeLegalDisclaimerModal) {
       this.closeLegalDisclaimerModal.addEventListener("click", () => {
-        if (this.legalDisclaimerModal) this.legalDisclaimerModal.close();
+        if (this.hasAgreedDisclaimer && this.legalDisclaimerModal) {
+          this.legalDisclaimerModal.close();
+        }
       });
     }
-    if (this.dismissLegalDisclaimerBtn) {
-      this.dismissLegalDisclaimerBtn.addEventListener("click", () => {
-        if (this.legalDisclaimerModal) this.legalDisclaimerModal.close();
+    if (this.closeDisclaimerReviewBtn) {
+      this.closeDisclaimerReviewBtn.addEventListener("click", () => {
+        if (this.hasAgreedDisclaimer && this.legalDisclaimerModal) {
+          this.legalDisclaimerModal.close();
+        }
+      });
+    }
+    if (this.legalDisclaimerModal) {
+      // Intercept Escape key when agreement has not been accepted
+      this.legalDisclaimerModal.addEventListener("cancel", (e) => {
+        if (!this.hasAgreedDisclaimer) {
+          e.preventDefault();
+          this.handleDisclaimerAgreementSubmit();
+        }
+      });
+      // Click on backdrop should not dismiss splash screen
+      this.legalDisclaimerModal.addEventListener("click", (e) => {
+        if (e.target === this.legalDisclaimerModal) {
+          if (!this.hasAgreedDisclaimer) {
+            this.handleDisclaimerAgreementSubmit();
+          } else {
+            this.legalDisclaimerModal.close();
+          }
+        }
+      });
+    }
+    if (this.footerDisclaimerBtn) {
+      this.footerDisclaimerBtn.addEventListener("click", () => {
+        this.openLegalDisclaimer(!this.hasAgreedDisclaimer);
       });
     }
 
@@ -184,7 +255,7 @@ class SettleMintApp {
         // Legal compliance notice bar disclaimer button
         const complianceBtn = e.target.closest("#openComplianceModalBtn");
         if (complianceBtn) {
-          if (this.legalDisclaimerModal) this.legalDisclaimerModal.showModal();
+          this.openLegalDisclaimer(!this.hasAgreedDisclaimer);
           return;
         }
 
@@ -220,12 +291,49 @@ class SettleMintApp {
           return;
         }
 
-        // Dispute Card row select
-        const cardItem = e.target.closest(".orderly-dispute-card");
-        if (cardItem) {
-          const caseId = cardItem.getAttribute("data-case-id");
-          this.activeCaseId = caseId;
+        // Toggle All Dossiers Button (Collapse All / Expand All)
+        const toggleAllBtn = e.target.closest("#toggleAllDossiersBtn");
+        if (toggleAllBtn) {
+          const filtered = this.getFilteredCases();
+          if (this.expandedCaseIds.size === filtered.length) {
+            this.expandedCaseIds.clear();
+          } else {
+            this.expandedCaseIds = new Set(filtered.map(c => c.id));
+          }
           this.renderCurrentView();
+          return;
+        }
+
+        // Expandable card header or toggle button click
+        const expandTrigger = e.target.closest(".expandable-card-header, .dossier-expand-toggle");
+        if (expandTrigger) {
+          const cardItem = expandTrigger.closest(".orderly-dispute-card");
+          if (cardItem) {
+            const caseId = cardItem.getAttribute("data-case-id");
+            if (this.expandedCaseIds.has(caseId)) {
+              // Collapse this card
+              this.expandedCaseIds.delete(caseId);
+            } else {
+              // Expand this card (single-accordion mode keeps screen compact without scrolling)
+              this.expandedCaseIds.clear();
+              this.expandedCaseIds.add(caseId);
+              this.activeCaseId = caseId;
+            }
+            this.renderCurrentView();
+            return;
+          }
+        }
+
+        // Fallback: Click on card background outside the body drawer
+        const cardItem = e.target.closest(".orderly-dispute-card");
+        if (cardItem && !e.target.closest(".expandable-card-body")) {
+          const caseId = cardItem.getAttribute("data-case-id");
+          if (!this.expandedCaseIds.has(caseId)) {
+            this.expandedCaseIds.clear();
+            this.expandedCaseIds.add(caseId);
+            this.activeCaseId = caseId;
+            this.renderCurrentView();
+          }
         }
       });
 
@@ -332,6 +440,7 @@ class SettleMintApp {
 
     this.cases.unshift(newCase);
     this.activeCaseId = newCase.id;
+    this.expandedCaseIds = new Set([newCase.id]);
 
     if (this.sidebarBadgeCount) {
       this.sidebarBadgeCount.textContent = this.cases.length;
@@ -365,7 +474,7 @@ class SettleMintApp {
 
     switch (this.currentView) {
       case "dashboard":
-        this.viewDashboard.innerHTML = renderDashboard(activeCase, filteredCases);
+        this.viewDashboard.innerHTML = renderDashboard(activeCase, filteredCases, this.expandedCaseIds);
         const filterEl = document.getElementById("disputeFilterSelect");
         if (filterEl) {
           filterEl.value = this.disputeFilter;
@@ -406,8 +515,9 @@ class SettleMintApp {
             const paper = document.getElementById("legalDocumentPaper");
             if (paper) {
               navigator.clipboard?.writeText(paper.innerText);
-              copyBtn.textContent = "Copied ✓";
-              setTimeout(() => { copyBtn.textContent = "Copy Text"; }, 2000);
+              const label = copyBtn.querySelector(".btn-label") || copyBtn;
+              label.textContent = "Copied ✓";
+              setTimeout(() => { label.textContent = "Copy Text"; }, 2000);
             }
           });
         }
@@ -418,10 +528,24 @@ class SettleMintApp {
               "Certified PDF Dispatched",
               `Bates stamped letter ${activeCase.docketNumber}-DOC01 generated and encrypted to vault.`
             );
-            exportPdfBtn.textContent = "Exported ✓";
-            setTimeout(() => { exportPdfBtn.textContent = "Export Certified PDF"; }, 2000);
+            const label = exportPdfBtn.querySelector(".btn-label") || exportPdfBtn;
+            label.textContent = "Exported ✓";
+            setTimeout(() => { label.textContent = "Export Certified PDF"; }, 2000);
           });
         }
+
+        // Live Statutory Demands Checklist Synchronization
+        document.querySelectorAll(".statutory-demand-checkbox").forEach(cb => {
+          cb.addEventListener("change", (e) => {
+            const docItemId = e.target.getAttribute("data-doc-item");
+            if (docItemId) {
+              const docEl = document.getElementById(docItemId);
+              if (docEl) {
+                docEl.style.display = e.target.checked ? "list-item" : "none";
+              }
+            }
+          });
+        });
         break;
       case "evidence":
         this.viewEvidence.innerHTML = renderEvidenceVault(this.evidence, activeCase);
@@ -437,6 +561,141 @@ class SettleMintApp {
       this.sidebarBadgeCount.textContent = this.cases.length;
     }
     this.renderCurrentView();
+  }
+
+  // =========================================================================
+  // Statutory Disclaimer Splash Screen & Gate Methods
+  // =========================================================================
+
+  getStoredDisclaimerAgreement() {
+    try {
+      const raw = localStorage.getItem(this.DISCLAIMER_STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  initLegalDisclaimer() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceSplash = urlParams.get("splash") === "1" || urlParams.get("reset_terms") === "1";
+
+    if (forceSplash) {
+      try {
+        localStorage.removeItem(this.DISCLAIMER_STORAGE_KEY);
+      } catch (e) {}
+      this.hasAgreedDisclaimer = false;
+      this.openLegalDisclaimer(true);
+      return;
+    }
+
+    const record = this.getStoredDisclaimerAgreement();
+    if (record && record.agreed) {
+      this.hasAgreedDisclaimer = true;
+    } else {
+      this.hasAgreedDisclaimer = false;
+      // Launch popup splash screen gate immediately before software can be used
+      this.openLegalDisclaimer(true);
+    }
+  }
+
+  openLegalDisclaimer(isSplash = false) {
+    if (!this.legalDisclaimerModal) return;
+
+    if (isSplash) {
+      this.legalDisclaimerModal.classList.add("is-splash-screen");
+      if (this.disclaimerSplashTag) this.disclaimerSplashTag.style.display = "inline-flex";
+      if (this.legalDisclaimerTitle) this.legalDisclaimerTitle.textContent = "Legal & Statutory Disclaimer";
+      if (this.legalDisclaimerSubtitle) this.legalDisclaimerSubtitle.textContent = "Procedural Self-Advocacy Instrument — Mandatory Agreement Required";
+      if (this.closeLegalDisclaimerModal) this.closeLegalDisclaimerModal.style.display = "none";
+      if (this.disclaimerConsentSection) {
+        this.disclaimerConsentSection.style.display = "block";
+        this.disclaimerConsentSection.classList.remove("shake-error", "is-agreed");
+      }
+      if (this.disclaimerConsentCheckbox) this.disclaimerConsentCheckbox.checked = false;
+      if (this.disclaimerValidationMsg) this.disclaimerValidationMsg.style.display = "none";
+      if (this.disclaimerAgreedCard) this.disclaimerAgreedCard.style.display = "none";
+      if (this.declineDisclaimerBtn) this.declineDisclaimerBtn.style.display = "inline-flex";
+      if (this.closeDisclaimerReviewBtn) this.closeDisclaimerReviewBtn.style.display = "none";
+      if (this.agreeDisclaimerBtn) {
+        this.agreeDisclaimerBtn.style.display = "inline-flex";
+        this.agreeDisclaimerBtn.innerHTML = `<span>I Agree & Enter Application</span><span aria-hidden="true" style="font-size: 15px;">→</span>`;
+      }
+    } else {
+      // Review mode
+      this.legalDisclaimerModal.classList.remove("is-splash-screen");
+      if (this.disclaimerSplashTag) this.disclaimerSplashTag.style.display = "none";
+      if (this.legalDisclaimerTitle) this.legalDisclaimerTitle.textContent = "Mandatory Legal & Statutory Compliance Terms";
+      if (this.legalDisclaimerSubtitle) this.legalDisclaimerSubtitle.textContent = "Procedural Self-Advocacy Instrument — Not Attorney Representation";
+      if (this.closeLegalDisclaimerModal) this.closeLegalDisclaimerModal.style.display = "flex";
+      if (this.disclaimerConsentSection) this.disclaimerConsentSection.style.display = "none";
+      if (this.disclaimerAgreedCard) {
+        this.disclaimerAgreedCard.style.display = "flex";
+        const record = this.getStoredDisclaimerAgreement();
+        const dateStr = record?.agreedAt ? new Date(record.agreedAt).toLocaleString() : "Active Session";
+        if (this.disclaimerAgreedMeta) {
+          this.disclaimerAgreedMeta.textContent = `User agreed on ${dateStr} (v${record?.version || "1.0"})`;
+        }
+      }
+      if (this.declineDisclaimerBtn) this.declineDisclaimerBtn.style.display = "none";
+      if (this.agreeDisclaimerBtn) this.agreeDisclaimerBtn.style.display = "none";
+      if (this.closeDisclaimerReviewBtn) this.closeDisclaimerReviewBtn.style.display = "inline-flex";
+    }
+
+    if (!this.legalDisclaimerModal.open) {
+      this.legalDisclaimerModal.showModal();
+    }
+  }
+
+  handleDisclaimerConsentToggle() {
+    if (!this.disclaimerConsentCheckbox || !this.disclaimerConsentSection) return;
+    const checked = this.disclaimerConsentCheckbox.checked;
+    this.disclaimerConsentSection.classList.toggle("is-agreed", checked);
+    if (checked && this.disclaimerValidationMsg) {
+      this.disclaimerValidationMsg.style.display = "none";
+      this.disclaimerConsentSection.classList.remove("shake-error");
+    }
+  }
+
+  handleDisclaimerAgreementSubmit() {
+    if (!this.disclaimerConsentCheckbox?.checked) {
+      if (this.disclaimerConsentSection) {
+        this.disclaimerConsentSection.classList.remove("shake-error");
+        void this.disclaimerConsentSection.offsetWidth;
+        this.disclaimerConsentSection.classList.add("shake-error");
+      }
+      if (this.disclaimerValidationMsg) {
+        this.disclaimerValidationMsg.style.display = "block";
+      }
+      return;
+    }
+
+    const record = {
+      agreed: true,
+      agreedAt: new Date().toISOString(),
+      version: "1.0"
+    };
+    try {
+      localStorage.setItem(this.DISCLAIMER_STORAGE_KEY, JSON.stringify(record));
+    } catch (e) {
+      console.warn("Could not save disclaimer agreement to localStorage:", e);
+    }
+    this.hasAgreedDisclaimer = true;
+
+    if (this.agreeDisclaimerBtn) {
+      this.agreeDisclaimerBtn.innerHTML = `<span>Agreed ✓ Unlocking Console...</span>`;
+    }
+
+    setTimeout(() => {
+      if (this.legalDisclaimerModal) {
+        this.legalDisclaimerModal.close();
+      }
+      ipc.sendNotification(
+        "SettleMint Console Ready",
+        "Statutory compliance agreement acknowledged. All self-advocacy modules unlocked."
+      );
+    }, 250);
   }
 }
 
