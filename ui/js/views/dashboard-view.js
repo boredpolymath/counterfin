@@ -1,6 +1,7 @@
 /**
  * SettleMint Dashboard View: Orderly Consumer Advocacy Dashboard
  * Clean, structured, anxiety-reducing information hierarchy
+ * Covers Credit Cards, Medical Debt, Auto Loan Deficiencies, and all FDCPA debts
  */
 
 import { USER_PROFILE } from '../data/mock-dossiers.js';
@@ -20,36 +21,77 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
   // 2. Render Structured Dispute Items
   const disputeCardsHtml = cases.map(c => {
     const isSelected = c.id === activeCase.id;
-    const isExpanded = c.id === (expandedCaseId || activeCase.id);
 
-    // Icon SVGs
-    let iconSvg = `
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#006948" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-    `;
-    let iconClass = "mint";
-    let serviceBadge = "Emergency Care";
+    // Icon & category badge matching debt type
+    let iconSvg = '';
+    let iconClass = 'mint';
+    let serviceBadge = c.providerCategory || 'Consumer Debt';
+    let badgeClass = 'badge-medical';
 
-    if (c.iconType === "cardiology") {
+    if (c.debtType === 'credit_card' || c.iconType === 'credit_card') {
       iconSvg = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#006948" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+          <circle cx="6" cy="15" r="1.5" fill="currentColor"></circle>
+        </svg>
+      `;
+      iconClass = 'indigo';
+      serviceBadge = 'Credit Card • Revolving';
+      badgeClass = 'badge-credit';
+    } else if (c.debtType === 'auto_deficiency' || c.iconType === 'auto') {
+      iconSvg = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2.1 11 2 11.5 2 12v4c0 .6.4 1 1 1h2"></path>
+          <circle cx="7" cy="17" r="2"></circle>
+          <path d="M9 17h6"></path>
+          <circle cx="17" cy="17" r="2"></circle>
+        </svg>
+      `;
+      iconClass = 'amber';
+      serviceBadge = 'Auto Finance • Deficiency';
+      badgeClass = 'badge-auto';
+    } else if (c.debtType === 'personal_loan' || c.iconType === 'loan') {
+      iconSvg = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M14 10v11M12 2 2 7h20L12 2z"></path>
+        </svg>
+      `;
+      iconClass = 'violet';
+      serviceBadge = 'Installment Loan • Unsecured';
+      badgeClass = 'badge-loan';
+    } else if (c.iconType === 'cardiology') {
+      iconSvg = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
       `;
-      iconClass = "mint";
-      serviceBadge = "Cardiology Specialist";
-    } else if (c.iconType === "imaging") {
+      iconClass = 'mint';
+      serviceBadge = 'Medical • Specialist';
+      badgeClass = 'badge-medical';
+    } else if (c.iconType === 'imaging') {
       iconSvg = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
           <line x1="8" y1="21" x2="16" y2="21"></line>
           <line x1="12" y1="17" x2="12" y2="21"></line>
         </svg>
       `;
-      iconClass = "slate";
-      serviceBadge = "MRI / Diagnostics";
+      iconClass = 'slate';
+      serviceBadge = 'Medical • Diagnostics';
+      badgeClass = 'badge-medical';
+    } else {
+      // Default Medical
+      iconSvg = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <line x1="12" y1="8" x2="12" y2="14"></line>
+          <line x1="9" y1="11" x2="15" y2="11"></line>
+        </svg>
+      `;
+      iconClass = 'mint';
+      serviceBadge = c.providerCategory || 'Medical • Healthcare';
+      badgeClass = 'badge-medical';
     }
 
     // Status pill
@@ -83,7 +125,7 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
             </div>
             <div class="provider-info-block">
               <h4 class="provider-title">${c.originalProvider}</h4>
-              <span class="service-category-badge">${serviceBadge}</span>
+              <span class="service-category-badge ${badgeClass}" title="${c.legalFramework || ''}">${serviceBadge}</span>
             </div>
           </div>
           <div class="dossier-card-top-right">
@@ -115,11 +157,11 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
         <!-- Account & Collector Meta -->
         <div class="dossier-card-meta">
           <div class="dossier-meta-item">
-            <span class="meta-label">Agency:</span>
+            <span class="meta-label">Collector / Buyer:</span>
             <span class="meta-val">${c.collectionAgency}</span>
           </div>
           <div class="dossier-meta-item">
-            <span class="meta-label">Account:</span>
+            <span class="meta-label">Account #:</span>
             <span class="meta-val">${c.originalAccountNumber}</span>
           </div>
         </div>
@@ -131,7 +173,7 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
             ${c.statusBadge}
           </span>
           ${c.certifiedMailTracking ? `
-            <span class="certified-tag" title="Tracking: ${c.certifiedMailTracking}">
+            <span class="certified-tag" title="USPS Certified Tracking: ${c.certifiedMailTracking}">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
               USPS Certified
             </span>
@@ -151,6 +193,20 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
   }).join("");
 
   return `
+    <!-- 0. Mandatory Legal Compliance Notice Bar -->
+    <aside class="legal-compliance-bar" role="note" aria-label="Legal & Statutory Disclaimer">
+      <div class="compliance-bar-content">
+        <span class="compliance-badge">⚖️ LEGAL DISCLAIMER</span>
+        <span class="compliance-text">
+          <strong>Procedural Self-Advocacy Instrument:</strong> SettleMint is a local recordkeeping and procedural workflow tool. It <u>does not provide legal representation or legal advice</u> pursuant to 15 U.S.C. § 1692.
+        </span>
+      </div>
+      <button class="compliance-modal-trigger" id="openComplianceModalBtn" title="View Full Mandatory Legal Disclaimer">
+        <span>Read Full Disclaimer</span>
+        <span aria-hidden="true" style="font-size: 14px;">›</span>
+      </button>
+    </aside>
+
     <!-- 1. Header Overview & Protection State Banner -->
     <section class="orderly-welcome-banner">
       <div class="welcome-header-left">
@@ -165,11 +221,11 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
             <h2 class="welcome-heading">Welcome back, ${USER_PROFILE.shortName}</h2>
             <span class="status-pill status-pill-mint">
               <span class="status-dot status-dot-mint"></span>
-              Under Active Protection
+              FDCPA Active Shield
             </span>
           </div>
           <p class="welcome-description">
-            Your <strong>${cases.length} medical disputes</strong> are actively defended under 15 U.S.C. § 1692 & the No Surprises Act. All validation clocks are monitored automatically.
+            Your <strong>${cases.length} consumer debt disputes</strong> (Credit Cards, Medical, Auto & Loans) are actively defended under 15 U.S.C. § 1692, CFPB Regulation F & the FCRA. All validation clocks are monitored automatically.
           </p>
         </div>
       </div>
@@ -189,7 +245,7 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
           </div>
         </div>
         <div class="metric-card-value tabular-nums">$${totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-        <div class="metric-card-sub">${cases.length} disputed healthcare claims</div>
+        <div class="metric-card-sub">${cases.length} disputed consumer & medical claims</div>
         <div class="metric-card-footer">
           <span class="status-pill status-pill-mint">
             <span class="status-dot status-dot-mint"></span>
@@ -211,7 +267,7 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
           </div>
         </div>
         <div class="metric-card-value tabular-nums">${USER_PROFILE.nextDeadlineDays} Days Left</div>
-        <div class="metric-card-sub">${USER_PROFILE.nextDeadlineAgency} verification clock</div>
+        <div class="metric-card-sub">${USER_PROFILE.nextDeadlineAgency} validation clock</div>
         <div class="metric-card-footer">
           <span class="status-pill status-pill-amber">
             Clock Active
@@ -233,7 +289,7 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
           </div>
         </div>
         <div class="metric-card-value text-rose tabular-nums">${totalViolations} Infractions</div>
-        <div class="metric-card-sub">Late-night calls & unverified claims</div>
+        <div class="metric-card-sub">Missing chain-of-title, late calls & threats</div>
         <div class="metric-card-footer">
           <span class="status-pill status-pill-rose" style="font-weight: 700;">
             Up to $${totalDamages.toLocaleString("en-US", { minimumFractionDigits: 0 })}
@@ -248,14 +304,15 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
       <div class="disputes-section-header">
         <div class="disputes-header-titles">
           <h3 class="disputes-title">Active Dispute Dossiers</h3>
-          <p class="disputes-subtitle">Collectors are legally barred from reporting unverified claims to credit bureaus.</p>
+          <p class="disputes-subtitle">Collectors and junk debt buyers are legally barred from outreach or reporting unverified claims to credit bureaus.</p>
         </div>
         <div class="disputes-controls">
           <select class="orderly-filter-select" id="disputeFilterSelect">
-            <option value="all">All ${cases.length} Accounts</option>
-            <option value="er">Emergency Room (ER)</option>
-            <option value="specialist">Specialist / Cardiology</option>
-            <option value="imaging">Imaging / Radiology</option>
+            <option value="all">All ${cases.length} Accounts (FDCPA Covered)</option>
+            <option value="credit_card">Credit Card Debt (Revolving)</option>
+            <option value="medical">Medical & Hospital Debts</option>
+            <option value="auto_deficiency">Auto Loan Deficiencies</option>
+            <option value="personal_loan">Personal & Installment Loans</option>
           </select>
         </div>
       </div>
@@ -276,15 +333,18 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
                 </svg>
               </div>
               <div>
-                <span class="label-caps">ACTIVE DOSSIER INSPECTOR</span>
+                <span class="label-caps">ACTIVE DOSSIER INSPECTOR — ${activeCase.debtType ? activeCase.debtType.replace('_', ' ').toUpperCase() : 'CONSUMER DEBT'}</span>
                 <h4 class="inspector-provider-name">${activeCase.originalProvider} <span class="docket-id-tag">${activeCase.docketNumber}</span></h4>
               </div>
             </div>
             <div class="tray-meta-pills">
-              <span class="meta-tag">Date of Service: ${activeCase.dateOfService}</span>
+              <span class="meta-tag">Account: ${activeCase.originalAccountNumber}</span>
               <span class="meta-tag">Jurisdiction: New York (CPLR § 214-i)</span>
+              ${activeCase.legalFramework ? `
+                <span class="meta-tag alert-amber">${activeCase.legalFramework}</span>
+              ` : ''}
               ${activeCase.violationsCount > 0 ? `
-                <span class="meta-tag alert-rose">■ ${activeCase.violationsCount} FDCPA Infraction(s) Flagged</span>
+                <span class="meta-tag alert-rose">■ ${activeCase.violationsCount} Statutory Infraction(s) Flagged</span>
               ` : ''}
             </div>
           </div>
@@ -345,11 +405,15 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
           </svg>
         </div>
         <div class="advisory-strip-text">
-          <h4 class="advisory-strip-title">Next Steps & Patient Protection Rules</h4>
+          <h4 class="advisory-strip-title">Next Steps & FDCPA Consumer Shield Rules</h4>
           <div class="advisory-points-row">
             <div class="advisory-point-item">
               <span class="point-bullet">🛡</span>
-              <span><strong>Do not make token payments:</strong> In many states, any partial payment resets the statutory lawsuit clock.</span>
+              <span><strong>Do not make token payments:</strong> In many states, any partial payment resets the statutory lawsuit clock on revolving credit and installment notes.</span>
+            </div>
+            <div class="advisory-point-item">
+              <span class="point-bullet">📜</span>
+              <span><strong>Demand chain of title:</strong> Junk debt buyers must prove legal assignment from the original card issuer or creditor under CFPB Reg F.</span>
             </div>
             <div class="advisory-point-item">
               <span class="point-bullet">📞</span>

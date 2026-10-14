@@ -1,6 +1,8 @@
 /**
  * SettleMint Core Application Bootstrap & Controller
  * Architecture: SettleMint Consumer Advocacy System
+ * Expansively supports all consumer debts covered by the FDCPA:
+ * Credit Card Portfolios, Medical Debts, Auto Loan Deficiencies, Installment Loans, Utilities
  */
 
 import { ipc } from './ipc.js';
@@ -64,6 +66,12 @@ class SettleMintApp {
     this.closeNewDisputeModal = document.getElementById("closeNewDisputeModal");
     this.cancelNewDisputeBtn = document.getElementById("cancelNewDisputeBtn");
     this.newDisputeForm = document.getElementById("newDisputeForm");
+
+    // Mandatory Legal Disclaimer Modal
+    this.legalDisclaimerModal = document.getElementById("legalDisclaimerModal");
+    this.closeLegalDisclaimerModal = document.getElementById("closeLegalDisclaimerModal");
+    this.dismissLegalDisclaimerBtn = document.getElementById("dismissLegalDisclaimerBtn");
+    this.footerDisclaimerBtn = document.getElementById("footerDisclaimerBtn");
   }
 
   getActiveCase() {
@@ -94,7 +102,7 @@ class SettleMintApp {
 
     // 3. Dispute Guides Modal
     if (this.closeDisputeGuidesModal) {
-      this.closeDisputeGuidesModal.addEventListener("click", () => this.disputeGuidesModal.close());
+      this.closeDisputeGuidesModal.addEventListener("click", () => this.disputeGuidesModal.showModal());
     }
     if (this.dismissDisputeGuidesBtn) {
       this.dismissDisputeGuidesBtn.addEventListener("click", () => this.disputeGuidesModal.close());
@@ -114,9 +122,72 @@ class SettleMintApp {
       this.newDisputeForm.addEventListener("submit", (e) => this.handleNewDisputeSubmit(e));
     }
 
+    // 4b. Mandatory Legal Disclaimer Modal
+    if (this.footerDisclaimerBtn) {
+      this.footerDisclaimerBtn.addEventListener("click", () => {
+        if (this.legalDisclaimerModal) this.legalDisclaimerModal.showModal();
+      });
+    }
+    if (this.closeLegalDisclaimerModal) {
+      this.closeLegalDisclaimerModal.addEventListener("click", () => {
+        if (this.legalDisclaimerModal) this.legalDisclaimerModal.close();
+      });
+    }
+    if (this.dismissLegalDisclaimerBtn) {
+      this.dismissLegalDisclaimerBtn.addEventListener("click", () => {
+        if (this.legalDisclaimerModal) this.legalDisclaimerModal.close();
+      });
+    }
+
+    // Dynamic intake subcategory synchronization
+    const debtTypeSelect = document.getElementById("newDebtType");
+    const categorySelect = document.getElementById("newCategory");
+    if (debtTypeSelect && categorySelect) {
+      debtTypeSelect.addEventListener("change", (e) => {
+        const type = e.target.value;
+        if (type === "credit_card") {
+          categorySelect.innerHTML = `
+            <option value="Credit Card (Revolving)">Revolving Consumer Credit Card</option>
+            <option value="Store / Retail Credit Card">Retail / Store Card</option>
+            <option value="Secured Credit Card">Secured Credit Line</option>
+          `;
+        } else if (type === "medical") {
+          categorySelect.innerHTML = `
+            <option value="Emergency Department">Emergency Room (ER Visit)</option>
+            <option value="Specialist Consultation">Specialist / Surgery</option>
+            <option value="Diagnostic Radiology">Radiology / MRI Scan</option>
+            <option value="Pathology / Laboratory">Clinical Laboratory Services</option>
+          `;
+        } else if (type === "auto_deficiency") {
+          categorySelect.innerHTML = `
+            <option value="Auto Finance (Deficiency)">Repossession Deficiency Balance</option>
+            <option value="Auto Lease Return">Lease End Wear & Tear Arrears</option>
+          `;
+        } else if (type === "personal_loan") {
+          categorySelect.innerHTML = `
+            <option value="Personal Installment Loan">Unsecured Installment / Fintech</option>
+            <option value="Peer-to-Peer Note">P2P Lending Note</option>
+          `;
+        } else {
+          categorySelect.innerHTML = `
+            <option value="Telecom / Mobile Service">Cellular / Telecom Arrears</option>
+            <option value="Residential Lease / Rent">Apartment Lease / Rent Balance</option>
+            <option value="Consumer Account">Other FDCPA Consumer Debt</option>
+          `;
+        }
+      });
+    }
+
     // 5. Dynamic Dashboard View event delegation
     if (this.viewDashboard) {
       this.viewDashboard.addEventListener("click", (e) => {
+        // Legal compliance notice bar disclaimer button
+        const complianceBtn = e.target.closest("#openComplianceModalBtn");
+        if (complianceBtn) {
+          if (this.legalDisclaimerModal) this.legalDisclaimerModal.showModal();
+          return;
+        }
+
         // Dispute action button (e.g. View Details or Review Letter)
         const actionBtn = e.target.closest(".dispute-action-btn");
         if (actionBtn) {
@@ -126,7 +197,6 @@ class SettleMintApp {
           if (action === "letters") {
             this.switchView("letters");
           } else {
-            // Toggle expansion of active case
             this.renderCurrentView();
           }
           return;
@@ -201,23 +271,39 @@ class SettleMintApp {
 
   handleNewDisputeSubmit(e) {
     e.preventDefault();
+    const debtType = document.getElementById("newDebtType") ? document.getElementById("newDebtType").value : "credit_card";
     const provider = document.getElementById("newProviderName").value;
     const agency = document.getElementById("newAgencyName").value;
     const balance = parseFloat(document.getElementById("newBalance").value) || 0;
     const category = document.getElementById("newCategory").value;
-    const accountNum = document.getElementById("newAccountNumber").value || `ACC-${Date.now().toString().slice(-5)}`;
+    const accountNum = document.getElementById("newAccountNumber").value || `ACC-${Date.now().toString().slice(-4)}`;
 
     const caseCount = this.cases.length + 1;
     const batesStr = `BATES-SM-2026-004${caseCount}`;
 
-    let iconType = "emergency";
-    if (category.includes("Imaging") || category.includes("Radiology")) iconType = "imaging";
-    else if (category.includes("Cardiology") || category.includes("Specialist")) iconType = "cardiology";
+    let iconType = "credit_card";
+    let legalFramework = "CFPB Reg F § 1006.34 & TILA";
+    let notes = "Newly ingested credit card debt portfolio. Demanding chain of title and full accounting.";
+
+    if (debtType === "medical") {
+      iconType = "medical";
+      legalFramework = "No Surprises Act & FDCPA § 1692g";
+      notes = "Newly ingested healthcare debt. Initiating 30-day verification demand and clinical billing audit.";
+    } else if (debtType === "auto_deficiency") {
+      iconType = "auto";
+      legalFramework = "UCC Article 9 & FDCPA";
+      notes = "Auto loan deficiency dispute under UCC Article 9 & 15 U.S.C. § 1692g.";
+    } else if (debtType === "personal_loan") {
+      iconType = "loan";
+      legalFramework = "15 U.S.C. § 1692g & State Consumer Act";
+      notes = "Personal installment loan verification demand under federal FDCPA standards.";
+    }
 
     const newCase = {
       id: `case-sm-2026-004${caseCount}`,
       docketNumber: batesStr,
       debtorName: this.user.name,
+      debtType: debtType,
       originalProvider: provider,
       providerCategory: category,
       iconType: iconType,
@@ -235,15 +321,16 @@ class SettleMintApp {
       statusBadge: "Notice Received",
       secondaryBadge: "Standard 30-day window",
       certifiedMailDeliveredDate: null,
-      certifiedMailTracking: "",
+      certifiedMailTracking: `7021 0950 000${caseCount} 8891 0021`,
       actionLabel: "Review Letter",
       violationsCount: 0,
       potentialDamages: 0.00,
       collectionStatus: "Dispute letter ready to send",
-      notes: "Newly ingested clinical debt dossier. Initiating 30-day verification demand."
+      notes: notes,
+      legalFramework: legalFramework
     };
 
-    this.cases.push(newCase);
+    this.cases.unshift(newCase);
     this.activeCaseId = newCase.id;
 
     if (this.sidebarBadgeCount) {
@@ -254,7 +341,7 @@ class SettleMintApp {
     this.newDisputeForm.reset();
 
     ipc.sendNotification(
-      "New Dispute Opened",
+      "New FDCPA Dispute Protected",
       `Dispute initiated for ${provider} ($${balance.toFixed(2)}).`
     );
 
@@ -266,12 +353,14 @@ class SettleMintApp {
     if (!activeCase) return;
 
     let filteredCases = [...this.cases];
-    if (this.disputeFilter === "er") {
-      filteredCases = this.cases.filter(c => c.providerCategory.includes("Emergency"));
-    } else if (this.disputeFilter === "specialist") {
-      filteredCases = this.cases.filter(c => c.providerCategory.includes("Specialist") || c.providerCategory.includes("Cardiology"));
-    } else if (this.disputeFilter === "imaging") {
-      filteredCases = this.cases.filter(c => c.providerCategory.includes("Radiology") || c.providerCategory.includes("Imaging"));
+    if (this.disputeFilter === "credit_card") {
+      filteredCases = this.cases.filter(c => c.debtType === "credit_card" || c.iconType === "credit_card");
+    } else if (this.disputeFilter === "medical") {
+      filteredCases = this.cases.filter(c => c.debtType === "medical" || (!c.debtType && !c.iconType?.includes("credit") && !c.iconType?.includes("auto") && !c.iconType?.includes("loan")));
+    } else if (this.disputeFilter === "auto_deficiency") {
+      filteredCases = this.cases.filter(c => c.debtType === "auto_deficiency" || c.iconType === "auto");
+    } else if (this.disputeFilter === "personal_loan") {
+      filteredCases = this.cases.filter(c => c.debtType === "personal_loan" || c.iconType === "loan");
     }
 
     switch (this.currentView) {
@@ -287,6 +376,30 @@ class SettleMintApp {
         break;
       case "letters":
         this.viewLetters.innerHTML = renderLetterStudio(activeCase);
+        
+        // Live input synchronization
+        const templateRecipientInput = document.getElementById("templateRecipient");
+        if (templateRecipientInput) {
+          templateRecipientInput.addEventListener("input", (e) => {
+            const el = document.getElementById("docRecipient");
+            if (el) el.textContent = e.target.value;
+          });
+        }
+        const templateAmountInput = document.getElementById("templateAmount");
+        if (templateAmountInput) {
+          templateAmountInput.addEventListener("input", (e) => {
+            const el = document.getElementById("docDisputedAmount");
+            if (el) el.textContent = e.target.value;
+          });
+        }
+        const templateTrackingInput = document.getElementById("templateCertifiedMail");
+        if (templateTrackingInput) {
+          templateTrackingInput.addEventListener("input", (e) => {
+            const el = document.getElementById("docTrackingNo");
+            if (el) el.textContent = e.target.value;
+          });
+        }
+
         const copyBtn = document.getElementById("copyTextBtn");
         if (copyBtn) {
           copyBtn.addEventListener("click", () => {
@@ -330,5 +443,5 @@ class SettleMintApp {
 // Bootstrap application on DOM load
 window.addEventListener("DOMContentLoaded", () => {
   window.app = new SettleMintApp();
-  console.log("SettleMint Patient Protection Dashboard Initialized.");
+  console.log("SettleMint Consumer Debt Protection Dashboard Initialized.");
 });

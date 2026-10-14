@@ -17,6 +17,10 @@ pub enum FdcpaViolationType {
     CollectionDuringValidation,
     /// 15 U.S.C. 1692c(c) - Contact after receipt of formal Cease and Desist
     PostCeaseContact,
+    /// 15 U.S.C. 1692e & 12 C.F.R. § 1006.26 - Suing or threatening to sue on time-barred debt
+    TimeBarredSuitThreat,
+    /// 12 C.F.R. § 1006.34 - Failure to provide required CFPB Regulation F validation notice itemization & chain of custody
+    MissingRegFValidationItemization,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

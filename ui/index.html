@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
-  <title>SettleMint — Patient Protection Dashboard</title>
+  <title>SettleMint — Consumer Debt Defense Console (FDCPA)</title>
   
   <!-- Typography: Plus Jakarta Sans & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -126,7 +126,7 @@
           </div>
           <div class="sidebar-user-info">
             <span class="sidebar-user-name">Sarah Henderson</span>
-            <span class="sidebar-user-sub">Protected Patient</span>
+            <span class="sidebar-user-sub">Protected Consumer</span>
           </div>
         </div>
       </div>
@@ -172,6 +172,10 @@
       </div>
       <span class="footer-divider">•</span>
       <span class="footer-meta-text">Consumer Debt Defense Console</span>
+      <span class="footer-divider">•</span>
+      <button class="footer-disclaimer-btn" id="footerDisclaimerBtn" title="View Mandatory Legal & Statutory Disclaimer">
+        ⚖️ Legal Disclaimer (Not Legal Advice)
+      </button>
     </div>
 
     <div class="footer-right">
@@ -215,14 +219,14 @@
         <div class="script-box">
           <span class="script-box-label">MANDATORY OPENING STATEMENT (READ THIS FIRST):</span>
           <blockquote class="script-quote">
-            "Before we begin, please be advised that this call is being documented. State your full legal name, the corporate name of your agency, your physical corporate address, and the original creditor's account number."
+            "Before we begin, please be advised that this call is being documented. State your full legal name, the corporate name of your agency, your physical corporate address, the original creditor's name (e.g. issuing bank or provider), and the original account number."
           </blockquote>
         </div>
 
         <div class="script-box">
           <span class="script-box-label">FORMAL DISPUTE & VALIDATION DEMAND:</span>
           <blockquote class="script-quote">
-            "Pursuant to the Fair Debt Collection Practices Act, 15 U.S.C. § 1692g, I dispute this alleged debt in its entirety. I demand formal verification in writing, including the original itemized hospital accounting and proof of your authority to collect. You must cease further telephone contact."
+            "Pursuant to the Fair Debt Collection Practices Act, 15 U.S.C. § 1692g, and CFPB Regulation F, I dispute this alleged debt in its entirety. I demand formal verification in writing, including complete chain of assignment, full itemized accounting, and proof of your authority to collect. You must cease further telephone contact."
           </blockquote>
         </div>
 
@@ -254,8 +258,8 @@
             </svg>
           </div>
           <div>
-            <h2 class="modal-title">Medical Debt Dispute Guides & Statutory Rights</h2>
-            <span class="modal-subtitle">Federal protections under FDCPA, FCRA & No Surprises Act</span>
+            <h2 class="modal-title">FDCPA Consumer Debt Compendium & Statutory Rights</h2>
+            <span class="modal-subtitle">Federal protections under FDCPA, CFPB Regulation F, FCRA & No Surprises Act</span>
           </div>
         </div>
         <button class="btn-close-modal" id="closeDisputeGuidesModal">✕</button>
@@ -263,23 +267,37 @@
 
       <div class="modal-body">
         <div class="guide-item-card">
-          <h3 class="guide-item-title">1. The No Surprises Act (Public Law 116-260)</h3>
+          <h3 class="guide-item-title">1. 30-Day Mandatory Debt Validation Stay (15 U.S.C. § 1692g)</h3>
+          <p class="guide-item-text">
+            Sending a written Debt Validation Letter (DVL) via USPS Certified Mail within 30 days of the initial notice freezes all collection efforts across all covered debts (credit cards, medical, loans, utilities). Collectors are legally barred from contacting you or furnishing adverse reports to credit bureaus until verification is provided.
+          </p>
+        </div>
+
+        <div class="guide-item-card">
+          <h3 class="guide-item-title">2. Credit Card Junk Debt Buyers & CFPB Regulation F (12 CFR Part 1006)</h3>
+          <p class="guide-item-text">
+            Debt buyers (such as Midland, Portfolio Recovery, LVNV) purchase defaulted credit card portfolios for pennies on the dollar, frequently lacking proper documentation. Under CFPB Regulation F § 1006.34, they must furnish itemized validation disclosures, an unbroken chain of title from the original card issuer, and full charge-off fee itemization.
+          </p>
+        </div>
+
+        <div class="guide-item-card">
+          <h3 class="guide-item-title">3. The No Surprises Act for Medical Debts (Public Law 116-260)</h3>
           <p class="guide-item-text">
             Protects patients from surprise balance billing for emergency services and non-emergency services provided by out-of-network clinicians at in-network facilities. Providers cannot bill you more than your in-network cost-sharing amount.
           </p>
         </div>
 
-        <div class="guide-item-card">
-          <h3 class="guide-item-title">2. 30-Day Debt Validation Window (15 U.S.C. § 1692g)</h3>
+        <div class="guide-item-card alert-amber">
+          <h3 class="guide-item-title text-amber">4. Time-Barred Debt & The Statute of Limitations Trap (12 CFR § 1006.26)</h3>
           <p class="guide-item-text">
-            Sending a written Debt Validation Letter (DVL) via USPS Certified Mail within 30 days of the initial notice freezes all collection efforts. Collectors are legally barred from contacting you or furnishing adverse reports to credit bureaus until verification is provided.
+            Once a debt's state statute of limitations expires (e.g. 3 years in NY, 4 in CA/TX/FL), collectors are strictly forbidden by federal law from suing or threatening to sue. Making even a $5 token payment can restart the statutory lawsuit clock in many states. Never make partial payments while an account is under dispute.
           </p>
         </div>
 
-        <div class="guide-item-card alert-amber">
-          <h3 class="guide-item-title text-amber">3. The Statute of Limitations Reset Trap</h3>
+        <div class="guide-item-card">
+          <h3 class="guide-item-title">5. Auto Loan Deficiencies & UCC Article 9 Protections</h3>
           <p class="guide-item-text">
-            Making even a $5 or $10 payment restarts the statutory clock in many states, exposing you to refreshed lawsuit liability. Never make partial payments while an account is under dispute.
+            After vehicle repossession, creditors must give timely notice of sale (UCC § 9-611) and conduct a commercially reasonable sale (UCC § 9-610). If they fail to provide full accounting of gross auction proceeds, storage, and fees, they may forfeit all rights to collect any deficiency balance.
           </p>
         </div>
       </div>
@@ -303,7 +321,7 @@
           </div>
           <div>
             <h2 class="modal-title">Open New Dispute Dossier</h2>
-            <span class="modal-subtitle">Add a hospital or clinic collection account to your shield</span>
+            <span class="modal-subtitle">Add a credit card, medical, auto, or consumer debt to your shield</span>
           </div>
         </div>
         <button class="btn-close-modal" id="closeNewDisputeModal">✕</button>
@@ -313,34 +331,50 @@
         <form id="newDisputeForm" class="consumer-form">
           <div class="form-row form-cols-2">
             <div class="form-group">
-              <label class="form-label">Healthcare Provider</label>
-              <input type="text" class="input-rounded" id="newProviderName" placeholder="e.g. Metro Health System" required>
+              <label class="form-label">Debt Classification (FDCPA Covered)</label>
+              <select class="input-rounded" id="newDebtType">
+                <option value="credit_card" selected>Credit Card (Revolving / Charge-Off)</option>
+                <option value="medical">Medical Debt (Hospital / Specialist / Clinic)</option>
+                <option value="auto_deficiency">Auto Loan Deficiency (Vehicle Repossession)</option>
+                <option value="personal_loan">Personal & Installment Loan</option>
+                <option value="student_loan">Private Student Loan</option>
+                <option value="utility">Utility & Telecom Debt</option>
+                <option value="other">Other Consumer Debt (Household / Personal)</option>
+              </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Collection Agency</label>
-              <input type="text" class="input-rounded" id="newAgencyName" placeholder="e.g. Apex Recovery Group" required>
+              <label class="form-label">Specific Category / Subtype</label>
+              <select class="input-rounded" id="newCategory">
+                <option value="Credit Card (Revolving)">Revolving Consumer Credit Card</option>
+                <option value="Emergency Department">Emergency Room (ER Visit)</option>
+                <option value="Specialist Consultation">Medical Specialist / Surgery</option>
+                <option value="Auto Finance (Deficiency)">Auto Repossession Deficiency</option>
+                <option value="Personal Installment Loan">Unsecured Installment / Fintech</option>
+                <option value="Telecom / Mobile Service">Cellular / Telecom Arrears</option>
+              </select>
             </div>
           </div>
 
           <div class="form-row form-cols-2">
             <div class="form-group">
-              <label class="form-label">Alleged Balance ($)</label>
-              <input type="number" step="0.01" class="input-rounded" id="newBalance" placeholder="2350.00" required>
+              <label class="form-label">Original Creditor / Issuing Bank / Provider</label>
+              <input type="text" class="input-rounded" id="newProviderName" placeholder="e.g. Citibank, N.A. or Metro Health" required>
             </div>
             <div class="form-group">
-              <label class="form-label">Care Department</label>
-              <select class="input-rounded" id="newCategory">
-                <option value="Emergency Department">Emergency Room (ER Visit)</option>
-                <option value="Specialist Consultation">Specialist / Cardiology</option>
-                <option value="Diagnostic Radiology">Radiology / MRI / CT Scan</option>
-                <option value="Pathology / Laboratory">Clinical Laboratory Services</option>
-              </select>
+              <label class="form-label">Collection Agency / Debt Buyer</label>
+              <input type="text" class="input-rounded" id="newAgencyName" placeholder="e.g. Midland Credit Management or Apex Recovery" required>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Account / MRN Reference Number</label>
-            <input type="text" class="input-rounded" id="newAccountNumber" placeholder="MHS-99412-ER">
+          <div class="form-row form-cols-2">
+            <div class="form-group">
+              <label class="form-label">Alleged Disputed Balance ($)</label>
+              <input type="number" step="0.01" class="input-rounded" id="newBalance" placeholder="3420.00" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Original Account / Card # (Last 4)</label>
+              <input type="text" class="input-rounded" id="newAccountNumber" placeholder="CITI-4491-****-8812">
+            </div>
           </div>
 
           <div class="modal-footer">
@@ -348,6 +382,69 @@
             <button type="submit" class="btn btn-pill-primary">Create Protected Dispute</button>
           </div>
         </form>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 4. Mandatory Legal & Statutory Disclaimer Modal -->
+  <dialog class="modal-dialog" id="legalDisclaimerModal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge" style="background-color: #fef3c7; color: #92400e;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title">Mandatory Legal & Statutory Compliance Disclaimer</h2>
+            <span class="modal-subtitle">Procedural Self-Advocacy Instrument — Not Attorney Representation</span>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="closeLegalDisclaimerModal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="script-box alert-amber">
+          <span class="script-box-label text-amber">IMPORTANT NOTICE TO ALL CONSUMERS:</span>
+          <p style="font-size: 13px; line-height: 1.5; color: #0f172a;">
+            SettleMint is an independent desktop administrative utility. It is <strong>NOT a law firm</strong>, does <strong>NOT provide legal representation</strong>, and does <strong>NOT give legal advice</strong>.
+          </p>
+        </div>
+
+        <div class="guide-item-card">
+          <h3 class="guide-item-title">1. No Attorney-Client Relationship</h3>
+          <p class="guide-item-text">
+            Using SettleMint, including the generation of Debt Validation Letters (DVL), telephone call logs, violation tallies, or statutory deadline trackers, does not create an attorney-client relationship. All generated documents are self-represented administrative instruments.
+          </p>
+        </div>
+
+        <div class="guide-item-card">
+          <h3 class="guide-item-title">2. Procedural Administrative Self-Advocacy (15 U.S.C. § 1692)</h3>
+          <p class="guide-item-text">
+            The software facilitates personal recordkeeping under the Fair Debt Collection Practices Act (15 U.S.C. § 1692), CFPB Regulation F (12 CFR Part 1006), Fair Credit Reporting Act (15 U.S.C. § 1681), and applicable consumer credit statutes. It is designed to assist consumers in exercising their rights to dispute debts and request written verification.
+          </p>
+        </div>
+
+        <div class="guide-item-card">
+          <h3 class="guide-item-title">3. Statutory Limitation Calculations (SOL)</h3>
+          <p class="guide-item-text">
+            All Statutes of Limitations timelines and expiration estimates are calculated based on publicly codified state statutes. These calculations are provided for informational and planning purposes only and do not constitute a formal legal opinion on tolling, jurisdiction, or choice-of-law provisions.
+          </p>
+        </div>
+
+        <div class="guide-item-card">
+          <h3 class="guide-item-title">4. Requirement to Consult Licensed Counsel</h3>
+          <p class="guide-item-text">
+            If you have been served with a civil summons, court complaint, or legal lawsuit, you must consult a licensed attorney in your state jurisdiction immediately. Do not ignore court deadlines.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-pill-primary" id="dismissLegalDisclaimerBtn">I Understand & Acknowledge</button>
       </div>
     </div>
   </dialog>

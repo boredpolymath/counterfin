@@ -22,8 +22,8 @@ export function renderInteractions(interactions, activeCase) {
     const violationHtml = hasViolation ? `
       <div style="margin-top: 6px; display: flex; flex-direction: column; gap: 4px;">
         ${item.violations.map(v => `
-          <div style="display:flex; justify-content:space-between; align-items:center; background-color: var(--color-secondary-container); border: 1px solid var(--color-secondary); padding: 4px 8px;">
-            <div style="display:flex; align-items:center; gap: 6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; background-color: var(--color-secondary-container); border: 1px solid var(--color-secondary); padding: 6px 10px; flex-wrap: wrap; gap: 6px;">
+            <div style="display:flex; align-items:center; gap: 6px; flex-wrap: wrap;">
               <span class="specimen-chip chip-violation">■ VIOLATION</span>
               <strong style="font-size: 11px; color: var(--color-secondary-deep);">${v.citation}</strong>
               <span style="font-size: 11px; color: var(--color-secondary-deep);">${v.title}</span>
@@ -37,7 +37,7 @@ export function renderInteractions(interactions, activeCase) {
     return `
       <div class="interaction-item ${hasViolation ? "has-violation" : ""}">
         <div class="interaction-header">
-          <div class="interaction-meta">
+          <div class="interaction-meta" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <span class="specimen-chip ${item.direction === 'Incoming' ? 'chip-subpoena' : 'chip-compliant'}">
               ${item.direction.toUpperCase()} (${item.channel.toUpperCase()})
             </span>

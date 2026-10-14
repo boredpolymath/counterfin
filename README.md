@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/settlemint-banner.png" alt="SettleMint — Credit Shield & Dispute Console" width="100%" style="max-width: 850px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);" />
+</p>
+
 # SettleMint: Consumer Credit Shield & Debt Collector Dispute Console
 
 [![Continuous Integration](https://github.com/boredpolymath/settlemint/actions/workflows/ci.yml/badge.svg)](https://github.com/boredpolymath/settlemint/actions/workflows/ci.yml)
@@ -8,7 +12,7 @@
 [![Design: Evidentiary Brutalism](https://img.shields.io/badge/Design-Clinical%20Evidentiary-0F172A.svg)](#design-system-clinical-forensic-defense)
 
 > **Prepared by Bored Polymath Studios**  
-> An uncompromising, local-first forensic desktop console empowering consumers to dispute medical debts, enforce statutory FDCPA deadlines, log collection violations, and safeguard credit profiles.
+> An uncompromising, local-first forensic desktop console empowering consumers to dispute credit card debt, medical bills, auto loan deficiencies, and all consumer claims covered by the FDCPA (15 U.S.C. § 1692), enforce statutory deadlines, log collection violations, and safeguard credit profiles.
 
 ---
 
@@ -22,7 +26,8 @@
 ## Table of Contents
 
 - [Core Capabilities](#core-capabilities)
-- [Design System: Clinical Forensic Defense](#design-system-clinical-forensic-defense)
+- [Supported FDCPA Debt Classifications](#supported-fdcpa-debt-classifications)
+- [Design System & Responsive Architecture](#design-system--responsive-architecture)
 - [Architecture Overview](#architecture-overview)
 - [Security & Privacy Architecture](#security--privacy-architecture)
 - [Getting Started](#getting-started)
@@ -37,29 +42,47 @@
 
 ## Core Capabilities
 
-* **Case Dossier Registry:** Strict containment of individual disputed debt items, binding hospital providers, MRN accounts, third-party collection agencies, and alleged balances.
-* **30-Day FDCPA Validation Engine:** Automated enforcement of the mandatory 30-day debt validation window pursuant to 15 U.S.C. § 1692g, tracking statutory expiration dates and required collection cessations.
-* **Statute of Limitations (SOL) Watcher:** 50-state jurisdictional rule matrix tracking debt expiration, actively alerting consumers against making partial payments that reset expired clocks.
-* **Chronological Interaction Stream:** Comprehensive communication ledger recording incoming and outgoing phone calls, letters, and emails with automated FDCPA violation flags (inconvenient hours, harassment, unlawful threats).
+* **Multi-Debt Case Dossier Registry:** Strict containment of individual disputed debt items, binding original credit card issuers, healthcare systems, auto lenders, third-party collection agencies, debt buyers, and alleged balances.
+* **30-Day FDCPA Validation Engine:** Automated enforcement of the mandatory 30-day debt validation window pursuant to 15 U.S.C. § 1692g, tracking statutory expiration dates and required collection cessations across all consumer debts.
+* **Statute of Limitations (SOL) Watcher:** 50-state jurisdictional rule matrix tracking debt expiration periods across revolving credit card debt, medical debt, written promissory notes, and open accounts, actively alerting consumers against partial payment restart traps.
+* **CFPB Regulation F & Chain-of-Title Audit:** Demands mandatory itemization (charge-off balance, interest, fees, credits) under 12 C.F.R. § 1006.34 and complete, unbroken chains of assignment from junk debt buyers (Midland, Portfolio Recovery, LVNV).
+* **Chronological Evidentiary Stream:** Comprehensive communication ledger recording incoming and outgoing phone calls, letters, and emails with automated FDCPA violation flags (inconvenient hours, harassment, unlawful threats of lawsuit on time-barred debt under 12 C.F.R. § 1006.26).
 * **Statutory Damages Accumulator:** Live ledger tabulating potential statutory damages under 15 U.S.C. § 1692k (up to $1,000 per statutory proceeding + actual damages).
-* **Side-by-Side Letter Studio:** Dynamic template drafting engine with live legal document preview, Bates stamp watermarking, and print-ready PDF export.
+* **Side-by-Side Letter Studio:** Dynamic template drafting engine with live legal document preview, Bates stamp watermarking, debt-tailored statutory demand checklists, and print-ready PDF export.
+* **Mandatory Legal & Statutory Compliance System:** Prominently displays self-advocacy notices on the dashboard, in the persistent footer, and embedded directly onto generated letters to guarantee strict legal compliance.
 * **Cryptographic Evidence Vault:** Local sandboxed file gallery hashing all scanned collection notices, certified mail receipts, and audio logs with SHA-256 checksums.
 * **Credit Bureau Delta Auditing:** Three-bureau trade line diff tracking (Equifax, Experian, TransUnion) auditing whether collectors properly furnish dispute marks under FCRA § 623(a)(3).
 * **Low-Memory System Tray Daemon:** Lightweight resident desktop service (< 25 MB RSS) delivering deadline alerts and instant quick-action intake for collector phone calls.
 
 ---
 
-## Design System: Clinical Forensic Defense
+## Supported FDCPA Debt Classifications
 
-SettleMint is built on the **Evidentiary Brutalism** design movement, merging clinical laboratory precision with judicial evidentiary procedure:
+Under 15 U.S.C. § 1692a(5), SettleMint defends any obligation arising primarily for personal, family, or household purposes:
 
-* **Sterile Baselines:** Cleanroom surfaces (`#FFFFFF` and ambient `#F7F9FB`) evoke medical charting and official legal briefs.
-* **Evidentiary Contrast:** Pitch-black typography paired with crisp micro-borders (`1px solid #E2E8F0` and `#0F172A`) delivers immediate information hierarchy.
-* **Emergency Crimson Signalry:** Saturated clinical reds (`#DC2626`) are reserved strictly for statutory deadlines, acute liability exposure, and FDCPA violations.
-* **Zero-Radius Geometry:** Sharp right angles (`border-radius: 0px`) and hard zero-blur drop shadows (`4px 4px 0px #0F172A`) simulate printed legal binders and microscope slides.
-* **Typography:**
-  - `Public Sans`: Authoritative official captions, body copy, and tabular legal briefs.
-  - `JetBrains Mono`: Bates stamp numbers, precision timestamps, SHA-256 hashes, and statutory countdowns.
+| Debt Classification | Governing Federal & State Statutes | Key Statutory Defenses & Demands |
+|---|---|---|
+| **Credit Card Debt** | 15 U.S.C. § 1692g, CFPB Reg F (12 CFR Part 1006), TILA | Unbroken chain of assignment (bills of sale), $0-balance/charge-off billing history, Reg F fee itemization, cardholder agreements. |
+| **Medical Debt** | 15 U.S.C. § 1692, No Surprises Act (P.L. 116-260), CPLR § 214-i | Itemized clinical accounting (CPT & ICD-10 diagnosis codes), out-of-network balance billing bans, insurance adjustment audits. |
+| **Auto Loan Deficiency** | 15 U.S.C. § 1692g, UCC Article 9 (§§ 9-610, 9-611, 9-616) | Original installment sale contract, timely notice of sale, commercially reasonable auction defense, gross proceeds deficiency accounting. |
+| **Personal & Installment Loans** | 15 U.S.C. § 1692g, State Consumer Credit Acts | Promissory note verification, signature validation, licensing and surety bond proof. |
+| **Utility & Telecom Debt** | 15 U.S.C. § 1692g, FCRA § 623 | Service agreement verification, meter/usage accounting records, credit bureau dispute verification. |
+
+---
+
+## Design System & Responsive Architecture
+
+SettleMint merges the precision of clinical laboratory baselines with judicial evidentiary procedure:
+
+* **Fluid Adaptive Grid:** Replaced rigid columns with `repeat(auto-fill, minmax(min(100%, 330px), 1fr))`, ensuring spacious 3–4 column layouts on wide displays, comfortable 2-column viewing on laptop/split screens (900px–1250px), and clean single-column stacking on tablets/mobile.
+* **Elastic Card Internals:** Long creditor titles, account numbers, and currency balances feature flex-wrapping and text-overflow protection, eliminating text clipping across all viewport sizes.
+* **Visual Identity & Color Hierarchy:**
+  - **Indigo (`#3730A3` / `#E0E7FF`):** Revolving credit card debts & CFPB Regulation F portfolios.
+  - **Mint & Emerald (`#006948` / `#ECFDF5`):** Medical claims & No Surprises Act protections.
+  - **Amber (`#92400E` / `#FEF3C7`):** Auto finance, UCC Article 9 repossession deficiencies, and statutory deadline clocks.
+  - **Violet (`#6B21A8` / `#F3E8FF`):** Unsecured installment loans & fintech notes.
+  - **Emergency Rose (`#E11D48` / `#FFF1F2`):** FDCPA violations, time-barred debt lawsuit threats, and statutory penalties.
+* **Dynamic Inspection & Timeline:** Active dossier inspector features wrapping meta tags and touch-friendly horizontal scrolling on the 5-stage dispute progression bar.
 
 ---
 
@@ -67,6 +90,9 @@ SettleMint is built on the **Evidentiary Brutalism** design movement, merging cl
 
 ```
 settlemint/
+├── assets/                          # Repository & Documentation Brand Assets
+│   └── settlemint-banner.png        # Official SettleMint Credit Shield banner
+│
 ├── .github/                         # GitHub Community & CI Standards
 │   ├── ISSUE_TEMPLATE/              # Structured bug, feature & statute issue forms
 │   ├── workflows/ci.yml             # GitHub Actions CI workflow (Check, Clippy, Test)
@@ -80,22 +106,22 @@ settlemint/
 │       ├── main.rs                  # Native application entrypoint
 │       ├── lib.rs                   # Module registration & IPC handler wiring
 │       ├── db/                      # Embedded SQLite Data Layer (WAL mode, schema)
-│       ├── models/                  # Core Domain Entities & 7-stage state machine
-│       ├── engine/                  # FDCPA, SOL, Template & Evidence Vault engines
+│       ├── models/                  # Core Domain Entities (DebtType, Case, Violation, etc.)
+│       ├── engine/                  # FDCPA, Multi-Debt SOL, Template & Evidence engines
 │       ├── commands/                # Tauri IPC Command Handlers
 │       └── tray/                    # Low-Memory System Tray Daemon
 │
 ├── ui/                              # Frontend Workspace (Clinical Forensic Defense)
-│   ├── index.html                   # 12-Column Desktop Workbench & Modals
+│   ├── index.html                   # Desktop Workbench, Modals & Compliance Dialogs
 │   ├── css/
-│   │   ├── tokens.css               # Clinical High-Contrast design tokens
-│   │   ├── layout.css               # 12-column multi-pane layout
-│   │   └── components.css           # Specimen chips, countdown widget, Bates stamps
+│   │   ├── tokens.css               # Design tokens, color system, and elevation
+│   │   ├── layout.css               # Responsive app layout, sidebar, and workspace viewport
+│   │   └── components.css           # Adaptive dispute cards, metrics, stepper & letter preview
 │   └── js/
-│       ├── app.js                   # Application bootstrap & state coordination
+│       ├── app.js                   # Application bootstrap, state coordination & event bus
 │       ├── ipc.js                   # Tauri IPC bridge abstraction with offline fallback
-│       ├── data/                    # Medical debt dispute domain seed fixtures
-│       └── views/                   # Modular view renderers (Dashboard, Stream, Studio, etc.)
+│       ├── data/                    # FDCPA multi-debt seed fixtures (Credit Card, Medical, Auto, Loans)
+│       └── views/                   # Modular view renderers (Dashboard, Letters, Stream, Audit, Vault)
 │
 ├── CODE_OF_CONDUCT.md               # Contributor Covenant v2.1
 ├── CONTRIBUTING.md                  # Development setup, PR guidelines & code standards

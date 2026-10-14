@@ -6,7 +6,7 @@ pub mod document;
 pub mod deadline;
 pub mod credit;
 
-pub use case::{Case, CaseStatus};
+pub use case::{Case, CaseStatus, DebtType};
 pub use creditor::{Creditor, AgencyType};
 pub use interaction::{Interaction, Channel, Direction};
 pub use violation::{Violation, FdcpaViolationType};

@@ -1,6 +1,10 @@
 /**
  * SettleMint Initial Seed Data & Domain Fixtures
- * Conforming to Medical Debt Collection Specifications & Patient Protection Dashboard
+ * Full FDCPA Consumer Debt Protection Suite:
+ * - Credit Card Debt & Purchased Portfolios (CFPB Reg F, TILA, Chain of Title)
+ * - Medical Debt (No Surprises Act, Clinical Itemization)
+ * - Auto Loan Deficiency (UCC Article 9 Accounting)
+ * - Personal & Installment Loans (Consumer Lending Statutes)
  */
 
 export const USER_PROFILE = {
@@ -8,22 +12,53 @@ export const USER_PROFILE = {
   shortName: "Sarah",
   initials: "SH",
   statuteState: "NY",
-  totalUnderReview: 4820.00,
-  activeAccountsCount: 3,
-  nextDeadlineDays: 11,
-  nextDeadlineAgency: "Apex Recovery Group",
-  violationsTotal: 3,
-  potentialStatutoryClaim: 3000.00
+  totalUnderReview: 11540.00,
+  activeAccountsCount: 4,
+  nextDeadlineDays: 8,
+  nextDeadlineAgency: "Midland Credit Management",
+  violationsTotal: 5,
+  potentialStatutoryClaim: 5000.00
 };
 
 export const INITIAL_CASES = [
   {
+    id: "case-sm-2026-0041",
+    docketNumber: "BATES-SM-2026-0041",
+    debtorName: "Sarah Henderson",
+    debtType: "credit_card",
+    originalProvider: "Citibank, N.A. (Diamond Preferred)",
+    providerCategory: "Credit Card (Revolving)",
+    iconType: "credit_card",
+    collectionAgency: "Midland Credit Management, Inc.",
+    originalAccountNumber: "CITI-4491-****-8812",
+    collectionAccountNumber: "MCM-99214-B",
+    dateOfService: "2023-05-14",
+    initialNoticeDate: "2026-10-06",
+    originalBalance: 3420.00,
+    disputedBalance: 3420.00,
+    currentPhase: "ValidationPending",
+    statuteState: "NY",
+    statuteLimitYears: 3,
+    statutoryDaysRemaining: 8,
+    statusBadge: "Waiting on collector response",
+    secondaryBadge: "Missing Chain of Title",
+    certifiedMailDeliveredDate: "Oct 12",
+    certifiedMailTracking: "7021 0950 0001 9841 3320",
+    actionLabel: "View Details",
+    violationsCount: 2,
+    potentialDamages: 2000.00,
+    collectionStatus: "Paused by Law (CFPB Reg F)",
+    notes: "Purchased credit card portfolio debt. Disputed under FDCPA § 1692g & CFPB Reg F for failure to furnish assignment chain and unverified post-charge-off interest additions.",
+    legalFramework: "CFPB Reg F § 1006.34 & TILA"
+  },
+  {
     id: "case-sm-2026-0042",
     docketNumber: "BATES-SM-2026-0042",
     debtorName: "Sarah Henderson",
+    debtType: "medical",
     originalProvider: "Metro Health System (ER Visit)",
     providerCategory: "Emergency Department",
-    iconType: "emergency",
+    iconType: "medical",
     collectionAgency: "Apex Recovery Group",
     originalAccountNumber: "MHS-99412-ER",
     collectionAccountNumber: "APX-88201-9",
@@ -31,7 +66,7 @@ export const INITIAL_CASES = [
     initialNoticeDate: "2026-10-03",
     originalBalance: 2350.00,
     disputedBalance: 2350.00,
-    currentPhase: "ValidationPending", // State machine phase
+    currentPhase: "ValidationPending",
     statuteState: "NY",
     statuteLimitYears: 3,
     statutoryDaysRemaining: 11,
@@ -43,22 +78,24 @@ export const INITIAL_CASES = [
     violationsCount: 1,
     potentialDamages: 1000.00,
     collectionStatus: "Paused by Law",
-    notes: "Emergency department physician billing dispute. DVL delivered via USPS Certified Mail Oct 14. 11 days remaining for validation."
+    notes: "Emergency department physician billing dispute. DVL delivered via USPS Certified Mail Oct 14. 11 days remaining for validation.",
+    legalFramework: "No Surprises Act & FDCPA § 1692g"
   },
   {
     id: "case-sm-2026-0043",
     docketNumber: "BATES-SM-2026-0043",
     debtorName: "Sarah Henderson",
-    originalProvider: "St. Jude Cardiology",
-    providerCategory: "Specialist Consultation",
-    iconType: "cardiology",
+    debtType: "auto_deficiency",
+    originalProvider: "Santander Consumer USA",
+    providerCategory: "Auto Finance (Deficiency)",
+    iconType: "auto",
     collectionAgency: "Northern Financial Billing",
-    originalAccountNumber: "SJC-33019-CARD",
+    originalAccountNumber: "SC-88319-AUTO",
     collectionAccountNumber: "NFB-44102-B",
     dateOfService: "2023-09-18",
     initialNoticeDate: "2026-09-15",
-    originalBalance: 1580.00,
-    disputedBalance: 1580.00,
+    originalBalance: 4150.00,
+    disputedBalance: 4150.00,
     currentPhase: "DisputeEscalated",
     statuteState: "NY",
     statuteLimitYears: 3,
@@ -71,22 +108,24 @@ export const INITIAL_CASES = [
     violationsCount: 2,
     potentialDamages: 2000.00,
     collectionStatus: "Collection Paused",
-    notes: "Late-night call recorded & flagged for statutory penalty. Written stop-contact notice served."
+    notes: "Late-night call recorded & flagged for statutory penalty. Written stop-contact notice served. Demand for UCC Article 9 post-sale accounting.",
+    legalFramework: "UCC Article 9 & FDCPA § 1692c"
   },
   {
     id: "case-sm-2026-0044",
     docketNumber: "BATES-SM-2026-0044",
     debtorName: "Sarah Henderson",
-    originalProvider: "Valley Imaging (MRI Scan)",
-    providerCategory: "Diagnostic Radiology",
-    iconType: "imaging",
+    debtType: "personal_loan",
+    originalProvider: "Cross River Bank / Upstart",
+    providerCategory: "Personal Installment Loan",
+    iconType: "loan",
     collectionAgency: "Cadence Receivables LLC",
-    originalAccountNumber: "VAL-55104-MRI",
+    originalAccountNumber: "UPST-55104-LOAN",
     collectionAccountNumber: "CR-10923-C",
     dateOfService: "2024-08-11",
     initialNoticeDate: "2026-10-23",
-    originalBalance: 890.00,
-    disputedBalance: 890.00,
+    originalBalance: 1620.00,
+    disputedBalance: 1620.00,
     currentPhase: "InitialNotice",
     statuteState: "NY",
     statuteLimitYears: 3,
@@ -99,11 +138,35 @@ export const INITIAL_CASES = [
     violationsCount: 0,
     potentialDamages: 0.00,
     collectionStatus: "Dispute letter ready to send",
-    notes: "Notice received Oct 23. Standard 30-day dispute window active. Ready for formal Debt Validation Letter."
+    notes: "Notice received Oct 23. Standard 30-day dispute window active. Ready for formal Promissory Note & Assignment Validation Letter.",
+    legalFramework: "15 U.S.C. § 1692g & NY CCFA"
   }
 ];
 
 export const INITIAL_INTERACTIONS = [
+  {
+    id: "int-100",
+    caseId: "case-sm-2026-0041",
+    timestamp: "2026-10-11 10:15 AM",
+    direction: "Incoming",
+    channel: "Phone",
+    contactName: "Midland Senior Negotiator #882",
+    durationSec: 210,
+    summary: "Collector demanded payment on Citibank credit card balance, claiming legal action was imminent. Account was purchased in a bulk portfolio without chain of custody documentation.",
+    violations: [
+      {
+        citation: "15 U.S.C. § 1692e(5)",
+        title: "Threatening legal suit without verifying title or legal authority to file",
+        damages: 1000.00
+      },
+      {
+        citation: "12 C.F.R. § 1006.34",
+        title: "Failure to provide mandatory CFPB Regulation F validation notice itemization",
+        damages: 1000.00
+      }
+    ],
+    recorded: true
+  },
   {
     id: "int-101",
     caseId: "case-sm-2026-0043",
@@ -112,7 +175,7 @@ export const INITIAL_INTERACTIONS = [
     channel: "Phone",
     contactName: "Agent Miller #412",
     durationSec: 185,
-    summary: "Collector called at 9:42 PM (outside 8 AM - 9 PM window). Threatening immediate credit destruction and wage attachment without judgment.",
+    summary: "Collector called at 9:42 PM (outside 8 AM - 9 PM window) regarding auto loan deficiency balance. Threatening immediate credit destruction and wage attachment without judgment.",
     violations: [
       {
         citation: "15 U.S.C. § 1692c(a)(1)",
@@ -165,13 +228,23 @@ export const INITIAL_INTERACTIONS = [
     channel: "Mail",
     contactName: "Cadence Receivables LLC",
     durationSec: 0,
-    summary: "Initial written dunning notice received from Cadence Receivables for Valley Imaging bill.",
+    summary: "Initial written dunning notice received from Cadence Receivables for Upstart installment loan balance.",
     violations: [],
     recorded: false
   }
 ];
 
 export const INITIAL_EVIDENCE = [
+  {
+    id: "ev-00",
+    caseId: "case-sm-2026-0041",
+    title: "Citibank Final Card Statement & Charge-off Notice.pdf",
+    docType: "Billing Statement",
+    fileSize: "1.8 MB",
+    batesStamp: "BATES-SM-2026-0041-EV01",
+    sha256Hash: "5a22d710b14b3f88ef49190c1092a472910fa88921bdfc0199e4001dca41f90a",
+    uploadedDate: "2026-10-07"
+  },
   {
     id: "ev-01",
     caseId: "case-sm-2026-0042",
@@ -205,7 +278,7 @@ export const INITIAL_EVIDENCE = [
   {
     id: "ev-04",
     caseId: "case-sm-2026-0044",
-    title: "Cadence Receivables Initial Notice.pdf",
+    title: "Cadence Receivables Upstart Notice.pdf",
     docType: "Scanned Notice",
     fileSize: "1.1 MB",
     batesStamp: "BATES-SM-2026-0044-EV01",
@@ -215,6 +288,17 @@ export const INITIAL_EVIDENCE = [
 ];
 
 export const INITIAL_CREDIT_TRADELINES = [
+  {
+    id: "cr-00",
+    caseId: "case-sm-2026-0041",
+    bureau: "Experian",
+    agencyName: "MIDLAND CREDIT MANAGEMENT",
+    accountNumber: "MCM-99214-****",
+    reportedBalance: 3420.00,
+    disputeRemarkStatus: "COLLECTION_ACCOUNT",
+    compliant: false, // Violation: omitted notice of dispute after consumer letter
+    lastReportedDate: "2026-10-14"
+  },
   {
     id: "cr-01",
     caseId: "case-sm-2026-0042",
@@ -243,7 +327,7 @@ export const INITIAL_CREDIT_TRADELINES = [
     bureau: "TransUnion",
     agencyName: "NORTHERN FINANCIAL BILLING",
     accountNumber: "NFB-44102-****",
-    reportedBalance: 1580.00,
+    reportedBalance: 4150.00,
     disputeRemarkStatus: "DISPUTED_IN_WRITING",
     compliant: true,
     lastReportedDate: "2026-10-01"
