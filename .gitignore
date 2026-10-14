@@ -18,3 +18,7 @@ Thumbs.db
 # Internal Non-Committed Documentation & Checklists
 /markdown/
 
+# Video Assets & Build Pipeline
+settlemint-trailer.mp4
+assets/settlemint-trailer.mp4
+/trailer/
