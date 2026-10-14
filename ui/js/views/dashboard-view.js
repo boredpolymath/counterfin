@@ -75,121 +75,77 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
 
     return `
       <div class="orderly-dispute-card ${isSelected ? 'active-case' : ''}" data-case-id="${c.id}">
-        <!-- Main Summary Grid Row -->
-        <div class="dispute-main-row">
-          <!-- Col 1: Provider & Identity -->
-          <div class="col-provider">
+        <!-- Card Header -->
+        <div class="dossier-card-top">
+          <div class="dossier-card-provider">
             <div class="dispute-card-icon-wrap ${iconClass}">
               ${iconSvg}
             </div>
             <div class="provider-info-block">
-              <div class="provider-header-line">
-                <span class="provider-title">${c.originalProvider}</span>
-                <span class="service-category-badge">${serviceBadge}</span>
-              </div>
-              <div class="provider-subline">
-                <span>Agency: <strong>${c.collectionAgency}</strong></span>
-                <span class="bullet">•</span>
-                <span>Account: <strong>${c.originalAccountNumber}</strong></span>
-              </div>
+              <h4 class="provider-title">${c.originalProvider}</h4>
+              <span class="service-category-badge">${serviceBadge}</span>
             </div>
           </div>
-
-          <!-- Col 2: Legal Status & Tracking -->
-          <div class="col-status">
-            <div class="status-cell">
-              <span class="status-pill ${statusPillClass}">
-                <span class="status-dot ${statusDotClass}"></span>
-                ${c.statusBadge}
+          <div class="dossier-card-top-right">
+            ${isSelected ? `
+              <span class="status-pill status-pill-mint selected-badge">
+                <span class="status-dot status-dot-mint"></span>
+                Inspecting
               </span>
-              <div class="tracking-meta-line">
-                ${c.certifiedMailTracking ? `
-                  <span class="certified-tag">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    USPS Certified Mail
-                  </span>
-                ` : `<span>Standard 30-Day Window</span>`}
-              </div>
-            </div>
-          </div>
-
-          <!-- Col 3: Financial Exposure & Timeline -->
-          <div class="col-financials">
-            <div class="balance-display tabular-nums">$${c.disputedBalance.toFixed(2)}</div>
-            <div class="timeline-status-text" style="color: ${timelineColor};">
-              ${timelinePhrase}
-            </div>
-          </div>
-
-          <!-- Col 4: Action Control -->
-          <div class="col-actions">
-            <button class="btn btn-pill-primary btn-sm dispute-action-btn" data-case-id="${c.id}" data-action="${c.actionLabel === 'Review Letter' ? 'letters' : 'details'}">
-              <span>${c.actionLabel}</span>
-              <span style="font-size: 13px;">›</span>
-            </button>
+            ` : `
+              <span class="status-pill status-pill-neutral">
+                Select
+              </span>
+            `}
           </div>
         </div>
 
-        <!-- Optional Expanded Dossier Drawer (when selected) -->
-        ${isSelected ? `
-          <div class="dossier-expanded-tray">
-            <div class="dossier-tray-header">
-              <div class="tray-title-block">
-                <span class="label-caps">CASE DOSSIER DETAILS</span>
-                <span class="docket-id-tag">${c.docketNumber}</span>
-              </div>
-              <div class="tray-meta-pills">
-                <span class="meta-tag">Date of Service: ${c.dateOfService}</span>
-                <span class="meta-tag">Jurisdiction: New York (CPLR § 214-i)</span>
-                ${c.violationsCount > 0 ? `
-                  <span class="meta-tag alert-rose">■ ${c.violationsCount} FDCPA Infraction(s) Flagged</span>
-                ` : ''}
-              </div>
-            </div>
-
-            <!-- 5-Phase Dispute Timeline Bar -->
-            <div class="timeline-stepper">
-              <div class="step-node ${c.currentPhase === 'InitialNotice' ? 'active' : 'done'}">
-                <span class="step-num">1</span>
-                <span class="step-name">Notice Received</span>
-              </div>
-              <div class="step-connector ${c.currentPhase !== 'InitialNotice' ? 'active' : ''}"></div>
-              <div class="step-node ${c.currentPhase === 'ValidationPending' ? 'active' : c.currentPhase !== 'InitialNotice' ? 'done' : ''}">
-                <span class="step-num">2</span>
-                <span class="step-name">DVL Demanded</span>
-              </div>
-              <div class="step-connector ${c.currentPhase === 'DisputeEscalated' || c.currentPhase === 'CollectorResponded' ? 'active' : ''}"></div>
-              <div class="step-node ${c.currentPhase === 'CollectorResponded' ? 'active' : ''}">
-                <span class="step-num">3</span>
-                <span class="step-name">Collector Review</span>
-              </div>
-              <div class="step-connector ${c.currentPhase === 'DisputeEscalated' ? 'active' : ''}"></div>
-              <div class="step-node ${c.currentPhase === 'DisputeEscalated' ? 'active' : ''}">
-                <span class="step-num">4</span>
-                <span class="step-name">Dispute Escalated</span>
-              </div>
-              <div class="step-connector"></div>
-              <div class="step-node">
-                <span class="step-num">5</span>
-                <span class="step-name">Case Dismissed</span>
-              </div>
-            </div>
-
-            <div class="tray-action-bar">
-              <span class="tray-caption">
-                ${c.notes || "Statutory debt validation demand in progress. Collectors must halt outreach until written verification is supplied."}
-              </span>
-              <div class="tray-buttons">
-                <button class="btn btn-pill-outline btn-sm quick-open-letter-btn" data-case-id="${c.id}">
-                  Draft Dispute Letter
-                </button>
-                <button class="btn btn-pill-outline btn-sm quick-open-calls-btn" data-case-id="${c.id}">
-                  Log Collector Call
-                </button>
-              </div>
-            </div>
+        <!-- Disputed Financials & Statutory Timeline -->
+        <div class="dossier-card-financials">
+          <div class="dossier-balance-group">
+            <span class="dossier-balance-label">DISPUTED BALANCE</span>
+            <div class="balance-display tabular-nums">$${c.disputedBalance.toFixed(2)}</div>
           </div>
-        ` : ''}
+          <div class="dossier-timeline-tag" style="color: ${timelineColor};">
+            <span class="timeline-dot" style="background-color: ${timelineColor};"></span>
+            <span>${timelinePhrase}</span>
+          </div>
+        </div>
+
+        <!-- Account & Collector Meta -->
+        <div class="dossier-card-meta">
+          <div class="dossier-meta-item">
+            <span class="meta-label">Agency:</span>
+            <span class="meta-val">${c.collectionAgency}</span>
+          </div>
+          <div class="dossier-meta-item">
+            <span class="meta-label">Account:</span>
+            <span class="meta-val">${c.originalAccountNumber}</span>
+          </div>
+        </div>
+
+        <!-- Legal Status & USPS Tracking -->
+        <div class="dossier-card-status-bar">
+          <span class="status-pill ${statusPillClass}">
+            <span class="status-dot ${statusDotClass}"></span>
+            ${c.statusBadge}
+          </span>
+          ${c.certifiedMailTracking ? `
+            <span class="certified-tag" title="Tracking: ${c.certifiedMailTracking}">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              USPS Certified
+            </span>
+          ` : ''}
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="dossier-card-footer">
+          <span class="docket-id-tag">${c.docketNumber}</span>
+          <button class="btn btn-pill-primary btn-sm dispute-action-btn" data-case-id="${c.id}" data-action="${c.actionLabel === 'Review Letter' ? 'letters' : 'details'}">
+            <span>${c.actionLabel}</span>
+            <span style="font-size: 13px;">›</span>
+          </button>
+        </div>
       </div>
     `;
   }).join("");
@@ -304,9 +260,78 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
         </div>
       </div>
 
-      <div class="disputes-stream-container">
+      <div class="disputes-grid-container">
         ${disputeCardsHtml}
       </div>
+
+      <!-- Active Dossier Inspection Panel -->
+      ${activeCase ? `
+        <div class="dossier-inspector-panel">
+          <div class="dossier-tray-header">
+            <div class="tray-title-block">
+              <div class="inspector-pulse-circle">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#006948" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+              <div>
+                <span class="label-caps">ACTIVE DOSSIER INSPECTOR</span>
+                <h4 class="inspector-provider-name">${activeCase.originalProvider} <span class="docket-id-tag">${activeCase.docketNumber}</span></h4>
+              </div>
+            </div>
+            <div class="tray-meta-pills">
+              <span class="meta-tag">Date of Service: ${activeCase.dateOfService}</span>
+              <span class="meta-tag">Jurisdiction: New York (CPLR § 214-i)</span>
+              ${activeCase.violationsCount > 0 ? `
+                <span class="meta-tag alert-rose">■ ${activeCase.violationsCount} FDCPA Infraction(s) Flagged</span>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- 5-Phase Dispute Timeline Bar -->
+          <div class="timeline-stepper">
+            <div class="step-node ${activeCase.currentPhase === 'InitialNotice' ? 'active' : 'done'}">
+              <span class="step-num">1</span>
+              <span class="step-name">Notice Received</span>
+            </div>
+            <div class="step-connector ${activeCase.currentPhase !== 'InitialNotice' ? 'active' : ''}"></div>
+            <div class="step-node ${activeCase.currentPhase === 'ValidationPending' ? 'active' : activeCase.currentPhase !== 'InitialNotice' ? 'done' : ''}">
+              <span class="step-num">2</span>
+              <span class="step-name">DVL Demanded</span>
+            </div>
+            <div class="step-connector ${activeCase.currentPhase === 'DisputeEscalated' || activeCase.currentPhase === 'CollectorResponded' ? 'active' : ''}"></div>
+            <div class="step-node ${activeCase.currentPhase === 'CollectorResponded' ? 'active' : ''}">
+              <span class="step-num">3</span>
+              <span class="step-name">Collector Review</span>
+            </div>
+            <div class="step-connector ${activeCase.currentPhase === 'DisputeEscalated' ? 'active' : ''}"></div>
+            <div class="step-node ${activeCase.currentPhase === 'DisputeEscalated' ? 'active' : ''}">
+              <span class="step-num">4</span>
+              <span class="step-name">Dispute Escalated</span>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-node">
+              <span class="step-num">5</span>
+              <span class="step-name">Case Dismissed</span>
+            </div>
+          </div>
+
+          <div class="tray-action-bar">
+            <span class="tray-caption">
+              ${activeCase.notes || "Statutory debt validation demand in progress. Collectors must halt outreach until written verification is supplied."}
+            </span>
+            <div class="tray-buttons">
+              <button class="btn btn-pill-outline btn-sm quick-open-letter-btn" data-case-id="${activeCase.id}">
+                Draft Dispute Letter
+              </button>
+              <button class="btn btn-pill-outline btn-sm quick-open-calls-btn" data-case-id="${activeCase.id}">
+                Log Collector Call
+              </button>
+            </div>
+          </div>
+        </div>
+      ` : ''}
     </section>
 
     <!-- 4. Peaceful Reassurance & Next Steps Advisory Strip -->
@@ -328,7 +353,7 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseId = null
             </div>
             <div class="advisory-point-item">
               <span class="point-bullet">📞</span>
-              <span><strong>If a collector calls:</strong> Click <em>Quick Call Script</em> in the header bar above to read our 1-minute legal deflection phrase.</span>
+              <span><strong>If a collector calls:</strong> Click <em>Quick Call Script</em> in the sidebar to read our 1-minute legal deflection phrase.</span>
             </div>
           </div>
         </div>

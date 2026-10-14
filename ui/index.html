@@ -17,121 +17,117 @@
   <link rel="stylesheet" href="css/components.css">
 </head>
 <body class="consumer-theme">
-  <!-- Application Shell Header -->
-  <header class="app-header">
-    <div class="header-left">
-      <div class="header-shield-box">
-        <svg class="header-shield-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#006948" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          <path d="m9 12 2 2 4-4"></path>
-        </svg>
-      </div>
-      <div class="header-title-wrap">
-        <h1 class="header-page-title">Patient Protection Dashboard</h1>
-        <span class="header-page-sub">All 3 accounts actively disputed • Rights fully reserved</span>
-      </div>
-    </div>
-
-    <!-- Header Actions -->
-    <div class="header-actions">
-      <button class="btn btn-pill-outline" id="callScriptBtn" title="Display FDCPA Phone Script">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-        </svg>
-        <span>Quick Call Script</span>
-      </button>
-      <button class="btn btn-pill-primary" id="newCaseBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        <span>+ New Dispute</span>
-      </button>
-      <div class="user-avatar-pill" title="Sarah Henderson">
-        <span>SH</span>
-      </div>
-    </div>
-  </header>
-
   <!-- Main Container -->
   <div class="app-layout">
     <!-- Left Navigation Sidebar -->
     <aside class="app-sidebar">
-      <!-- App Brand -->
-      <div class="sidebar-brand-box">
-        <div class="sidebar-brand-left">
-          <div class="brand-shield-mark">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-              <path d="m9 12 2 2 4-4"></path>
-            </svg>
-          </div>
-          <div class="brand-text-block">
-            <span class="brand-title">SettleMint</span>
-            <span class="brand-tag">CREDIT SHIELD CONSOLE</span>
-          </div>
-        </div>
-        <span class="brand-active-dot"></span>
-      </div>
-
-      <!-- Navigation Section -->
-      <div class="sidebar-nav-container">
-        <div class="nav-section-label">NAVIGATION</div>
-        <nav class="sidebar-nav">
-          <div class="nav-pill-item active" data-nav="dashboard">
-            <div class="nav-pill-label">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="sidebar-top-section">
+        <!-- App Brand -->
+        <div class="sidebar-brand-box">
+          <div class="sidebar-brand-left">
+            <div class="brand-shield-mark">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 <path d="m9 12 2 2 4-4"></path>
               </svg>
-              <span>My Disputes</span>
             </div>
-            <span class="nav-badge-pill" id="sidebarBadgeCount">3</span>
+            <div class="brand-text-block">
+              <span class="brand-title">SettleMint</span>
+              <span class="brand-tag">CREDIT SHIELD CONSOLE</span>
+            </div>
           </div>
+          <span class="brand-active-dot"></span>
+        </div>
 
-          <div class="nav-pill-item" data-nav="interactions">
-            <div class="nav-pill-label">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-              </svg>
-              <span>Call Assistant</span>
-            </div>
-          </div>
+        <!-- Sidebar Action Buttons -->
+        <div class="sidebar-actions">
+          <button class="btn sidebar-btn-primary" id="newCaseBtn" title="Create New Dispute (+ New Dispute)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>+ New Dispute</span>
+          </button>
+          <button class="btn sidebar-btn-secondary" id="callScriptBtn" title="Display FDCPA Phone Script">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <span>Quick Call Script</span>
+          </button>
+        </div>
 
-          <div class="nav-pill-item" data-nav="letters">
-            <div class="nav-pill-label">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-              </svg>
-              <span>Dispute Letters</span>
+        <!-- Navigation Section -->
+        <div class="sidebar-nav-container">
+          <div class="nav-section-label">NAVIGATION</div>
+          <nav class="sidebar-nav">
+            <div class="nav-pill-item active" data-nav="dashboard" title="My Disputes">
+              <div class="nav-pill-label">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+                <span>My Disputes</span>
+              </div>
+              <span class="nav-badge-pill" id="sidebarBadgeCount">3</span>
             </div>
-          </div>
 
-          <div class="nav-pill-item" data-nav="evidence">
-            <div class="nav-pill-label">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-              </svg>
-              <span>Evidence Vault</span>
+            <div class="nav-pill-item" data-nav="interactions" title="Call Assistant">
+              <div class="nav-pill-label">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>Call Assistant</span>
+              </div>
             </div>
-          </div>
-        </nav>
+
+            <div class="nav-pill-item" data-nav="letters" title="Dispute Letters">
+              <div class="nav-pill-label">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <span>Dispute Letters</span>
+              </div>
+            </div>
+
+            <div class="nav-pill-item" data-nav="evidence" title="Evidence Vault">
+              <div class="nav-pill-label">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Evidence Vault</span>
+              </div>
+            </div>
+          </nav>
+        </div>
       </div>
 
-      <!-- Local Encryption Assurance Card -->
-      <div class="sidebar-encryption-card">
-        <div class="encryption-icon-circle">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#006948" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
+      <div class="sidebar-bottom-section">
+        <!-- Local Encryption Assurance Card -->
+        <div class="sidebar-encryption-card">
+          <div class="encryption-icon-circle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#006948" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="encryption-text-block">
+            <span class="encryption-title">Local Zero-Knowledge</span>
+            <p class="encryption-desc">Your records are encrypted with AES-256 and securely saved on your device.</p>
+          </div>
         </div>
-        <div class="encryption-text-block">
-          <span class="encryption-title">Local Zero-Knowledge</span>
-          <p class="encryption-desc">Your records are encrypted with AES-256 and securely saved on your device.</p>
+
+        <!-- Sidebar Patient Profile -->
+        <div class="sidebar-user-card">
+          <div class="sidebar-user-avatar" title="Sarah Henderson">
+            <span>SH</span>
+          </div>
+          <div class="sidebar-user-info">
+            <span class="sidebar-user-name">Sarah Henderson</span>
+            <span class="sidebar-user-sub">Protected Patient</span>
+          </div>
         </div>
       </div>
     </aside>
@@ -170,16 +166,28 @@
   <!-- Persistent Protection Footer -->
   <footer class="app-footer">
     <div class="footer-left">
-      <span>SettleMint empowers consumers to defend against invalid medical bills. Protected under Consumer Debt Defense Laws • No Surprises Act Covered • 100% Local AES-256 Storage.</span>
+      <div class="footer-status-indicator">
+        <span class="footer-status-dot"></span>
+        <span class="footer-status-text">Local Storage Active</span>
+      </div>
+      <span class="footer-divider">•</span>
+      <span class="footer-meta-text">Consumer Debt Defense Console</span>
     </div>
+
     <div class="footer-right">
-      <span>Protected under Consumer Debt Defense Laws</span>
       <div class="footer-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#006948" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           <path d="m9 12 2 2 4-4"></path>
         </svg>
-        <strong>No Surprises Act Covered</strong>
+        <span>No Surprises Act Protected</span>
+      </div>
+      <div class="footer-badge">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>AES-256 Encrypted</span>
       </div>
     </div>
   </footer>
