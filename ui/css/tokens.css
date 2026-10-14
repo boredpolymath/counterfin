@@ -1,67 +1,110 @@
 /**
- * SettleMint Design Tokens: Clinical Forensic Defense System
- * Movement: Clinical High-Contrast & Evidentiary Brutalism
+ * SettleMint Design Tokens: Consumer Advocacy System
+ * Movement: Corporate / Modern Advocacy with Glassmorphism & Soft Emerald Elevation
  */
 
 :root {
   /* Surfaces & Baselines */
-  --color-surface: #f7f9fb;
-  --color-surface-dim: #d8dadc;
-  --color-surface-bright: #f7f9fb;
+  --color-surface: #f8f9ff;
+  --color-surface-dim: #cbdbf5;
+  --color-surface-bright: #f8f9ff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f2f4f6;
-  --color-surface-container: #eceef0;
-  --color-surface-container-high: #e6e8ea;
-  --color-surface-container-highest: #e0e3e5;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-highest: #d3e4fe;
+  --color-surface-variant: #d3e4fe;
 
   /* On-Surface & Text Hierarchy */
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #45464d;
-  --color-inverse-surface: #2d3133;
-  --color-inverse-on-surface: #eff1f3;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #3d4a42;
+  --color-inverse-surface: #213145;
+  --color-inverse-on-surface: #eaf1ff;
 
-  /* Evidentiary Primaries (Obsidian & Pitch Black) */
-  --color-primary: #000000;
-  --color-primary-slate: #0f172a;
+  /* Primary Emerald & Mint */
+  --color-primary: #006948;
+  --color-primary-container: #00855d;
   --color-on-primary: #ffffff;
-  --color-primary-container: #131b2e;
-  --color-on-primary-container: #7c839b;
+  --color-on-primary-container: #f5fff7;
+  --color-primary-emerald: #059669;
+  --color-primary-emerald-hover: #047857;
+  --color-primary-mint: #34d399;
+  --color-primary-mint-wash: #ecfdf5;
+  --color-inverse-primary: #68dba9;
+  --color-primary-fixed: #85f8c4;
+  --color-primary-fixed-dim: #68dba9;
+  --color-on-primary-fixed: #002114;
+  --color-on-primary-fixed-variant: #005137;
 
-  /* Emergency Crimson Signalry */
-  --color-secondary: #dc2626;
-  --color-secondary-dark: #b91c1c;
-  --color-secondary-deep: #991b1b;
+  /* Secondary Charcoal Slate */
+  --color-secondary: #565e74;
+  --color-secondary-slate: #0f172a;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #fef2f2;
-  --color-on-secondary-container: #991b1b;
+  --color-secondary-container: #dae2fd;
+  --color-on-secondary-container: #5c647a;
+  --color-secondary-fixed: #dae2fd;
+  --color-secondary-fixed-dim: #bec6e0;
+  --color-on-secondary-fixed: #131b2e;
+  --color-on-secondary-fixed-variant: #3f465c;
 
-  /* Tertiary Legal Slate */
-  --color-tertiary: #1e293b;
-  --color-tertiary-medium: #334155;
-  --color-tertiary-light: #475569;
+  /* Tertiary Mint Greens */
+  --color-tertiary: #006949;
   --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #00855d;
+  --color-on-tertiary-container: #f5fff7;
+  --color-tertiary-fixed: #68fcbf;
+  --color-tertiary-fixed-dim: #45dfa4;
+  --color-on-tertiary-fixed: #002114;
+  --color-on-tertiary-fixed-variant: #005137;
 
-  /* Structural Evidentiary Borders & Hairlines */
+  /* Alert, Disputed & Warning Tones */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-rose: #e11d48;
+  --color-rose-bg: #fff1f2;
+  --color-rose-border: #fecdd3;
+  --color-rose-text: #be123c;
+  --color-amber: #d97706;
+  --color-amber-bg: #fffbeb;
+  --color-amber-border: #fde68a;
+  --color-amber-text: #b45309;
+
+  /* Outlines & Borders */
+  --color-outline: #6d7a72;
+  --color-outline-variant: #bccac0;
+  --color-surface-tint: #006c4a;
   --color-border-standard: #e2e8f0;
+  --color-border-subtle: #edf2f7;
   --color-border-medium: #cbd5e1;
-  --color-border-inset: #94a3b8;
-  --color-border-authoritative: #0f172a;
-  --color-border-danger: #dc2626;
+  --color-border-emerald: #a7f3d0;
 
   /* Typography Stacks */
-  --font-family-sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family-mono: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
 
   /* Type Scales */
-  --font-size-display-lg: 40px;
-  --font-size-headline-lg: 28px;
-  --font-size-headline-md: 22px;
+  --font-size-hero: 48px;
+  --font-size-headline-lg: 32px;
+  --font-size-headline-md: 24px;
   --font-size-headline-sm: 18px;
   --font-size-body-lg: 16px;
   --font-size-body-md: 14px;
   --font-size-body-sm: 12px;
-  --font-size-code: 12px;
-  --font-size-caps: 11px;
+  --font-size-label-lg: 14px;
+  --font-size-label-md: 12px;
+  --font-size-label-caption: 11px;
+
+  /* Rounded Geometry */
+  --radius-xs: 0.25rem;  /* 4px */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.5rem;   /* 8px default */
+  --radius-lg: 0.75rem;  /* 12px */
+  --radius-xl: 1rem;     /* 16px cards */
+  --radius-2xl: 1.5rem;  /* 24px shields */
+  --radius-full: 9999px; /* pill */
 
   /* Spacing Rhythms */
   --space-2xs: 0.125rem;
@@ -69,14 +112,14 @@
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --gutter-desktop: 1.5rem;
-  --margin-desktop: 2rem;
+  --space-xl: 2.5rem;
+  --gutter: 1.5rem;
+  --margin: 2rem;
 
-  /* Geometry & Elevation */
-  --radius-none: 0px; /* Zero-radius geometry */
-  --elevation-none: none;
-  --border-shadow-hard: 4px 4px 0px #0f172a;
-  --border-shadow-subtle: 2px 2px 0px #0f172a;
+  /* Shadows & Elevation */
+  --shadow-level-0: none;
+  --shadow-level-1: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-level-2: 0 10px 15px -3px rgba(5, 150, 105, 0.07), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-level-3: 0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 }
