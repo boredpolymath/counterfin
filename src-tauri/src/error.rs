@@ -24,6 +24,12 @@ pub enum AppError {
 
     #[error("Internal system error: {0}")]
     Internal(String),
+
+    #[error("Security or cryptographic verification error: {0}")]
+    Security(String),
+
+    #[error("Serialization error: {0}")]
+    Serialization(String),
 }
 
 impl From<rusqlite::Error> for AppError {
@@ -53,6 +59,8 @@ impl Serialize for AppError {
             AppError::Io(_) => "IO_ERROR",
             AppError::Calculation(_) => "CALCULATION_ERROR",
             AppError::Internal(_) => "INTERNAL_ERROR",
+            AppError::Security(_) => "SECURITY_ERROR",
+            AppError::Serialization(_) => "SERIALIZATION_ERROR",
         };
         state.serialize_field("code", code)?;
         state.serialize_field("message", &self.to_string())?;

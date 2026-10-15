@@ -3,9 +3,13 @@ pub mod schema;
 
 pub use dao::{
     CaseDao, CreditTradelineDao, CreditorDao, DeadlineDao, DocumentDao, InteractionDao,
-    ViolationDao,
+    StatutoryPatchDao, ViolationDao,
 };
 
+use crate::engine::{
+    DynamicLicensingRule, DynamicSolRule, LicensingEngine, PatchEngine, PatchSummary,
+    SignedStatutoryPatch, SolEngine,
+};
 use crate::error::{AppError, AppResult};
 use crate::models::case::{Case, CaseStatus};
 use crate::models::credit::CreditTradeLine;
@@ -226,6 +230,97 @@ impl DatabaseManager {
             .lock()
             .map_err(|e| AppError::Internal(e.to_string()))?;
         DeadlineDao::get_by_case(&conn, case_id)
+    }
+
+    pub fn apply_statutory_patch(&self, patch: &SignedStatutoryPatch) -> AppResult<PatchSummary> {
+        PatchEngine::verify_signature(patch)?;
+        let mut conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        StatutoryPatchDao::apply_patch(&mut conn, patch)
+    }
+
+    pub fn get_active_statutory_patches(&self) -> AppResult<Vec<PatchSummary>> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        StatutoryPatchDao::get_active_patches(&conn)
+    }
+
+    pub fn rollback_statutory_patch(&self, patch_id: &str) -> AppResult<()> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        StatutoryPatchDao::rollback_patch(&conn, patch_id)
+    }
+
+    pub fn rollback_all_statutory_patches(&self) -> AppResult<()> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        StatutoryPatchDao::rollback_all(&conn)
+    }
+
+    pub fn get_active_sol_rule(&self, state_code: &str) -> AppResult<DynamicSolRule> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        if let Some(r) = StatutoryPatchDao::get_sol_override(&conn, state_code)? {
+            Ok(r)
+        } else {
+            Ok(DynamicSolRule::from(SolEngine::get_rule(state_code)))
+        }
+    }
+
+    pub fn get_all_active_sol_rules(&self) -> AppResult<Vec<DynamicSolRule>> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        let overrides = StatutoryPatchDao::get_all_sol_overrides(&conn)?;
+        let mut list = Vec::new();
+        for code in SolEngine::ALL_STATE_CODES.iter() {
+            if let Some(r) = overrides.get(*code) {
+                list.push(r.clone());
+            } else {
+                list.push(DynamicSolRule::from(SolEngine::get_rule(code)));
+            }
+        }
+        Ok(list)
+    }
+
+    pub fn get_active_licensing_rule(&self, state_code: &str) -> AppResult<DynamicLicensingRule> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        if let Some(r) = StatutoryPatchDao::get_licensing_override(&conn, state_code)? {
+            Ok(r)
+        } else {
+            Ok(DynamicLicensingRule::from(LicensingEngine::get_rule(state_code)))
+        }
+    }
+
+    pub fn get_all_active_licensing_rules(&self) -> AppResult<Vec<DynamicLicensingRule>> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        let overrides = StatutoryPatchDao::get_all_licensing_overrides(&conn)?;
+        let mut list = Vec::new();
+        for code in LicensingEngine::ALL_STATE_CODES.iter() {
+            if let Some(r) = overrides.get(*code) {
+                list.push(r.clone());
+            } else {
+                list.push(DynamicLicensingRule::from(LicensingEngine::get_rule(code)));
+            }
+        }
+        Ok(list)
     }
 }
 
@@ -1136,5 +1231,89 @@ mod tests {
 
         // Cleanup temp test directory
         std::fs::remove_dir_all(&test_dir).ok();
+    }
+
+    #[test]
+    fn test_statutory_patch_import_and_rollback() {
+        use crate::engine::{PatchEngine, PatchLicensingRule, PatchSolRule, StatutoryPatchPayload};
+
+        let db = DatabaseManager::init_in_memory().expect("Init in-memory DB");
+
+        // 1. Verify initial baseline built-in rules
+        let base_ca = db.get_active_sol_rule("CA").expect("Get baseline CA SOL");
+        assert_eq!(base_ca.medical_sol_years, 4);
+        assert!(!base_ca.is_overridden);
+
+        let base_tx_lic = db.get_active_licensing_rule("TX").expect("Get baseline TX licensing");
+        assert_eq!(base_tx_lic.bond_amount, "$10,000");
+        assert!(!base_tx_lic.is_overridden);
+
+        // 2. Create signed statutory patch
+        let patch_payload = StatutoryPatchPayload {
+            patch_id: "patch-2026-q4-ca-tx-update".to_string(),
+            version: "2026.4.1".to_string(),
+            description: "California Medical SOL reduction and Texas bond threshold inflation adjustment".to_string(),
+            published_at: "2026-10-15T12:00:00Z".to_string(),
+            sol_rules: vec![PatchSolRule {
+                state_code: "CA".to_string(),
+                state_name: "California".to_string(),
+                medical_sol_years: 3,
+                credit_card_sol_years: 4,
+                written_contract_sol_years: 4,
+                open_account_sol_years: 4,
+                statutory_code: "Cal. Civ. Proc. Code § 337 (amended)".to_string(),
+                partial_payment_resets_clock: false,
+                notes: "Updated 3-year limitation on medical debt collections".to_string(),
+            }],
+            licensing_rules: vec![PatchLicensingRule {
+                state_code: "TX".to_string(),
+                state_name: "Texas".to_string(),
+                requires_license: false,
+                regulatory_agency: "Texas Secretary of State (Statutory Documents Section)".to_string(),
+                requires_surety_bond: true,
+                bond_amount: "$15,000".to_string(),
+                statutory_code: "Tex. Fin. Code § 392.101".to_string(),
+                unlicensed_collection_is_per_se_violation: true,
+                notes: "Updated $15,000 surety bond filing requirement".to_string(),
+            }],
+        };
+
+        let signed_patch = PatchEngine::sign_patch(patch_payload).expect("Sign patch");
+        let json_str = serde_json::to_string_pretty(&signed_patch).expect("Serialize patch");
+        std::fs::write("../fixtures/sample_statutory_patch_2026.4.json", &json_str).ok();
+
+        // 3. Apply patch
+        let summary = db.apply_statutory_patch(&signed_patch).expect("Apply patch");
+        assert_eq!(summary.patch_id, "patch-2026-q4-ca-tx-update");
+        assert_eq!(summary.sol_rules_count, 1);
+        assert_eq!(summary.licensing_rules_count, 1);
+
+        // 4. Verify overridden rules are active
+        let updated_ca = db.get_active_sol_rule("CA").expect("Get active CA SOL");
+        assert_eq!(updated_ca.medical_sol_years, 3);
+        assert!(updated_ca.is_overridden);
+
+        let updated_tx_lic = db.get_active_licensing_rule("TX").expect("Get active TX licensing");
+        assert_eq!(updated_tx_lic.bond_amount, "$15,000");
+        assert!(updated_tx_lic.is_overridden);
+
+        let active_patches = db.get_active_statutory_patches().expect("Get active patches");
+        assert_eq!(active_patches.len(), 1);
+        assert_eq!(active_patches[0].patch_id, "patch-2026-q4-ca-tx-update");
+
+        // 5. Rollback patch
+        db.rollback_statutory_patch("patch-2026-q4-ca-tx-update").expect("Rollback patch");
+
+        // 6. Verify restored to baseline
+        let restored_ca = db.get_active_sol_rule("CA").expect("Get restored CA SOL");
+        assert_eq!(restored_ca.medical_sol_years, 4);
+        assert!(!restored_ca.is_overridden);
+
+        let restored_tx_lic = db.get_active_licensing_rule("TX").expect("Get restored TX licensing");
+        assert_eq!(restored_tx_lic.bond_amount, "$10,000");
+        assert!(!restored_tx_lic.is_overridden);
+
+        let remaining_patches = db.get_active_statutory_patches().expect("Get active patches");
+        assert_eq!(remaining_patches.len(), 0);
     }
 }

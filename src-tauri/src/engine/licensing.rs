@@ -16,6 +16,38 @@ pub struct StateLicensingRule {
     pub notes: &'static str,
 }
 
+/// Dynamic, owned Licensing Rule capable of supporting live air-gapped statutory table overrides
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DynamicLicensingRule {
+    pub state_code: String,
+    pub state_name: String,
+    pub requires_license: bool,
+    pub regulatory_agency: String,
+    pub requires_surety_bond: bool,
+    pub bond_amount: String,
+    pub statutory_code: String,
+    pub unlicensed_collection_is_per_se_violation: bool,
+    pub notes: String,
+    pub is_overridden: bool,
+}
+
+impl From<StateLicensingRule> for DynamicLicensingRule {
+    fn from(r: StateLicensingRule) -> Self {
+        Self {
+            state_code: r.state_code.to_string(),
+            state_name: r.state_name.to_string(),
+            requires_license: r.requires_license,
+            regulatory_agency: r.regulatory_agency.to_string(),
+            requires_surety_bond: r.requires_surety_bond,
+            bond_amount: r.bond_amount.to_string(),
+            statutory_code: r.statutory_code.to_string(),
+            unlicensed_collection_is_per_se_violation: r.unlicensed_collection_is_per_se_violation,
+            notes: r.notes.to_string(),
+            is_overridden: false,
+        }
+    }
+}
+
 impl LicensingEngine {
     /// Retrieve statutory licensing and surety bond requirements for a given state or territory
     pub fn get_rule(state_code: &str) -> StateLicensingRule {

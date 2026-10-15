@@ -97,6 +97,11 @@ pub fn run() {
             commands::verify_master_passphrase,
             commands::export_encrypted_backup,
             commands::restore_encrypted_backup,
+            commands::import_statutory_patch,
+            commands::get_active_statutory_patches,
+            commands::rollback_statutory_patch,
+            commands::rollback_all_statutory_patches,
+            commands::get_official_statutory_authority_key,
         ])
         .run(tauri::generate_context!())
         .expect("error while building SettleMint application");

@@ -114,10 +114,54 @@ CREATE TABLE IF NOT EXISTS credit_tradelines (
     FOREIGN KEY(case_id) REFERENCES cases(id) ON DELETE CASCADE
 );
 
+-- 8. Statutory Patches Table (Air-Gapped Offline Update Architecture)
+CREATE TABLE IF NOT EXISTS statutory_patches (
+    id TEXT PRIMARY KEY,
+    version TEXT NOT NULL,
+    description TEXT NOT NULL,
+    published_at TEXT NOT NULL,
+    applied_at TEXT NOT NULL,
+    signature TEXT NOT NULL,
+    signer_public_key TEXT NOT NULL,
+    payload_json TEXT NOT NULL
+);
+
+-- 9. SOL Overrides Table
+CREATE TABLE IF NOT EXISTS sol_overrides (
+    state_code TEXT PRIMARY KEY,
+    state_name TEXT NOT NULL,
+    medical_sol_years INTEGER NOT NULL,
+    credit_card_sol_years INTEGER NOT NULL,
+    written_contract_sol_years INTEGER NOT NULL,
+    open_account_sol_years INTEGER NOT NULL,
+    statutory_code TEXT NOT NULL,
+    partial_payment_resets_clock INTEGER NOT NULL,
+    notes TEXT NOT NULL,
+    patch_id TEXT NOT NULL,
+    FOREIGN KEY(patch_id) REFERENCES statutory_patches(id) ON DELETE CASCADE
+);
+
+-- 10. Licensing Overrides Table
+CREATE TABLE IF NOT EXISTS licensing_overrides (
+    state_code TEXT PRIMARY KEY,
+    state_name TEXT NOT NULL,
+    requires_license INTEGER NOT NULL,
+    regulatory_agency TEXT NOT NULL,
+    requires_surety_bond INTEGER NOT NULL,
+    bond_amount TEXT NOT NULL,
+    statutory_code TEXT NOT NULL,
+    unlicensed_collection_is_per_se_violation INTEGER NOT NULL,
+    notes TEXT NOT NULL,
+    patch_id TEXT NOT NULL,
+    FOREIGN KEY(patch_id) REFERENCES statutory_patches(id) ON DELETE CASCADE
+);
+
 -- Indices for rapid query performance (< 50ms)
 CREATE INDEX IF NOT EXISTS idx_cases_status ON cases(status);
 CREATE INDEX IF NOT EXISTS idx_cases_debt_type ON cases(debt_type);
 CREATE INDEX IF NOT EXISTS idx_interactions_case ON interactions(case_id, timestamp);
 CREATE INDEX IF NOT EXISTS idx_violations_case ON violations(case_id);
 CREATE INDEX IF NOT EXISTS idx_deadlines_target ON deadlines(target_date, completed);
+CREATE INDEX IF NOT EXISTS idx_sol_overrides_state ON sol_overrides(state_code);
+CREATE INDEX IF NOT EXISTS idx_licensing_overrides_state ON licensing_overrides(state_code);
 "#;

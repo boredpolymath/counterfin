@@ -54,6 +54,53 @@ impl StateSolRule {
     }
 }
 
+/// Dynamic, owned SOL Rule capable of supporting live air-gapped statutory table overrides
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DynamicSolRule {
+    pub state_code: String,
+    pub state_name: String,
+    pub medical_sol_years: u32,
+    pub credit_card_sol_years: u32,
+    pub written_contract_sol_years: u32,
+    pub open_account_sol_years: u32,
+    pub statutory_code: String,
+    pub partial_payment_resets_clock: bool,
+    pub notes: String,
+    pub is_overridden: bool,
+}
+
+impl From<StateSolRule> for DynamicSolRule {
+    fn from(r: StateSolRule) -> Self {
+        Self {
+            state_code: r.state_code.to_string(),
+            state_name: r.state_name.to_string(),
+            medical_sol_years: r.medical_sol_years,
+            credit_card_sol_years: r.credit_card_sol_years,
+            written_contract_sol_years: r.written_contract_sol_years,
+            open_account_sol_years: r.open_account_sol_years,
+            statutory_code: r.statutory_code.to_string(),
+            partial_payment_resets_clock: r.partial_payment_resets_clock,
+            notes: r.notes.to_string(),
+            is_overridden: false,
+        }
+    }
+}
+
+impl DynamicSolRule {
+    pub fn get_sol_years(&self, debt_type: &DebtType) -> u32 {
+        match debt_type {
+            DebtType::CreditCard => self.credit_card_sol_years,
+            DebtType::Medical => self.medical_sol_years,
+            DebtType::PersonalLoan | DebtType::AutoDeficiency | DebtType::StudentLoan => {
+                self.written_contract_sol_years
+            }
+            DebtType::UtilityTelecom | DebtType::ResidentialRent | DebtType::OtherConsumerDebt => {
+                self.open_account_sol_years
+            }
+        }
+    }
+}
+
 impl SolEngine {
     /// Retrieve statutory limitation parameters for consumer debts in a given state or territory
     pub fn get_rule(state_code: &str) -> StateSolRule {
@@ -682,13 +729,12 @@ impl SolEngine {
             .collect()
     }
 
-    /// Calculate the statutory expiration date for a debt given its default or last activity date
-    pub fn calculate_expiration_date(
-        state_code: &str,
+    /// Calculate the statutory expiration date for a debt using a dynamic rule (built-in or overridden)
+    pub fn calculate_expiration_date_with_rule(
+        rule: &DynamicSolRule,
         debt_type: &DebtType,
         default_or_activity_date: NaiveDate,
     ) -> Option<NaiveDate> {
-        let rule = Self::get_rule(state_code);
         let sol_years = rule.get_sol_years(debt_type);
 
         let new_year = default_or_activity_date.year() + sol_years as i32;
@@ -701,6 +747,16 @@ impl SolEngine {
         } else {
             NaiveDate::from_ymd_opt(new_year, month, day)
         }
+    }
+
+    /// Calculate the statutory expiration date for a debt given its default or last activity date
+    pub fn calculate_expiration_date(
+        state_code: &str,
+        debt_type: &DebtType,
+        default_or_activity_date: NaiveDate,
+    ) -> Option<NaiveDate> {
+        let rule = DynamicSolRule::from(Self::get_rule(state_code));
+        Self::calculate_expiration_date_with_rule(&rule, debt_type, default_or_activity_date)
     }
 
     /// Check if a debt is time-barred under the applicable state SOL
@@ -719,16 +775,16 @@ impl SolEngine {
         }
     }
 
-    /// Full temporal date delta and warning calculation for Statute of Limitations clock
-    pub fn calculate_sol_clock(
-        state_code: &str,
+    /// Full temporal date delta and warning calculation using a dynamic rule
+    pub fn calculate_sol_clock_with_rule(
+        rule: &DynamicSolRule,
         debt_type: &DebtType,
         default_date: NaiveDate,
         reference_today: Option<NaiveDate>,
     ) -> Option<SolClockResult> {
-        let rule = Self::get_rule(state_code);
         let sol_years = rule.get_sol_years(debt_type);
-        let expiration_date = Self::calculate_expiration_date(state_code, debt_type, default_date)?;
+        let expiration_date =
+            Self::calculate_expiration_date_with_rule(rule, debt_type, default_date)?;
         let today = reference_today.unwrap_or_else(|| Utc::now().date_naive());
 
         let time_elapsed_days = (today - default_date).num_days();
@@ -763,8 +819,8 @@ impl SolEngine {
         };
 
         Some(SolClockResult {
-            state_code: rule.state_code.to_string(),
-            state_name: rule.state_name.to_string(),
+            state_code: rule.state_code.clone(),
+            state_name: rule.state_name.clone(),
             debt_type: debt_type.clone(),
             sol_years,
             default_date: default_date.format("%Y-%m-%d").to_string(),
@@ -773,12 +829,23 @@ impl SolEngine {
             days_remaining,
             is_time_barred,
             is_approaching_time_barred,
-            statutory_code: rule.statutory_code.to_string(),
+            statutory_code: rule.statutory_code.clone(),
             partial_payment_resets_clock: rule.partial_payment_resets_clock,
             approach_warning,
             revival_warning,
-            notes: rule.notes.to_string(),
+            notes: rule.notes.clone(),
         })
+    }
+
+    /// Full temporal date delta and warning calculation for Statute of Limitations clock
+    pub fn calculate_sol_clock(
+        state_code: &str,
+        debt_type: &DebtType,
+        default_date: NaiveDate,
+        reference_today: Option<NaiveDate>,
+    ) -> Option<SolClockResult> {
+        let rule = DynamicSolRule::from(Self::get_rule(state_code));
+        Self::calculate_sol_clock_with_rule(&rule, debt_type, default_date, reference_today)
     }
 }
 

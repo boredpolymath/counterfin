@@ -153,6 +153,29 @@ export const ipc = {
   },
 
   // -------------------------------------------------------------------------
+  // Air-Gapped Statutory Patches & Offline Updates
+  // -------------------------------------------------------------------------
+  async importStatutoryPatch(signedPatchJson) {
+    return await this.invoke('import_statutory_patch', { signedPatchJson });
+  },
+
+  async getActiveStatutoryPatches() {
+    return await this.invoke('get_active_statutory_patches');
+  },
+
+  async rollbackStatutoryPatch(patchId) {
+    return await this.invoke('rollback_statutory_patch', { patchId });
+  },
+
+  async rollbackAllStatutoryPatches() {
+    return await this.invoke('rollback_all_statutory_patches');
+  },
+
+  async getOfficialStatutoryAuthorityKey() {
+    return await this.invoke('get_official_statutory_authority_key');
+  },
+
+  // -------------------------------------------------------------------------
   // Credit Tradelines
   // -------------------------------------------------------------------------
   async getCreditTradelines(caseId) {

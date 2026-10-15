@@ -1,7 +1,7 @@
 use crate::db::DatabaseManager;
 use crate::engine::{
-    BackgroundMonitor, DeadlineAlert, DeliveryAdvanceResult, FdcpaEngine, LicensingEngine,
-    SolEngine, StateLicensingRule, StateSolRule, UspsTrackingResult,
+    BackgroundMonitor, DeadlineAlert, DeliveryAdvanceResult, DynamicLicensingRule, DynamicSolRule,
+    FdcpaEngine, PatchEngine, PatchSummary, SignedStatutoryPatch, SolEngine, UspsTrackingResult,
 };
 use crate::error::{AppError, AppResult};
 use crate::models::case::DebtType;
@@ -53,13 +53,18 @@ pub async fn calculate_fdcpa_validation_window(
 }
 
 #[command]
-pub async fn get_state_sol_rule(state_code: String) -> AppResult<StateSolRule> {
-    Ok(SolEngine::get_rule(&state_code))
+pub async fn get_state_sol_rule(
+    state_code: String,
+    db: State<'_, DatabaseManager>,
+) -> AppResult<DynamicSolRule> {
+    db.get_active_sol_rule(&state_code)
 }
 
 #[command]
-pub async fn get_all_state_sol_rules() -> AppResult<Vec<StateSolRule>> {
-    Ok(SolEngine::get_all_rules())
+pub async fn get_all_state_sol_rules(
+    db: State<'_, DatabaseManager>,
+) -> AppResult<Vec<DynamicSolRule>> {
+    db.get_all_active_sol_rules()
 }
 
 #[command]
@@ -67,10 +72,12 @@ pub async fn check_debt_time_barred(
     state_code: String,
     debt_type: DebtType,
     default_date_str: String,
+    db: State<'_, DatabaseManager>,
 ) -> AppResult<TimeBarredCheckResult> {
     let default_date = NaiveDate::parse_from_str(&default_date_str, "%Y-%m-%d")
         .map_err(|e| AppError::Validation(format!("Invalid default date format: {}", e)))?;
-    let clock = SolEngine::calculate_sol_clock(&state_code, &debt_type, default_date, None)
+    let rule = db.get_active_sol_rule(&state_code)?;
+    let clock = SolEngine::calculate_sol_clock_with_rule(&rule, &debt_type, default_date, None)
         .ok_or_else(|| AppError::Calculation("Failed to calculate expiration date".to_string()))?;
 
     Ok(TimeBarredCheckResult {
@@ -94,6 +101,7 @@ pub async fn calculate_sol_clock(
     debt_type: DebtType,
     default_date_str: String,
     reference_date_str: Option<String>,
+    db: State<'_, DatabaseManager>,
 ) -> AppResult<crate::engine::sol::SolClockResult> {
     let default_date = NaiveDate::parse_from_str(&default_date_str, "%Y-%m-%d")
         .map_err(|e| AppError::Validation(format!("Invalid default date format: {}", e)))?;
@@ -106,18 +114,61 @@ pub async fn calculate_sol_clock(
             None
         };
 
-    SolEngine::calculate_sol_clock(&state_code, &debt_type, default_date, ref_date)
+    let rule = db.get_active_sol_rule(&state_code)?;
+    SolEngine::calculate_sol_clock_with_rule(&rule, &debt_type, default_date, ref_date)
         .ok_or_else(|| AppError::Calculation("Failed to calculate SOL clock".to_string()))
 }
 
 #[command]
-pub async fn get_state_licensing_rule(state_code: String) -> AppResult<StateLicensingRule> {
-    Ok(LicensingEngine::get_rule(&state_code))
+pub async fn get_state_licensing_rule(
+    state_code: String,
+    db: State<'_, DatabaseManager>,
+) -> AppResult<DynamicLicensingRule> {
+    db.get_active_licensing_rule(&state_code)
 }
 
 #[command]
-pub async fn get_all_state_licensing_rules() -> AppResult<Vec<StateLicensingRule>> {
-    Ok(LicensingEngine::get_all_rules())
+pub async fn get_all_state_licensing_rules(
+    db: State<'_, DatabaseManager>,
+) -> AppResult<Vec<DynamicLicensingRule>> {
+    db.get_all_active_licensing_rules()
+}
+
+#[command]
+pub async fn import_statutory_patch(
+    signed_patch_json: String,
+    db: State<'_, DatabaseManager>,
+) -> AppResult<PatchSummary> {
+    let patch: SignedStatutoryPatch = serde_json::from_str(&signed_patch_json)
+        .map_err(|e| AppError::Validation(format!("Invalid signed statutory patch JSON: {}", e)))?;
+    db.apply_statutory_patch(&patch)
+}
+
+#[command]
+pub async fn get_active_statutory_patches(
+    db: State<'_, DatabaseManager>,
+) -> AppResult<Vec<PatchSummary>> {
+    db.get_active_statutory_patches()
+}
+
+#[command]
+pub async fn rollback_statutory_patch(
+    patch_id: String,
+    db: State<'_, DatabaseManager>,
+) -> AppResult<()> {
+    db.rollback_statutory_patch(&patch_id)
+}
+
+#[command]
+pub async fn rollback_all_statutory_patches(
+    db: State<'_, DatabaseManager>,
+) -> AppResult<()> {
+    db.rollback_all_statutory_patches()
+}
+
+#[command]
+pub async fn get_official_statutory_authority_key() -> AppResult<String> {
+    Ok(PatchEngine::get_official_public_key_hex())
 }
 
 #[command]

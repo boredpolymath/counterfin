@@ -854,6 +854,13 @@
         </form>
 
         <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--color-border-standard);">
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px;">Air-Gapped Statutory Tables & Offline Updates</div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+            <button type="button" class="btn btn-pill-outline btn-sm" id="openStatutoryPatchesModalBtn" style="color: #0284c7; border-color: #bae6fd;">
+              ⚖️ Manage Statutory Patches & Overrides
+            </button>
+          </div>
+
           <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px;">Workspace & Educational Data Controls</div>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button type="button" class="btn btn-pill-outline btn-sm" id="loadDemoDataModalBtn" style="color: var(--color-primary); border-color: var(--color-primary);">
@@ -864,6 +871,87 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 8. Air-Gapped Statutory Patch Management Modal (Section 13.2) -->
+  <dialog class="modal-dialog" id="statutoryPatchModal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge" style="background-color: #e0f2fe; color: #0369a1;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title">Air-Gapped Statutory Matrix & Legislative Patches</h2>
+            <span class="modal-subtitle">Cryptographically verified Ed25519 updates for 54 US jurisdictions</span>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="closeStatutoryPatchModal">✕</button>
+      </div>
+
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <!-- Engine Status Banner -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #0f172a;">Statutory Baseline Engine</div>
+            <div style="font-size: 11px; color: #64748b;" id="statutoryEngineStatus">v2026.10 Built-in • 54 Jurisdictions Codified</div>
+          </div>
+          <div style="text-align: right;">
+            <span class="status-pill status-pill-success" id="statutoryAirGapBadge">✓ 100% Air-Gapped & Offline</span>
+          </div>
+        </div>
+
+        <!-- Verification Authority Card -->
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; color: #166534;">
+          <strong>🔐 Cryptographic Trust Authority:</strong>
+          <div style="font-family: monospace; font-size: 11px; margin-top: 4px; word-break: break-all;" id="statutoryPubkeyDisplay">
+            Official Key: 35d5e78b81c64ef3ccf8621def44baf10fd1681ccc4fca216152f28e5db91919 (Bored Polymath Studios)
+          </div>
+        </div>
+
+        <!-- Active Patches List -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 12px; font-weight: 700; color: #334155; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Active Statutory Patches</span>
+            <button type="button" class="btn btn-sm btn-pill-outline" id="rollbackAllPatchesBtn" style="color: #e11d48; border-color: #fecdd3; display: none;">Revert All to Baseline</button>
+          </div>
+          <div id="activePatchesListContainer" style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="padding: 16px; text-align: center; color: #64748b; font-size: 12px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px;">
+              No custom patches currently applied. All 54 jurisdictions running official built-in statutory tables.
+            </div>
+          </div>
+        </div>
+
+        <!-- Import Patch Section -->
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 16px;">
+          <div style="font-size: 12px; font-weight: 700; color: #334155; text-transform: uppercase; margin-bottom: 8px;">Import Verified Statutory Patch (.json)</div>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+            Select an air-gapped legislative patch file. SettleMint will verify its Ed25519 signature before applying any changes to state limitation tables or licensing thresholds.
+          </p>
+
+          <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+            <input type="file" id="statutoryPatchFileInput" accept=".json" class="input-rounded" style="padding: 6px 10px; font-size: 12px; flex: 1;">
+            <button type="button" class="btn btn-pill-outline btn-sm" id="loadSamplePatchBtn" title="Load sample verified 2026 Q4 statutory patch">Load Sample Patch</button>
+          </div>
+
+          <!-- Patch Preview & Validation Box (hidden initially) -->
+          <div id="patchVerificationBox" style="display: none; background: #fafafa; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div id="patchValidationStatus"></div>
+            <pre id="patchPreviewContent" style="font-size: 11px; max-height: 120px; overflow-y: auto; background: #fff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px; margin-top: 8px;"></pre>
+            <div style="margin-top: 10px; text-align: right;">
+              <button type="button" class="btn btn-pill-primary btn-sm" id="applyVerifiedPatchBtn">Apply Verified Patch</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-pill-outline" id="dismissStatutoryPatchModalBtn">Close</button>
       </div>
     </div>
   </dialog>

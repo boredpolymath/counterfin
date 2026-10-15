@@ -1,0 +1,36 @@
+{
+  "payload": {
+    "patch_id": "patch-2026-q4-ca-tx-update",
+    "version": "2026.4.1",
+    "description": "California Medical SOL reduction and Texas bond threshold inflation adjustment",
+    "published_at": "2026-10-15T12:00:00Z",
+    "sol_rules": [
+      {
+        "state_code": "CA",
+        "state_name": "California",
+        "medical_sol_years": 3,
+        "credit_card_sol_years": 4,
+        "written_contract_sol_years": 4,
+        "open_account_sol_years": 4,
+        "statutory_code": "Cal. Civ. Proc. Code § 337 (amended)",
+        "partial_payment_resets_clock": false,
+        "notes": "Updated 3-year limitation on medical debt collections"
+      }
+    ],
+    "licensing_rules": [
+      {
+        "state_code": "TX",
+        "state_name": "Texas",
+        "requires_license": false,
+        "regulatory_agency": "Texas Secretary of State (Statutory Documents Section)",
+        "requires_surety_bond": true,
+        "bond_amount": "$15,000",
+        "statutory_code": "Tex. Fin. Code § 392.101",
+        "unlicensed_collection_is_per_se_violation": true,
+        "notes": "Updated $15,000 surety bond filing requirement"
+      }
+    ]
+  },
+  "signature_hex": "0473c3ba42578a61c95aaa807e5dc7a06dda7e7cf9955cb3ba490398922d7762d6ca29929f6470fa7732c966a9eaaae9b941a1121d21e4a063e96c1c2bed8f00",
+  "public_key_hex": "35d5e78b81c64ef3ccf8621def44baf10fd1681ccc4fca216152f28e5db91919"
+}

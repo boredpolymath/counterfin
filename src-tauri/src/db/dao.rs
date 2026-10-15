@@ -1,3 +1,4 @@
+use crate::engine::{DynamicLicensingRule, DynamicSolRule, PatchSummary, SignedStatutoryPatch};
 use crate::error::{AppError, AppResult};
 use crate::models::case::{Case, CaseStatus, DebtType};
 use crate::models::credit::{Bureau, CreditTradeLine, DisputeRemarkStatus};
@@ -835,5 +836,272 @@ impl DeadlineDao {
             params![deadline_id],
         )?;
         Ok(rows_affected > 0)
+    }
+}
+
+pub struct StatutoryPatchDao;
+
+impl StatutoryPatchDao {
+    pub fn apply_patch(conn: &mut Connection, patch: &SignedStatutoryPatch) -> AppResult<PatchSummary> {
+        let applied_at = Utc::now().to_rfc3339();
+        let payload_json = serde_json::to_string(&patch.payload)
+            .map_err(|e| AppError::Serialization(e.to_string()))?;
+
+        let tx = conn.transaction()?;
+
+        tx.execute(
+            "INSERT OR REPLACE INTO statutory_patches (
+                id, version, description, published_at, applied_at, signature, signer_public_key, payload_json
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+            params![
+                patch.payload.patch_id,
+                patch.payload.version,
+                patch.payload.description,
+                patch.payload.published_at,
+                applied_at,
+                patch.signature_hex,
+                patch.public_key_hex,
+                payload_json,
+            ],
+        )?;
+
+        for sol in &patch.payload.sol_rules {
+            tx.execute(
+                "INSERT OR REPLACE INTO sol_overrides (
+                    state_code, state_name, medical_sol_years, credit_card_sol_years,
+                    written_contract_sol_years, open_account_sol_years, statutory_code,
+                    partial_payment_resets_clock, notes, patch_id
+                ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+                params![
+                    sol.state_code.trim().to_uppercase(),
+                    sol.state_name,
+                    sol.medical_sol_years,
+                    sol.credit_card_sol_years,
+                    sol.written_contract_sol_years,
+                    sol.open_account_sol_years,
+                    sol.statutory_code,
+                    if sol.partial_payment_resets_clock { 1 } else { 0 },
+                    sol.notes,
+                    patch.payload.patch_id,
+                ],
+            )?;
+        }
+
+        for lic in &patch.payload.licensing_rules {
+            tx.execute(
+                "INSERT OR REPLACE INTO licensing_overrides (
+                    state_code, state_name, requires_license, regulatory_agency,
+                    requires_surety_bond, bond_amount, statutory_code,
+                    unlicensed_collection_is_per_se_violation, notes, patch_id
+                ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+                params![
+                    lic.state_code.trim().to_uppercase(),
+                    lic.state_name,
+                    if lic.requires_license { 1 } else { 0 },
+                    lic.regulatory_agency,
+                    if lic.requires_surety_bond { 1 } else { 0 },
+                    lic.bond_amount,
+                    lic.statutory_code,
+                    if lic.unlicensed_collection_is_per_se_violation { 1 } else { 0 },
+                    lic.notes,
+                    patch.payload.patch_id,
+                ],
+            )?;
+        }
+
+        tx.commit()?;
+
+        Ok(PatchSummary {
+            patch_id: patch.payload.patch_id.clone(),
+            version: patch.payload.version.clone(),
+            description: patch.payload.description.clone(),
+            published_at: patch.payload.published_at.clone(),
+            applied_at,
+            signer_public_key: patch.public_key_hex.clone(),
+            sol_rules_count: patch.payload.sol_rules.len(),
+            licensing_rules_count: patch.payload.licensing_rules.len(),
+        })
+    }
+
+    pub fn get_active_patches(conn: &Connection) -> AppResult<Vec<PatchSummary>> {
+        let mut stmt = conn.prepare(
+            "SELECT id, version, description, published_at, applied_at, signer_public_key, payload_json
+             FROM statutory_patches ORDER BY applied_at DESC"
+        )?;
+
+        let rows = stmt.query_map([], |row| {
+            let patch_id: String = row.get(0)?;
+            let version: String = row.get(1)?;
+            let description: String = row.get(2)?;
+            let published_at: String = row.get(3)?;
+            let applied_at: String = row.get(4)?;
+            let signer_public_key: String = row.get(5)?;
+            let payload_json: String = row.get(6)?;
+
+            let (sol_count, lic_count) = if let Ok(parsed) = serde_json::from_str::<crate::engine::StatutoryPatchPayload>(&payload_json) {
+                (parsed.sol_rules.len(), parsed.licensing_rules.len())
+            } else {
+                (0, 0)
+            };
+
+            Ok(PatchSummary {
+                patch_id,
+                version,
+                description,
+                published_at,
+                applied_at,
+                signer_public_key,
+                sol_rules_count: sol_count,
+                licensing_rules_count: lic_count,
+            })
+        })?;
+
+        let mut list = Vec::new();
+        for r in rows {
+            list.push(r?);
+        }
+        Ok(list)
+    }
+
+    pub fn rollback_patch(conn: &Connection, patch_id: &str) -> AppResult<()> {
+        conn.execute("DELETE FROM statutory_patches WHERE id = ?1", params![patch_id])?;
+        conn.execute("DELETE FROM sol_overrides WHERE patch_id = ?1", params![patch_id])?;
+        conn.execute("DELETE FROM licensing_overrides WHERE patch_id = ?1", params![patch_id])?;
+        Ok(())
+    }
+
+    pub fn rollback_all(conn: &Connection) -> AppResult<()> {
+        conn.execute("DELETE FROM statutory_patches", [])?;
+        conn.execute("DELETE FROM sol_overrides", [])?;
+        conn.execute("DELETE FROM licensing_overrides", [])?;
+        Ok(())
+    }
+
+    pub fn get_sol_override(conn: &Connection, state_code: &str) -> AppResult<Option<DynamicSolRule>> {
+        let code = state_code.trim().to_uppercase();
+        let mut stmt = conn.prepare(
+            "SELECT state_code, state_name, medical_sol_years, credit_card_sol_years,
+                    written_contract_sol_years, open_account_sol_years, statutory_code,
+                    partial_payment_resets_clock, notes
+             FROM sol_overrides WHERE state_code = ?1"
+        )?;
+
+        let mut rows = stmt.query(params![code])?;
+        if let Some(row) = rows.next()? {
+            let partial: i32 = row.get(7)?;
+            Ok(Some(DynamicSolRule {
+                state_code: row.get(0)?,
+                state_name: row.get(1)?,
+                medical_sol_years: row.get(2)?,
+                credit_card_sol_years: row.get(3)?,
+                written_contract_sol_years: row.get(4)?,
+                open_account_sol_years: row.get(5)?,
+                statutory_code: row.get(6)?,
+                partial_payment_resets_clock: partial != 0,
+                notes: row.get(8)?,
+                is_overridden: true,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn get_all_sol_overrides(conn: &Connection) -> AppResult<std::collections::HashMap<String, DynamicSolRule>> {
+        let mut stmt = conn.prepare(
+            "SELECT state_code, state_name, medical_sol_years, credit_card_sol_years,
+                    written_contract_sol_years, open_account_sol_years, statutory_code,
+                    partial_payment_resets_clock, notes
+             FROM sol_overrides"
+        )?;
+
+        let rows = stmt.query_map([], |row| {
+            let partial: i32 = row.get(7)?;
+            let code: String = row.get(0)?;
+            Ok((code.clone(), DynamicSolRule {
+                state_code: code,
+                state_name: row.get(1)?,
+                medical_sol_years: row.get(2)?,
+                credit_card_sol_years: row.get(3)?,
+                written_contract_sol_years: row.get(4)?,
+                open_account_sol_years: row.get(5)?,
+                statutory_code: row.get(6)?,
+                partial_payment_resets_clock: partial != 0,
+                notes: row.get(8)?,
+                is_overridden: true,
+            }))
+        })?;
+
+        let mut map = std::collections::HashMap::new();
+        for r in rows {
+            let (k, v) = r?;
+            map.insert(k, v);
+        }
+        Ok(map)
+    }
+
+    pub fn get_licensing_override(conn: &Connection, state_code: &str) -> AppResult<Option<DynamicLicensingRule>> {
+        let code = state_code.trim().to_uppercase();
+        let mut stmt = conn.prepare(
+            "SELECT state_code, state_name, requires_license, regulatory_agency,
+                    requires_surety_bond, bond_amount, statutory_code,
+                    unlicensed_collection_is_per_se_violation, notes
+             FROM licensing_overrides WHERE state_code = ?1"
+        )?;
+
+        let mut rows = stmt.query(params![code])?;
+        if let Some(row) = rows.next()? {
+            let requires_license: i32 = row.get(2)?;
+            let requires_bond: i32 = row.get(4)?;
+            let per_se: i32 = row.get(7)?;
+            Ok(Some(DynamicLicensingRule {
+                state_code: row.get(0)?,
+                state_name: row.get(1)?,
+                requires_license: requires_license != 0,
+                regulatory_agency: row.get(3)?,
+                requires_surety_bond: requires_bond != 0,
+                bond_amount: row.get(5)?,
+                statutory_code: row.get(6)?,
+                unlicensed_collection_is_per_se_violation: per_se != 0,
+                notes: row.get(8)?,
+                is_overridden: true,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn get_all_licensing_overrides(conn: &Connection) -> AppResult<std::collections::HashMap<String, DynamicLicensingRule>> {
+        let mut stmt = conn.prepare(
+            "SELECT state_code, state_name, requires_license, regulatory_agency,
+                    requires_surety_bond, bond_amount, statutory_code,
+                    unlicensed_collection_is_per_se_violation, notes
+             FROM licensing_overrides"
+        )?;
+
+        let rows = stmt.query_map([], |row| {
+            let requires_license: i32 = row.get(2)?;
+            let requires_bond: i32 = row.get(4)?;
+            let per_se: i32 = row.get(7)?;
+            let code: String = row.get(0)?;
+            Ok((code.clone(), DynamicLicensingRule {
+                state_code: code,
+                state_name: row.get(1)?,
+                requires_license: requires_license != 0,
+                regulatory_agency: row.get(3)?,
+                requires_surety_bond: requires_bond != 0,
+                bond_amount: row.get(5)?,
+                statutory_code: row.get(6)?,
+                unlicensed_collection_is_per_se_violation: per_se != 0,
+                notes: row.get(8)?,
+                is_overridden: true,
+            }))
+        })?;
+
+        let mut map = std::collections::HashMap::new();
+        for r in rows {
+            let (k, v) = r?;
+            map.insert(k, v);
+        }
+        Ok(map)
     }
 }

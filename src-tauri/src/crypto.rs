@@ -23,12 +23,12 @@ pub const SALT_SIZE_BYTES: usize = 16; // 128 bits
 pub const SMBAK_MAGIC_HEADER: &[u8; 8] = b"SMBAK01\0";
 
 /// Helper for encoding bytes to hex string
-fn hex_encode(bytes: &[u8]) -> String {
+pub(crate) fn hex_encode(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{:02x}", b)).collect()
 }
 
 /// Helper for decoding hex string to bytes
-fn hex_decode(s: &str) -> AppResult<Vec<u8>> {
+pub(crate) fn hex_decode(s: &str) -> AppResult<Vec<u8>> {
     if !s.len().is_multiple_of(2) {
         return Err(AppError::Validation(
             "Hex string length must be even".to_string(),
