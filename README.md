@@ -11,6 +11,8 @@
 [![Security: Zero-Telemetry](https://img.shields.io/badge/Telemetry-Zero--Network-10B981.svg)](#privacy--security-by-design)
 [![Platform: macOS | Windows | Linux](https://img.shields.io/badge/Platform-macOS%20|%20Windows%20|%20Linux-lightgrey.svg)](#getting-started)
 
+[![Checked by VibeDoctor](https://vibedoctor.io/api/badges/a33595b8-5f22-42e9-9b0e-4a0f05b49ad8)](https://vibedoctor.io)
+
 > **SettleMint** is a free, open-source, local-first desktop app that empowers consumers to defend against debt collectors. Whether dealing with credit card debt, hospital bills, auto loan deficiencies, or personal loans, SettleMint helps you organize notices, track statutory deadlines, catch illegal collection practices, and generate formal dispute letters—all without your data ever leaving your computer.
 
 ---
