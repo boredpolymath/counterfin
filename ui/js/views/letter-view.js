@@ -4,6 +4,16 @@
  * Supports: Credit Cards (CFPB Reg F / TILA), Medical (No Surprises Act), Auto (UCC Art 9), Installment Loans
  */
 
+export function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 export function renderLetterStudio(activeCase) {
   const isCreditCard = activeCase.debtType === 'credit_card' || activeCase.iconType === 'credit_card';
   const isAuto = activeCase.debtType === 'auto_deficiency' || activeCase.iconType === 'auto';
@@ -183,7 +193,7 @@ export function renderLetterStudio(activeCase) {
             </div>
           </div>
 
-          <div class="studio-action-row">
+          <div class="studio-action-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <button class="btn btn-pill-outline" id="copyTextBtn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -191,15 +201,31 @@ export function renderLetterStudio(activeCase) {
               </svg>
               <span class="btn-label">Copy Text</span>
             </button>
+            <button class="btn btn-pill-outline" id="exportTxtBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <span class="btn-label">Save .TXT</span>
+            </button>
+            <button class="btn btn-pill-outline" id="exportMdBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="7 15 7 9 10 12 13 9 13 15"></polyline>
+                <polyline points="17 9 17 15"></polyline>
+              </svg>
+              <span class="btn-label">Save .MD</span>
+            </button>
             <button class="btn btn-pill-primary" id="exportPdfBtn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
                 <line x1="12" y1="15" x2="12" y2="3"></line>
               </svg>
-              <span class="btn-label">Export Certified PDF</span>
+              <span class="btn-label">Export PDF</span>
             </button>
           </div>
+
         </div>
       </div>
 
@@ -230,11 +256,11 @@ export function renderLetterStudio(activeCase) {
             </p>
 
             <div class="doc-meta-table">
-              <div class="meta-line"><strong>DATE:</strong> <span>${todayStr}</span></div>
-              <div class="meta-line"><strong>TO:</strong> <span id="docRecipient">${activeCase.collectionAgency}</span></div>
+              <div class="meta-line"><strong>DATE:</strong> <span>${escapeHtml(todayStr)}</span></div>
+              <div class="meta-line"><strong>TO:</strong> <span id="docRecipient">${escapeHtml(activeCase.collectionAgency)}</span></div>
               <div class="meta-line"><strong>RE:</strong> <span>NOTICE OF FORMAL DISPUTE & MANDATORY DEBT VALIDATION (15 U.S.C. § 1692g)</span></div>
-              <div class="meta-line"><strong>ALLEGED ACCOUNT NO:</strong> <span class="label-code">${activeCase.collectionAccountNumber}</span></div>
-              <div class="meta-line"><strong>ORIGINAL CREDITOR:</strong> <span>${activeCase.originalProvider}</span></div>
+              <div class="meta-line"><strong>ALLEGED ACCOUNT NO:</strong> <span class="label-code">${escapeHtml(activeCase.collectionAccountNumber)}</span></div>
+              <div class="meta-line"><strong>ORIGINAL CREDITOR:</strong> <span>${escapeHtml(activeCase.originalProvider)}</span></div>
               <div class="meta-line"><strong>DISPUTED AMOUNT:</strong> <span class="label-code" id="docDisputedAmount" style="font-weight: 700; color: #0f172a;">$${activeCase.disputedBalance.toFixed(2)}</span></div>
             </div>
 
@@ -282,7 +308,7 @@ export function renderLetterStudio(activeCase) {
 
             <p style="margin-top: 24px;">
               Respectfully submitted,<br><br>
-              <strong>${activeCase.debtorName}</strong><br>
+              <strong>${escapeHtml(activeCase.debtorName)}</strong><br>
               <em>(Signed electronically with evidentiary timestamp & certified mail tracking log)</em>
             </p>
 

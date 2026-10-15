@@ -26,3 +26,7 @@ uuid = { version = "1.8", features = ["v4", "serde"] }
 rusqlite = { version = "0.31", features = ["bundled", "chrono", "uuid"] }
 sha2 = "0.10"
 thiserror = "1.0"
+argon2 = "0.6.0"
+chacha20poly1305 = "0.11.0"
+zeroize = { version = "1.9.1", features = ["derive"] }
+rand = "0.10.3"

@@ -23,7 +23,7 @@ pub enum FdcpaViolationType {
     MissingRegFValidationItemization,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Violation {
     pub id: Uuid,
     pub interaction_id: Uuid,

@@ -1,6 +1,5 @@
 /// Database schema definition matching Section 6.1 Relational Schema Entities
 /// Configured for Write-Ahead Logging (WAL) and foreign key integrity.
-
 pub const CREATE_TABLES_SQL: &str = r#"
 PRAGMA journal_mode = WAL;
 PRAGMA foreign_keys = ON;
@@ -11,6 +10,7 @@ CREATE TABLE IF NOT EXISTS cases (
     id TEXT PRIMARY KEY,
     docket_number TEXT NOT NULL UNIQUE,
     debtor_name TEXT NOT NULL,
+    debt_type TEXT NOT NULL DEFAULT 'Medical',
     provider_name TEXT NOT NULL,
     collection_agency TEXT NOT NULL,
     original_account_number TEXT NOT NULL,
@@ -116,6 +116,7 @@ CREATE TABLE IF NOT EXISTS credit_tradelines (
 
 -- Indices for rapid query performance (< 50ms)
 CREATE INDEX IF NOT EXISTS idx_cases_status ON cases(status);
+CREATE INDEX IF NOT EXISTS idx_cases_debt_type ON cases(debt_type);
 CREATE INDEX IF NOT EXISTS idx_interactions_case ON interactions(case_id, timestamp);
 CREATE INDEX IF NOT EXISTS idx_violations_case ON violations(case_id);
 CREATE INDEX IF NOT EXISTS idx_deadlines_target ON deadlines(target_date, completed);

@@ -4,8 +4,9 @@ use uuid::Uuid;
 
 /// Rigid state machine representing the lifecycle of a debt dispute case
 /// Section 4.1: Initial Notice -> Validation Pending -> Collector Responded -> Dispute Escalated -> Debt Settled -> Debt Dismissed -> In Litigation
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default)]
 pub enum CaseStatus {
+    #[default]
     InitialNotice,
     ValidationPending,
     CollectorResponded,
@@ -15,16 +16,73 @@ pub enum CaseStatus {
     InLitigation,
 }
 
-impl Default for CaseStatus {
-    fn default() -> Self {
-        CaseStatus::InitialNotice
+impl CaseStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            CaseStatus::InitialNotice => "InitialNotice",
+            CaseStatus::ValidationPending => "ValidationPending",
+            CaseStatus::CollectorResponded => "CollectorResponded",
+            CaseStatus::DisputeEscalated => "DisputeEscalated",
+            CaseStatus::DebtSettled => "DebtSettled",
+            CaseStatus::DebtDismissed => "DebtDismissed",
+            CaseStatus::InLitigation => "InLitigation",
+        }
+    }
+
+    /// Enforces strict, non-cyclical statutory state transitions (Section 5.3)
+    pub fn can_transition_to(&self, next: &CaseStatus) -> bool {
+        if self == next {
+            return true;
+        }
+
+        match self {
+            CaseStatus::InitialNotice => matches!(
+                next,
+                CaseStatus::ValidationPending
+                    | CaseStatus::InLitigation
+                    | CaseStatus::DebtSettled
+                    | CaseStatus::DebtDismissed
+            ),
+            CaseStatus::ValidationPending => matches!(
+                next,
+                CaseStatus::CollectorResponded
+                    | CaseStatus::DisputeEscalated
+                    | CaseStatus::InLitigation
+                    | CaseStatus::DebtSettled
+                    | CaseStatus::DebtDismissed
+            ),
+            CaseStatus::CollectorResponded => matches!(
+                next,
+                CaseStatus::DisputeEscalated
+                    | CaseStatus::InLitigation
+                    | CaseStatus::DebtSettled
+                    | CaseStatus::DebtDismissed
+            ),
+            CaseStatus::DisputeEscalated => matches!(
+                next,
+                CaseStatus::CollectorResponded
+                    | CaseStatus::InLitigation
+                    | CaseStatus::DebtSettled
+                    | CaseStatus::DebtDismissed
+            ),
+            CaseStatus::InLitigation => matches!(
+                next,
+                CaseStatus::DebtSettled | CaseStatus::DebtDismissed
+            ),
+            CaseStatus::DebtSettled => matches!(
+                next,
+                CaseStatus::DebtDismissed
+            ),
+            CaseStatus::DebtDismissed => false, // Terminal closed state; cannot reopen
+        }
     }
 }
 
 /// Debt classification under the Fair Debt Collection Practices Act (15 U.S.C. § 1692a(5))
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default)]
 pub enum DebtType {
     CreditCard,
+    #[default]
     Medical,
     PersonalLoan,
     AutoDeficiency,
@@ -32,12 +90,6 @@ pub enum DebtType {
     UtilityTelecom,
     ResidentialRent,
     OtherConsumerDebt,
-}
-
-impl Default for DebtType {
-    fn default() -> Self {
-        DebtType::Medical
-    }
 }
 
 /// Root case entity binding debtor, provider, agency, balances, and timeline state
