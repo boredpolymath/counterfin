@@ -144,7 +144,7 @@ impl CaseDao {
                     doc_type_trimmed,
                     d.relative_file_path,
                     d.sha256_hash,
-                    d.file_size_bytes,
+                    d.file_size_bytes as i64,
                     d.created_at.to_rfc3339(),
                 ],
             )?;
