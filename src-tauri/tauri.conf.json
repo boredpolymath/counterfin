@@ -28,12 +28,28 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "category": "Finance",
+    "shortDescription": "SettleMint: Consumer Credit Shield & Debt Collector Dispute Console",
+    "longDescription": "Free, open-source, local-first desktop application that empowers consumers to defend against debt collectors, track statutory deadlines, catch illegal collection practices, and generate formal dispute letters.",
+    "copyright": "Copyright © 2026 Bored Polymath Studios",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    },
+    "linux": {
+      "deb": {
+        "depends": [
+          "libwebkit2gtk-4.1-0 | libwebkit2gtk-4.0-37",
+          "libgtk-3-0",
+          "libayatana-appindicator3-1"
+        ]
+      }
+    }
   }
 }

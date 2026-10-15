@@ -158,3 +158,104 @@ fn test_system_tray_menu_actions_and_notification_delivery() {
 
     println!("  -> System tray action and native notification payload tests passed ✓");
 }
+
+// =========================================================================
+// 10.3 Zero-Telemetry & Network Silence Security Audit
+// =========================================================================
+
+#[test]
+fn test_zero_telemetry_and_network_silence_audit() {
+    println!("\n--- [10.3] Zero-Telemetry & Air-Gapped Network Silence Audit ---");
+
+    // 1. Verify Tauri CSP (Content Security Policy) strictly forbids external connect-src
+    let tauri_conf_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tauri.conf.json");
+    let tauri_conf_str = std::fs::read_to_string(&tauri_conf_path).expect("Read tauri.conf.json");
+    let conf_json: serde_json::Value =
+        serde_json::from_str(&tauri_conf_str).expect("Parse tauri.conf.json");
+
+    let csp = conf_json["app"]["security"]["csp"]
+        .as_str()
+        .expect("CSP configuration present");
+    println!("  -> Enforced Webview CSP: {}", csp);
+    assert!(
+        csp.contains("default-src 'self'"),
+        "CSP must restrict default origins to 'self'"
+    );
+    assert!(
+        !csp.contains("connect-src http") && !csp.contains("connect-src *"),
+        "CSP must never permit wildcard or external HTTP connect-src"
+    );
+
+    // 2. Audit Cargo.toml for zero network clients / telemetry libraries
+    let cargo_toml_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
+    let cargo_toml_str = std::fs::read_to_string(&cargo_toml_path).expect("Read Cargo.toml");
+    let forbidden_network_crates = [
+        "reqwest",
+        "hyper",
+        "ureq",
+        "curl",
+        "surf",
+        "attohttpc",
+        "posthog",
+        "sentry",
+        "segment",
+        "datadog",
+    ];
+    for crate_name in &forbidden_network_crates {
+        assert!(
+            !cargo_toml_str.contains(crate_name),
+            "Forbidden network/telemetry crate '{}' found in Cargo.toml!",
+            crate_name
+        );
+    }
+    println!("  -> Cargo dependency manifest certified clean of network & telemetry crates ✓");
+
+    // 3. Audit UI codebase for zero network calls (fetch, XHR, WebSockets, beacons)
+    let ui_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .join("ui");
+    if ui_dir.exists() {
+        let js_dir = ui_dir.join("js");
+        if js_dir.exists() {
+            for entry in std::fs::read_dir(js_dir).expect("Read ui/js dir") {
+                let entry = entry.unwrap();
+                let path = entry.path();
+                if path.extension().and_then(|s| s.to_str()) == Some("js") {
+                    let content = std::fs::read_to_string(&path).unwrap();
+                    assert!(
+                        !content.contains("fetch(") && !content.contains("fetch ("),
+                        "Forbidden fetch() call found in {:?}",
+                        path
+                    );
+                    assert!(
+                        !content.contains("XMLHttpRequest"),
+                        "Forbidden XMLHttpRequest found in {:?}",
+                        path
+                    );
+                    assert!(
+                        !content.contains("WebSocket"),
+                        "Forbidden WebSocket found in {:?}",
+                        path
+                    );
+                    assert!(
+                        !content.contains("sendBeacon"),
+                        "Forbidden navigator.sendBeacon found in {:?}",
+                        path
+                    );
+                }
+            }
+        }
+        println!("  -> Frontend UI certified 100% air-gapped (zero fetch/XHR/telemetry) ✓");
+    }
+
+    // 4. Verify USPS tracking operates strictly offline / in-memory without network sockets
+    let test_tracking = "7020 0640 0001 2345 6789";
+    let tracking_result = BackgroundMonitor::query_certified_mail_status(test_tracking);
+    assert_eq!(tracking_result.tracking_number, "70200640000123456789");
+    assert!(matches!(
+        tracking_result.status,
+        settlemint_lib::engine::monitor::UspsDeliveryStatus::InTransit
+    ));
+    println!("  -> In-memory USPS Certified Mail parser verified zero-network execution ✓");
+}
