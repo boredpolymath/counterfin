@@ -23,3 +23,13 @@ settlemint-trailer.mp4
 assets/settlemint-trailer.mp4
 assets/youtube-thumbnail.jpg
 /trailer/
+
+# Certificates & Code Signing Secrets
+*.p12
+*.pfx
+*.key
+*.pem
+*.secrets.env
+.env.local
+.env
+
