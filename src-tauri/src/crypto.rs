@@ -165,18 +165,25 @@ impl CryptoEngine {
 
         let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
 
-        let mut key_bytes = [0u8; KEY_SIZE_BYTES];
+        let mut key_vec = Self::generate_random_bytes(KEY_SIZE_BYTES);
         argon2
-            .hash_password_into(passphrase.as_bytes(), salt, &mut key_bytes)
+            .hash_password_into(passphrase.as_bytes(), salt, &mut key_vec)
             .map_err(|e| AppError::Calculation(format!("Key derivation failed: {}", e)))?;
+
+        let key_bytes: [u8; KEY_SIZE_BYTES] = key_vec
+            .try_into()
+            .map_err(|_| AppError::Calculation("Invalid derived key length".to_string()))?;
 
         Ok(MasterKey(key_bytes))
     }
 
     /// Generate cryptographically secure random bytes for salts and nonces
     pub fn generate_random_bytes(len: usize) -> Vec<u8> {
-        let mut buf = vec![0u8; len];
-        rand::rng().fill(&mut buf[..]);
+        let mut rng = rand::rng();
+        let mut buf = Vec::with_capacity(len);
+        for _ in 0..len {
+            buf.push(rng.random::<u8>());
+        }
         buf
     }
 
