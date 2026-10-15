@@ -5,6 +5,7 @@
 <h1 align="center">SettleMint: Consumer Credit Shield & Dispute Console</h1>
 
 <p align="center">
+  <a href="https://boredpolymath.github.io/settlemint/"><img src="https://img.shields.io/badge/Website-boredpolymath.github.io%2Fsettlemint-10B981?style=flat&logo=github&logoColor=white" alt="Live Website" /></a>
   <a href="https://github.com/boredpolymath/settlemint/actions/workflows/ci.yml"><img src="https://github.com/boredpolymath/settlemint/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-1.90%2B-blue.svg?logo=rust" alt="Rust: 1.90+" /></a>
@@ -18,6 +19,8 @@
 </p>
 
 > **SettleMint** is a free, open-source, local-first desktop app that empowers consumers to defend against debt collectors. Whether dealing with credit card debt, hospital bills, auto loan deficiencies, or personal loans, SettleMint helps you organize notices, track statutory deadlines, catch illegal collection practices, and generate formal dispute letters—all without your data ever leaving your computer.
+>
+> 🌐 **Visit the official website:** [https://boredpolymath.github.io/settlemint/](https://boredpolymath.github.io/settlemint/)
 
 ---
 
