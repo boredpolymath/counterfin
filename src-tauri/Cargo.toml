@@ -1,6 +1,6 @@
 [package]
 name = "settlemint"
-version = "0.1.0"
+version = "0.1.2"
 description = "SettleMint: Consumer Credit Shield & Debt Collector Dispute Console"
 authors = ["Bored Polymath Studios"]
 edition = "2024"

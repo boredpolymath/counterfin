@@ -69,6 +69,6 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: 'SettleMint ${{ github.ref_name }}'
           releaseBody: 'See changelog and release notes for statutory engine enhancements and security updates.'
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
