@@ -124,7 +124,10 @@ impl PatchEngine {
     /// Canonical serialization of the statutory payload for signature computation and verification
     pub fn serialize_canonical_payload(payload: &StatutoryPatchPayload) -> AppResult<Vec<u8>> {
         serde_json::to_vec(payload).map_err(|e| {
-            AppError::Serialization(format!("Failed to serialize statutory patch payload: {}", e))
+            AppError::Serialization(format!(
+                "Failed to serialize statutory patch payload: {}",
+                e
+            ))
         })
     }
 
@@ -203,7 +206,8 @@ mod tests {
                 open_account_sol_years: 4,
                 statutory_code: "Cal. Civ. Proc. Code § 337 (as amended 2026)".to_string(),
                 partial_payment_resets_clock: false,
-                notes: "Updated 3-year medical limitation with anti-revival enforcement.".to_string(),
+                notes: "Updated 3-year medical limitation with anti-revival enforcement."
+                    .to_string(),
             }],
             licensing_rules: vec![],
         };

@@ -302,7 +302,9 @@ impl DatabaseManager {
         if let Some(r) = StatutoryPatchDao::get_licensing_override(&conn, state_code)? {
             Ok(r)
         } else {
-            Ok(DynamicLicensingRule::from(LicensingEngine::get_rule(state_code)))
+            Ok(DynamicLicensingRule::from(LicensingEngine::get_rule(
+                state_code,
+            )))
         }
     }
 
@@ -1244,7 +1246,9 @@ mod tests {
         assert_eq!(base_ca.medical_sol_years, 4);
         assert!(!base_ca.is_overridden);
 
-        let base_tx_lic = db.get_active_licensing_rule("TX").expect("Get baseline TX licensing");
+        let base_tx_lic = db
+            .get_active_licensing_rule("TX")
+            .expect("Get baseline TX licensing");
         assert_eq!(base_tx_lic.bond_amount, "$10,000");
         assert!(!base_tx_lic.is_overridden);
 
@@ -1252,7 +1256,9 @@ mod tests {
         let patch_payload = StatutoryPatchPayload {
             patch_id: "patch-2026-q4-ca-tx-update".to_string(),
             version: "2026.4.1".to_string(),
-            description: "California Medical SOL reduction and Texas bond threshold inflation adjustment".to_string(),
+            description:
+                "California Medical SOL reduction and Texas bond threshold inflation adjustment"
+                    .to_string(),
             published_at: "2026-10-15T12:00:00Z".to_string(),
             sol_rules: vec![PatchSolRule {
                 state_code: "CA".to_string(),
@@ -1269,7 +1275,8 @@ mod tests {
                 state_code: "TX".to_string(),
                 state_name: "Texas".to_string(),
                 requires_license: false,
-                regulatory_agency: "Texas Secretary of State (Statutory Documents Section)".to_string(),
+                regulatory_agency: "Texas Secretary of State (Statutory Documents Section)"
+                    .to_string(),
                 requires_surety_bond: true,
                 bond_amount: "$15,000".to_string(),
                 statutory_code: "Tex. Fin. Code § 392.101".to_string(),
@@ -1283,7 +1290,9 @@ mod tests {
         std::fs::write("../fixtures/sample_statutory_patch_2026.4.json", &json_str).ok();
 
         // 3. Apply patch
-        let summary = db.apply_statutory_patch(&signed_patch).expect("Apply patch");
+        let summary = db
+            .apply_statutory_patch(&signed_patch)
+            .expect("Apply patch");
         assert_eq!(summary.patch_id, "patch-2026-q4-ca-tx-update");
         assert_eq!(summary.sol_rules_count, 1);
         assert_eq!(summary.licensing_rules_count, 1);
@@ -1293,27 +1302,36 @@ mod tests {
         assert_eq!(updated_ca.medical_sol_years, 3);
         assert!(updated_ca.is_overridden);
 
-        let updated_tx_lic = db.get_active_licensing_rule("TX").expect("Get active TX licensing");
+        let updated_tx_lic = db
+            .get_active_licensing_rule("TX")
+            .expect("Get active TX licensing");
         assert_eq!(updated_tx_lic.bond_amount, "$15,000");
         assert!(updated_tx_lic.is_overridden);
 
-        let active_patches = db.get_active_statutory_patches().expect("Get active patches");
+        let active_patches = db
+            .get_active_statutory_patches()
+            .expect("Get active patches");
         assert_eq!(active_patches.len(), 1);
         assert_eq!(active_patches[0].patch_id, "patch-2026-q4-ca-tx-update");
 
         // 5. Rollback patch
-        db.rollback_statutory_patch("patch-2026-q4-ca-tx-update").expect("Rollback patch");
+        db.rollback_statutory_patch("patch-2026-q4-ca-tx-update")
+            .expect("Rollback patch");
 
         // 6. Verify restored to baseline
         let restored_ca = db.get_active_sol_rule("CA").expect("Get restored CA SOL");
         assert_eq!(restored_ca.medical_sol_years, 4);
         assert!(!restored_ca.is_overridden);
 
-        let restored_tx_lic = db.get_active_licensing_rule("TX").expect("Get restored TX licensing");
+        let restored_tx_lic = db
+            .get_active_licensing_rule("TX")
+            .expect("Get restored TX licensing");
         assert_eq!(restored_tx_lic.bond_amount, "$10,000");
         assert!(!restored_tx_lic.is_overridden);
 
-        let remaining_patches = db.get_active_statutory_patches().expect("Get active patches");
+        let remaining_patches = db
+            .get_active_statutory_patches()
+            .expect("Get active patches");
         assert_eq!(remaining_patches.len(), 0);
     }
 }

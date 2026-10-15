@@ -160,9 +160,7 @@ pub async fn rollback_statutory_patch(
 }
 
 #[command]
-pub async fn rollback_all_statutory_patches(
-    db: State<'_, DatabaseManager>,
-) -> AppResult<()> {
+pub async fn rollback_all_statutory_patches(db: State<'_, DatabaseManager>) -> AppResult<()> {
     db.rollback_all_statutory_patches()
 }
 

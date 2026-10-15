@@ -842,7 +842,10 @@ impl DeadlineDao {
 pub struct StatutoryPatchDao;
 
 impl StatutoryPatchDao {
-    pub fn apply_patch(conn: &mut Connection, patch: &SignedStatutoryPatch) -> AppResult<PatchSummary> {
+    pub fn apply_patch(
+        conn: &mut Connection,
+        patch: &SignedStatutoryPatch,
+    ) -> AppResult<PatchSummary> {
         let applied_at = Utc::now().to_rfc3339();
         let payload_json = serde_json::to_string(&patch.payload)
             .map_err(|e| AppError::Serialization(e.to_string()))?;
@@ -880,7 +883,11 @@ impl StatutoryPatchDao {
                     sol.written_contract_sol_years,
                     sol.open_account_sol_years,
                     sol.statutory_code,
-                    if sol.partial_payment_resets_clock { 1 } else { 0 },
+                    if sol.partial_payment_resets_clock {
+                        1
+                    } else {
+                        0
+                    },
                     sol.notes,
                     patch.payload.patch_id,
                 ],
@@ -902,7 +909,11 @@ impl StatutoryPatchDao {
                     if lic.requires_surety_bond { 1 } else { 0 },
                     lic.bond_amount,
                     lic.statutory_code,
-                    if lic.unlicensed_collection_is_per_se_violation { 1 } else { 0 },
+                    if lic.unlicensed_collection_is_per_se_violation {
+                        1
+                    } else {
+                        0
+                    },
                     lic.notes,
                     patch.payload.patch_id,
                 ],
@@ -938,7 +949,9 @@ impl StatutoryPatchDao {
             let signer_public_key: String = row.get(5)?;
             let payload_json: String = row.get(6)?;
 
-            let (sol_count, lic_count) = if let Ok(parsed) = serde_json::from_str::<crate::engine::StatutoryPatchPayload>(&payload_json) {
+            let (sol_count, lic_count) = if let Ok(parsed) =
+                serde_json::from_str::<crate::engine::StatutoryPatchPayload>(&payload_json)
+            {
                 (parsed.sol_rules.len(), parsed.licensing_rules.len())
             } else {
                 (0, 0)
@@ -964,9 +977,18 @@ impl StatutoryPatchDao {
     }
 
     pub fn rollback_patch(conn: &Connection, patch_id: &str) -> AppResult<()> {
-        conn.execute("DELETE FROM statutory_patches WHERE id = ?1", params![patch_id])?;
-        conn.execute("DELETE FROM sol_overrides WHERE patch_id = ?1", params![patch_id])?;
-        conn.execute("DELETE FROM licensing_overrides WHERE patch_id = ?1", params![patch_id])?;
+        conn.execute(
+            "DELETE FROM statutory_patches WHERE id = ?1",
+            params![patch_id],
+        )?;
+        conn.execute(
+            "DELETE FROM sol_overrides WHERE patch_id = ?1",
+            params![patch_id],
+        )?;
+        conn.execute(
+            "DELETE FROM licensing_overrides WHERE patch_id = ?1",
+            params![patch_id],
+        )?;
         Ok(())
     }
 
@@ -977,13 +999,16 @@ impl StatutoryPatchDao {
         Ok(())
     }
 
-    pub fn get_sol_override(conn: &Connection, state_code: &str) -> AppResult<Option<DynamicSolRule>> {
+    pub fn get_sol_override(
+        conn: &Connection,
+        state_code: &str,
+    ) -> AppResult<Option<DynamicSolRule>> {
         let code = state_code.trim().to_uppercase();
         let mut stmt = conn.prepare(
             "SELECT state_code, state_name, medical_sol_years, credit_card_sol_years,
                     written_contract_sol_years, open_account_sol_years, statutory_code,
                     partial_payment_resets_clock, notes
-             FROM sol_overrides WHERE state_code = ?1"
+             FROM sol_overrides WHERE state_code = ?1",
         )?;
 
         let mut rows = stmt.query(params![code])?;
@@ -1006,29 +1031,34 @@ impl StatutoryPatchDao {
         }
     }
 
-    pub fn get_all_sol_overrides(conn: &Connection) -> AppResult<std::collections::HashMap<String, DynamicSolRule>> {
+    pub fn get_all_sol_overrides(
+        conn: &Connection,
+    ) -> AppResult<std::collections::HashMap<String, DynamicSolRule>> {
         let mut stmt = conn.prepare(
             "SELECT state_code, state_name, medical_sol_years, credit_card_sol_years,
                     written_contract_sol_years, open_account_sol_years, statutory_code,
                     partial_payment_resets_clock, notes
-             FROM sol_overrides"
+             FROM sol_overrides",
         )?;
 
         let rows = stmt.query_map([], |row| {
             let partial: i32 = row.get(7)?;
             let code: String = row.get(0)?;
-            Ok((code.clone(), DynamicSolRule {
-                state_code: code,
-                state_name: row.get(1)?,
-                medical_sol_years: row.get(2)?,
-                credit_card_sol_years: row.get(3)?,
-                written_contract_sol_years: row.get(4)?,
-                open_account_sol_years: row.get(5)?,
-                statutory_code: row.get(6)?,
-                partial_payment_resets_clock: partial != 0,
-                notes: row.get(8)?,
-                is_overridden: true,
-            }))
+            Ok((
+                code.clone(),
+                DynamicSolRule {
+                    state_code: code,
+                    state_name: row.get(1)?,
+                    medical_sol_years: row.get(2)?,
+                    credit_card_sol_years: row.get(3)?,
+                    written_contract_sol_years: row.get(4)?,
+                    open_account_sol_years: row.get(5)?,
+                    statutory_code: row.get(6)?,
+                    partial_payment_resets_clock: partial != 0,
+                    notes: row.get(8)?,
+                    is_overridden: true,
+                },
+            ))
         })?;
 
         let mut map = std::collections::HashMap::new();
@@ -1039,13 +1069,16 @@ impl StatutoryPatchDao {
         Ok(map)
     }
 
-    pub fn get_licensing_override(conn: &Connection, state_code: &str) -> AppResult<Option<DynamicLicensingRule>> {
+    pub fn get_licensing_override(
+        conn: &Connection,
+        state_code: &str,
+    ) -> AppResult<Option<DynamicLicensingRule>> {
         let code = state_code.trim().to_uppercase();
         let mut stmt = conn.prepare(
             "SELECT state_code, state_name, requires_license, regulatory_agency,
                     requires_surety_bond, bond_amount, statutory_code,
                     unlicensed_collection_is_per_se_violation, notes
-             FROM licensing_overrides WHERE state_code = ?1"
+             FROM licensing_overrides WHERE state_code = ?1",
         )?;
 
         let mut rows = stmt.query(params![code])?;
@@ -1070,12 +1103,14 @@ impl StatutoryPatchDao {
         }
     }
 
-    pub fn get_all_licensing_overrides(conn: &Connection) -> AppResult<std::collections::HashMap<String, DynamicLicensingRule>> {
+    pub fn get_all_licensing_overrides(
+        conn: &Connection,
+    ) -> AppResult<std::collections::HashMap<String, DynamicLicensingRule>> {
         let mut stmt = conn.prepare(
             "SELECT state_code, state_name, requires_license, regulatory_agency,
                     requires_surety_bond, bond_amount, statutory_code,
                     unlicensed_collection_is_per_se_violation, notes
-             FROM licensing_overrides"
+             FROM licensing_overrides",
         )?;
 
         let rows = stmt.query_map([], |row| {
@@ -1083,18 +1118,21 @@ impl StatutoryPatchDao {
             let requires_bond: i32 = row.get(4)?;
             let per_se: i32 = row.get(7)?;
             let code: String = row.get(0)?;
-            Ok((code.clone(), DynamicLicensingRule {
-                state_code: code,
-                state_name: row.get(1)?,
-                requires_license: requires_license != 0,
-                regulatory_agency: row.get(3)?,
-                requires_surety_bond: requires_bond != 0,
-                bond_amount: row.get(5)?,
-                statutory_code: row.get(6)?,
-                unlicensed_collection_is_per_se_violation: per_se != 0,
-                notes: row.get(8)?,
-                is_overridden: true,
-            }))
+            Ok((
+                code.clone(),
+                DynamicLicensingRule {
+                    state_code: code,
+                    state_name: row.get(1)?,
+                    requires_license: requires_license != 0,
+                    regulatory_agency: row.get(3)?,
+                    requires_surety_bond: requires_bond != 0,
+                    bond_amount: row.get(5)?,
+                    statutory_code: row.get(6)?,
+                    unlicensed_collection_is_per_se_violation: per_se != 0,
+                    notes: row.get(8)?,
+                    is_overridden: true,
+                },
+            ))
         })?;
 
         let mut map = std::collections::HashMap::new();
