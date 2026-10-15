@@ -51,6 +51,17 @@
 - **Argon2id + ChaCha20-Poly1305:** Authenticated encryption for all local SQLite storage and backup archives.
 - **NIST SHA-256 Vault:** Cryptographic hashing for evidence file integrity and tamper detection.
 
+### 📦 Verified Release Packages & Checksums
+
+| Artifact Name | Target Platform / Architecture | Format | Size | SHA-256 Checksum |
+|---|---|---|---|---|
+| `SettleMint_0.1.2_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed & Notarized DMG | 6.45 MiB | `ef7e261f6e8096d75d0a38306be0fa2f1ee9b382d778b78c297519444365d349` |
+| `SettleMint_0.1.2_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.68 MiB | `008e92ec436e2c62230dff57bbb701cbb7ce803bf5b6b96e5c160c0670a6c461` |
+| `SettleMint_0.1.2_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.68 MiB | `e7e8de0a771b1db126921a9d7119b4268d8b7ebf83f58563f8b61e5b395c945a` |
+| `SettleMint_0.1.2_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.75 MiB | `a587abe55da743d0461a95abbf1b1227847377f28c6afc2f754d70deecd1c38c` |
+| `SettleMint_0.1.2_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 3.75 MiB | `de8e815334921dc83f5420b390149c061eb1a3a6eb070410f756fe30a7222827` |
+| `SettleMint_aarch64.app.tar.gz` | macOS Apple Silicon | Signed App Bundle | 4.78 MiB | `bfd6e2dd46c7d68a32540307bbe070d6c0278ec18b1224f602e4bfc957024683` |
+
 ---
 
 ## SettleMint v0.1.0 — Initial Release Notes
