@@ -62,6 +62,8 @@ pub fn run() {
             commands::get_case_by_id,
             commands::create_case,
             commands::update_case_status,
+            commands::delete_case,
+            commands::clear_all_cases,
             commands::get_interactions,
             commands::get_violations,
             commands::detect_interaction_violations,

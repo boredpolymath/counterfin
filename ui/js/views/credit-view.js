@@ -4,7 +4,20 @@
  */
 
 export function renderCreditAudit(tradelines, activeCase) {
-  const caseTradelines = tradelines.filter(t => t.caseId === activeCase.id);
+  if (!activeCase) {
+    return `
+      <div class="empty-state-card" style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:60px 24px; text-align:center; max-width:600px; margin:40px auto;">
+        <div style="width:48px; height:48px; border-radius:12px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Credit Audit Account Selected</h3>
+        <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.5;">Select a dispute case from your dashboard to audit associated credit bureau trade lines.</p>
+        <button type="button" class="btn btn-pill-primary" id="creditEmptyNewCaseBtn">+ Open New Dispute</button>
+      </div>
+    `;
+  }
+
+  const caseTradelines = (tradelines || []).filter(t => t.caseId === activeCase.id);
 
   const cards = caseTradelines.length > 0 ? caseTradelines.map(item => `
     <div class="tradeline-card ${!item.compliant ? 'dispute-inaccurate' : ''}">

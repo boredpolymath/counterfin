@@ -4,19 +4,117 @@
  * Covers Credit Cards, Medical Debt, Auto Loan Deficiencies, and all FDCPA debts
  */
 
-import { USER_PROFILE } from '../data/mock-dossiers.js';
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
 
-export function renderDashboard(activeCase, allCases = [], expandedCaseIds = null) {
-  if (!activeCase) {
-    return `<div class="empty-state">No active dispute dossier selected.</div>`;
+export function renderDashboard(activeCase, allCases = [], expandedCaseIds = null, userProfile = null, isDemoMode = false) {
+  const cases = allCases.length > 0 ? allCases : (activeCase ? [activeCase] : []);
+
+  if (cases.length === 0) {
+    const userName = userProfile?.shortName || (userProfile?.name ? userProfile.name.split(' ')[0] : 'Advocate');
+    return `
+      <div class="first-run-dashboard" style="max-width: 900px; margin: 20px auto; padding: 24px;">
+        <!-- Welcome Hero -->
+        <div style="background: linear-gradient(135deg, #006948 0%, #004d34 100%); border-radius: var(--radius-xl); padding: 36px 32px; color: #ffffff; box-shadow: var(--shadow-lg); margin-bottom: 28px; position: relative; overflow: hidden;">
+          <div style="position: absolute; right: -20px; top: -20px; opacity: 0.08;">
+            <svg width="220" height="220" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div style="position: relative; z-index: 1;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); padding: 4px 12px; border-radius: 9999px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 14px;">
+              <span>LOCAL SANCTUARY ACTIVE</span>
+              <span>•</span>
+              <span>FDCPA CONSUMER SHIELD</span>
+            </div>
+            <h1 style="font-size: 26px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; color: #ffffff;">Welcome to SettleMint, ${escapeHtml(userName)}</h1>
+            <p style="font-size: 14.5px; opacity: 0.92; line-height: 1.55; max-width: 650px; margin-bottom: 22px;">
+              Your private, zero-knowledge console for asserting federal consumer protections against unlawful debt collectors. No accounts, no cloud tracking, and 100% encrypted locally on your machine.
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-pill-primary" id="firstRunNewDisputeBtn" style="background: #ffffff; color: #006948; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,0.15);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Log Your First Notice</span>
+              </button>
+              <button type="button" class="btn btn-pill-outline" id="firstRunProfileBtn" style="color: #ffffff; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Setup Legal Profile</span>
+              </button>
+              <button type="button" class="btn btn-pill-outline" id="firstRunDemoBtn" style="color: #85f8c4; border-color: rgba(133,248,196,0.5); background: rgba(0,0,0,0.1);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                <span>Explore Sample Dossiers</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Pillar Capability Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 28px;">
+          <div style="background: #ffffff; border: 1px solid var(--color-border-standard); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-sm);">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: var(--color-primary-mint-wash); color: var(--color-primary); display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">1. Start 30-Day Dispute Clock</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0;">
+              Under 15 U.S.C. § 1692g, you have 30 days from receiving an initial collection notice to demand verification and pause all collection activity.
+            </p>
+          </div>
+
+          <div style="background: #ffffff; border: 1px solid var(--color-border-standard); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-sm);">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">2. Demand Chain of Title</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0;">
+              Generate formal CFPB Reg F & UCC Article 9 validation letters requiring debt buyers to prove they lawfully own your account.
+            </p>
+          </div>
+
+          <div style="background: #ffffff; border: 1px solid var(--color-border-standard); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-sm);">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #fff1f2; color: #e11d48; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m14 13-7.5 7.5a2.12 2.12 0 1 1-3-3L11 10"></path><path d="m16 16 6-6"></path><path d="m8 8 6-6"></path></svg>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">3. Catch Collector Violations</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0;">
+              Log phone calls, threats, and false credit reporting. Each violation is eligible for up to $1,000 in statutory damages under 15 U.S.C. § 1692k.
+            </p>
+          </div>
+        </div>
+
+        <!-- Local Zero-Knowledge Security Callout -->
+        <div style="background: var(--color-surface-container-low); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; gap: 12px;">
+          <div style="color: #006948;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <div style="font-size: 12.5px; color: #475569; line-height: 1.45;">
+            <strong>Local Zero-Knowledge Architecture:</strong> SettleMint runs 100% on your device using encrypted SQLite. No servers, no tracking, and no external requests.
+          </div>
+        </div>
+      </div>
+    `;
   }
-
-  const cases = allCases.length > 0 ? allCases : [activeCase];
 
   // 1. Calculate Summary Metrics
   const totalBalance = cases.reduce((acc, c) => acc + (c.disputedBalance || 0), 0);
   const totalViolations = cases.reduce((acc, c) => acc + (c.violationsCount || 0), 0);
   const totalDamages = cases.reduce((acc, c) => acc + (c.potentialDamages || 0), 0);
+
+  let earliestDeadlineDays = 30;
+  let earliestAgency = "30-Day Window";
+  if (cases.length > 0) {
+    const sorted = [...cases].sort((a, b) => (a.statutoryDaysRemaining ?? 30) - (b.statutoryDaysRemaining ?? 30));
+    earliestDeadlineDays = sorted[0].statutoryDaysRemaining ?? 30;
+    earliestAgency = sorted[0].collectionAgency || sorted[0].originalProvider || "Active case";
+  }
+
+  const currentActiveCase = activeCase || cases[0];
 
   // 2. Render Structured Dispute Items
   const disputeCardsHtml = cases.map(c => {
@@ -258,7 +356,23 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseIds = nul
     `;
   }).join("");
 
+  const demoBannerHtml = isDemoMode ? `
+    <div class="demo-mode-banner" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-lg); padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="status-pill status-pill-amber" style="font-weight: 700; font-size: 11px;">SAMPLE DEMO MODE</span>
+        <span style="font-size: 13px; color: #92400e;">You are exploring sample educational dispute dossiers. Real data will be saved locally on your device.</span>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" class="btn btn-pill-primary btn-sm" id="demoBannerNewDisputeBtn">+ Add Real Dispute</button>
+        <button type="button" class="btn btn-pill-outline btn-sm" id="demoBannerClearBtn" style="color: #b45309; border-color: #fcd34d;">Clear Demo Data & Start Fresh</button>
+      </div>
+    </div>
+  ` : '';
+
+  const userName = userProfile?.shortName || (userProfile?.name ? userProfile.name.split(' ')[0] : 'Advocate');
+
   return `
+    ${demoBannerHtml}
     <!-- 1. Header Overview & Protection State Banner -->
     <section class="orderly-welcome-banner">
       <div class="welcome-header-left">
@@ -270,7 +384,7 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseIds = nul
         </div>
         <div class="welcome-text-group">
           <div class="welcome-title-row">
-            <h2 class="welcome-heading">Welcome back, ${USER_PROFILE.shortName}</h2>
+            <h2 class="welcome-heading">Welcome back, ${escapeHtml(userName)}</h2>
             <span class="status-pill status-pill-mint">
               <span class="status-dot status-dot-mint"></span>
               FDCPA Active Shield
@@ -318,8 +432,8 @@ export function renderDashboard(activeCase, allCases = [], expandedCaseIds = nul
             </svg>
           </div>
         </div>
-        <div class="metric-card-value tabular-nums">${USER_PROFILE.nextDeadlineDays} Days Left</div>
-        <div class="metric-card-sub">${USER_PROFILE.nextDeadlineAgency} validation clock</div>
+        <div class="metric-card-value tabular-nums">${earliestDeadlineDays} Days Left</div>
+        <div class="metric-card-sub">${escapeHtml(earliestAgency)} validation clock</div>
         <div class="metric-card-footer">
           <span class="status-pill status-pill-amber">
             Clock Active

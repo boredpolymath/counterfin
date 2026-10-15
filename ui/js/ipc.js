@@ -41,6 +41,14 @@ export const ipc = {
     return await this.invoke('update_case_status', { caseId, newStatus });
   },
 
+  async deleteCase(caseId) {
+    return await this.invoke('delete_case', { caseId });
+  },
+
+  async clearAllCases() {
+    return await this.invoke('clear_all_cases');
+  },
+
   // -------------------------------------------------------------------------
   // Interactions & FDCPA Violation Logging
   // -------------------------------------------------------------------------

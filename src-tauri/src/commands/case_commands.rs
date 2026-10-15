@@ -30,3 +30,13 @@ pub async fn update_case_status(
 ) -> AppResult<bool> {
     db.update_case_status(&case_id, &new_status)
 }
+
+#[command]
+pub async fn delete_case(case_id: String, db: State<'_, DatabaseManager>) -> AppResult<bool> {
+    db.delete_case(&case_id)
+}
+
+#[command]
+pub async fn clear_all_cases(db: State<'_, DatabaseManager>) -> AppResult<usize> {
+    db.clear_all_cases()
+}

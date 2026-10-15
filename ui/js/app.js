@@ -22,26 +22,165 @@ import { renderCreditAudit } from './views/credit-view.js';
 
 class SettleMintApp {
   constructor() {
-    this.user = { ...USER_PROFILE };
-    this.cases = [...INITIAL_CASES];
-    this.interactions = [...INITIAL_INTERACTIONS];
-    this.evidence = [...INITIAL_EVIDENCE];
-    this.tradelines = [...INITIAL_CREDIT_TRADELINES];
+    this.PROFILE_STORAGE_KEY = "settlemint_user_profile_v1";
+    this.DEMO_MODE_STORAGE_KEY = "settlemint_demo_mode";
+    this.DISCLAIMER_STORAGE_KEY = "settlemint_legal_disclaimer_agreed_v1";
+
+    this.isDemoMode = localStorage.getItem(this.DEMO_MODE_STORAGE_KEY) === "true";
+    this.loadUserProfile();
+
+    this.cases = this.isDemoMode ? [...INITIAL_CASES] : [];
+    this.interactions = this.isDemoMode ? [...INITIAL_INTERACTIONS] : [];
+    this.evidence = this.isDemoMode ? [...INITIAL_EVIDENCE] : [];
+    this.tradelines = this.isDemoMode ? [...INITIAL_CREDIT_TRADELINES] : [];
 
     this.activeCaseId = this.cases[0]?.id || null;
     this.expandedCaseIds = new Set(this.activeCaseId ? [this.activeCaseId] : []);
     this.currentView = "dashboard";
     this.disputeFilter = "all";
-
-    // Legal compliance & disclaimer gate state
-    this.DISCLAIMER_STORAGE_KEY = "settlemint_legal_disclaimer_agreed_v1";
     this.hasAgreedDisclaimer = false;
 
     this.initElements();
     this.bindEvents();
+    this.updateSidebarProfile();
     this.render();
     this.initLegalDisclaimer();
     this.initBackendData();
+  }
+
+  loadUserProfile() {
+    const raw = localStorage.getItem(this.PROFILE_STORAGE_KEY);
+    if (raw) {
+      try {
+        this.user = JSON.parse(raw);
+        return;
+      } catch (e) {
+        console.debug("Failed parsing user profile:", e);
+      }
+    }
+    this.user = {
+      name: "Consumer Advocate",
+      shortName: "Advocate",
+      initials: "CA",
+      address: "",
+      city: "",
+      state: "NY",
+      zip: "",
+      phone: "",
+      isConfigured: false
+    };
+  }
+
+  saveUserProfile(profileData) {
+    const parts = (profileData.name || "").trim().split(/\s+/);
+    let initials = "CA";
+    let shortName = "Advocate";
+    if (parts.length === 1 && parts[0]) {
+      initials = parts[0].slice(0, 2).toUpperCase();
+      shortName = parts[0];
+    } else if (parts.length >= 2) {
+      initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      shortName = parts[0];
+    }
+    this.user = {
+      name: profileData.name.trim() || "Consumer Advocate",
+      shortName: shortName,
+      initials: initials,
+      address: (profileData.address || "").trim(),
+      city: (profileData.city || "").trim(),
+      state: profileData.state || "NY",
+      zip: (profileData.zip || "").trim(),
+      phone: (profileData.phone || "").trim(),
+      isConfigured: true
+    };
+    localStorage.setItem(this.PROFILE_STORAGE_KEY, JSON.stringify(this.user));
+    this.updateSidebarProfile();
+    this.render();
+  }
+
+  updateSidebarProfile() {
+    const initialsEl = document.getElementById("sidebarUserInitials");
+    const nameEl = document.getElementById("sidebarUserName");
+    const stateEl = document.getElementById("sidebarUserJurisdiction");
+    if (initialsEl) initialsEl.textContent = this.user.initials || "CA";
+    if (nameEl) nameEl.textContent = this.user.name || "Consumer Profile";
+    if (stateEl) {
+      stateEl.textContent = this.user.isConfigured 
+        ? `${this.user.state || 'US'} Jurisdiction` 
+        : "Click to configure profile";
+    }
+  }
+
+  async loadDemoData() {
+    localStorage.setItem(this.DEMO_MODE_STORAGE_KEY, "true");
+    this.isDemoMode = true;
+    this.cases = [...INITIAL_CASES];
+    this.interactions = [...INITIAL_INTERACTIONS];
+    this.evidence = [...INITIAL_EVIDENCE];
+    this.tradelines = [...INITIAL_CREDIT_TRADELINES];
+    this.activeCaseId = this.cases[0]?.id || null;
+    this.expandedCaseIds = new Set(this.activeCaseId ? [this.activeCaseId] : []);
+
+    if (ipc.isTauri()) {
+      for (const c of INITIAL_CASES) {
+        const rustDebtType = c.debtType === 'credit_card' ? 'CreditCard' :
+                             c.debtType === 'medical' ? 'Medical' :
+                             c.debtType === 'auto_deficiency' ? 'AutoDeficiency' : 'PersonalLoan';
+        const payload = {
+          id: c.id.length === 36 ? c.id : crypto.randomUUID(),
+          docket_number: c.docketNumber,
+          debtor_name: c.debtorName,
+          debt_type: rustDebtType,
+          provider_name: c.originalProvider,
+          collection_agency: c.collectionAgency,
+          original_account_number: c.originalAccountNumber,
+          collection_account_number: c.collectionAccountNumber,
+          original_balance: c.originalBalance,
+          disputed_balance: c.disputedBalance,
+          status: "InitialNotice",
+          jurisdiction_state: c.statuteState || "NY",
+          date_of_service: c.dateOfService || null,
+          initial_notice_date: c.initialNoticeDate || new Date().toISOString().slice(0, 10),
+          certified_mail_tracking: c.certifiedMailTracking || null,
+          created_at: new Date().toISOString(),
+          closed_at: null
+        };
+        try {
+          await ipc.createCase(payload);
+        } catch (e) {
+          console.debug("Seed case note:", e);
+        }
+      }
+    }
+
+    if (this.sidebarBadgeCount) {
+      this.sidebarBadgeCount.textContent = this.cases.length;
+    }
+    this.render();
+    ipc.sendNotification("Demo Mode Activated", "Loaded 4 educational sample dispute dossiers.");
+  }
+
+  async clearAllData() {
+    localStorage.removeItem(this.DEMO_MODE_STORAGE_KEY);
+    this.isDemoMode = false;
+    if (ipc.isTauri()) {
+      try {
+        await ipc.clearAllCases();
+      } catch (e) {
+        console.debug("Clear all cases error:", e);
+      }
+    }
+    this.cases = [];
+    this.interactions = [];
+    this.evidence = [];
+    this.tradelines = [];
+    this.activeCaseId = null;
+    this.expandedCaseIds = new Set();
+    if (this.sidebarBadgeCount) {
+      this.sidebarBadgeCount.textContent = "0";
+    }
+    this.render();
+    ipc.sendNotification("Workspace Cleared", "Local cases reset. Ready for new consumer disputes.");
   }
 
 
@@ -123,11 +262,53 @@ class SettleMintApp {
     this.previewBates = document.getElementById("previewBates");
     this.previewSize = document.getElementById("previewSize");
     this.previewHash = document.getElementById("previewHash");
+
+    // User Profile Modal & Data Management
+    this.userProfileModal = document.getElementById("userProfileModal");
+    this.closeUserProfileModal = document.getElementById("closeUserProfileModal");
+    this.cancelUserProfileBtn = document.getElementById("cancelUserProfileBtn");
+    this.userProfileForm = document.getElementById("userProfileForm");
+    this.sidebarUserProfileBtn = document.getElementById("sidebarUserProfileBtn");
+    this.loadDemoDataModalBtn = document.getElementById("loadDemoDataModalBtn");
+    this.wipeAllDataModalBtn = document.getElementById("wipeAllDataModalBtn");
+    this.profileFullName = document.getElementById("profileFullName");
+    this.profileStreet = document.getElementById("profileStreet");
+    this.profileCity = document.getElementById("profileCity");
+    this.profileState = document.getElementById("profileState");
+    this.profileZip = document.getElementById("profileZip");
+    this.profilePhone = document.getElementById("profilePhone");
   }
 
-
   getActiveCase() {
-    return this.cases.find(c => c.id === this.activeCaseId) || this.cases[0];
+    return this.cases.find(c => c.id === this.activeCaseId) || this.cases[0] || null;
+  }
+
+  openUserProfileModal() {
+    if (!this.userProfileModal) return;
+    if (this.profileFullName) this.profileFullName.value = this.user.isConfigured ? this.user.name : "";
+    if (this.profileStreet) this.profileStreet.value = this.user.address || "";
+    if (this.profileCity) this.profileCity.value = this.user.city || "";
+    if (this.profileState) this.profileState.value = this.user.state || "NY";
+    if (this.profileZip) this.profileZip.value = this.user.zip || "";
+    if (this.profilePhone) this.profilePhone.value = this.user.phone || "";
+    this.userProfileModal.showModal();
+  }
+
+  openNewDisputeModal() {
+    if (!this.newDisputeModal) return;
+    const stateEl = document.getElementById("newState");
+    if (stateEl && this.user.state) {
+      stateEl.value = this.user.state;
+    }
+    const noticeEl = document.getElementById("newNoticeDate");
+    if (noticeEl && !noticeEl.value) {
+      noticeEl.value = new Date().toISOString().slice(0, 10);
+    }
+    const serviceEl = document.getElementById("newServiceDate");
+    if (serviceEl && !serviceEl.value) {
+      serviceEl.value = new Date().toISOString().slice(0, 10);
+    }
+    this.newDisputeModal.showModal();
   }
 
   bindEvents() {
@@ -141,7 +322,53 @@ class SettleMintApp {
       });
     });
 
-    // 2. Call Script Modal
+    // 2. User Profile & Settings
+    if (this.sidebarUserProfileBtn) {
+      this.sidebarUserProfileBtn.addEventListener("click", () => this.openUserProfileModal());
+      this.sidebarUserProfileBtn.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.openUserProfileModal();
+        }
+      });
+    }
+    if (this.closeUserProfileModal) {
+      this.closeUserProfileModal.addEventListener("click", () => this.userProfileModal.close());
+    }
+    if (this.cancelUserProfileBtn) {
+      this.cancelUserProfileBtn.addEventListener("click", () => this.userProfileModal.close());
+    }
+    if (this.userProfileForm) {
+      this.userProfileForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.saveUserProfile({
+          name: this.profileFullName.value,
+          address: this.profileStreet.value,
+          city: this.profileCity.value,
+          state: this.profileState.value,
+          zip: this.profileZip.value,
+          phone: this.profilePhone.value
+        });
+        this.userProfileModal.close();
+        ipc.sendNotification("Profile Saved", "Your consumer profile has been updated.");
+      });
+    }
+    if (this.loadDemoDataModalBtn) {
+      this.loadDemoDataModalBtn.addEventListener("click", () => {
+        if (this.userProfileModal) this.userProfileModal.close();
+        this.loadDemoData();
+      });
+    }
+    if (this.wipeAllDataModalBtn) {
+      this.wipeAllDataModalBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to clear all cases and start fresh?")) {
+          if (this.userProfileModal) this.userProfileModal.close();
+          this.clearAllData();
+        }
+      });
+    }
+
+    // 3. Call Script Modal
     if (this.callScriptBtn) {
       this.callScriptBtn.addEventListener("click", () => this.callScriptModal.showModal());
     }
@@ -152,7 +379,7 @@ class SettleMintApp {
       this.dismissCallScriptBtn.addEventListener("click", () => this.callScriptModal.close());
     }
 
-    // 3. Dispute Guides Modal
+    // 4. Dispute Guides Modal
     if (this.closeDisputeGuidesModal) {
       this.closeDisputeGuidesModal.addEventListener("click", () => this.disputeGuidesModal.showModal());
     }
@@ -160,9 +387,9 @@ class SettleMintApp {
       this.dismissDisputeGuidesBtn.addEventListener("click", () => this.disputeGuidesModal.close());
     }
 
-    // 4. New Dispute Modal
+    // 5. New Dispute Modal
     if (this.newCaseBtn) {
-      this.newCaseBtn.addEventListener("click", () => this.newDisputeModal.showModal());
+      this.newCaseBtn.addEventListener("click", () => this.openNewDisputeModal());
     }
     if (this.closeNewDisputeModal) {
       this.closeNewDisputeModal.addEventListener("click", () => this.newDisputeModal.close());
@@ -455,8 +682,22 @@ class SettleMintApp {
     const category = document.getElementById("newCategory").value;
     const accountNum = document.getElementById("newAccountNumber").value || `ACC-${Date.now().toString().slice(-4)}`;
 
-    const caseCount = this.cases.length + 1;
-    const batesStr = `BATES-SM-2026-004${caseCount}`;
+    const stateEl = document.getElementById("newState");
+    const statuteState = (stateEl && stateEl.value) ? stateEl.value : (this.user.state || "NY");
+    const noticeDateEl = document.getElementById("newNoticeDate");
+    const noticeDate = (noticeDateEl && noticeDateEl.value) ? noticeDateEl.value : new Date().toISOString().slice(0, 10);
+    const serviceDateEl = document.getElementById("newServiceDate");
+    const serviceDate = (serviceDateEl && serviceDateEl.value) ? serviceDateEl.value : noticeDate;
+
+    // Calculate statutory days remaining from noticeDate
+    const noticeMs = new Date(noticeDate).getTime();
+    const daysElapsed = Math.floor((Date.now() - noticeMs) / (1000 * 60 * 60 * 24));
+    const statutoryDaysRemaining = Math.max(0, 30 - Math.max(0, daysElapsed));
+
+    const caseUuid = crypto.randomUUID();
+    const caseCount = (this.cases.length + 1).toString().padStart(2, "0");
+    const batesStr = `BATES-SM-${new Date().getFullYear()}-00${caseCount}`;
+    const debtorName = (this.user.name && this.user.isConfigured) ? this.user.name : "Protected Consumer";
 
     let iconType = "credit_card";
     let legalFramework = "CFPB Reg F § 1006.34 & TILA";
@@ -477,9 +718,9 @@ class SettleMintApp {
     }
 
     const newCase = {
-      id: `case-sm-2026-004${caseCount}`,
+      id: caseUuid,
       docketNumber: batesStr,
-      debtorName: this.user.name,
+      debtorName: debtorName,
       debtType: debtType,
       originalProvider: provider,
       providerCategory: category,
@@ -487,16 +728,16 @@ class SettleMintApp {
       collectionAgency: agency,
       originalAccountNumber: accountNum,
       collectionAccountNumber: `AGY-${Date.now().toString().slice(-4)}`,
-      dateOfService: new Date().toISOString().slice(0, 10),
-      initialNoticeDate: new Date().toISOString().slice(0, 10),
+      dateOfService: serviceDate,
+      initialNoticeDate: noticeDate,
       originalBalance: balance,
       disputedBalance: balance,
       currentPhase: "InitialNotice",
-      statuteState: "NY",
+      statuteState: statuteState,
       statuteLimitYears: 3,
-      statutoryDaysRemaining: 30,
+      statutoryDaysRemaining: statutoryDaysRemaining,
       statusBadge: "Notice Received",
-      secondaryBadge: "Standard 30-day window",
+      secondaryBadge: `${statutoryDaysRemaining}-day window`,
       certifiedMailDeliveredDate: null,
       certifiedMailTracking: `7021 0950 000${caseCount} 8891 0021`,
       actionLabel: "Review Letter",
@@ -512,9 +753,9 @@ class SettleMintApp {
                            debtType === 'medical' ? 'Medical' :
                            debtType === 'auto_deficiency' ? 'AutoDeficiency' : 'PersonalLoan';
       const sqlitePayload = {
-        id: crypto.randomUUID(),
+        id: caseUuid,
         docket_number: batesStr,
-        debtor_name: this.user.name,
+        debtor_name: debtorName,
         debt_type: rustDebtType,
         provider_name: provider,
         collection_agency: agency,
@@ -523,9 +764,9 @@ class SettleMintApp {
         original_balance: balance,
         disputed_balance: balance,
         status: "InitialNotice",
-        jurisdiction_state: "NY",
-        date_of_service: newCase.dateOfService,
-        initial_notice_date: newCase.initialNoticeDate,
+        jurisdiction_state: statuteState,
+        date_of_service: serviceDate,
+        initial_notice_date: noticeDate,
         certified_mail_tracking: newCase.certifiedMailTracking,
         created_at: new Date().toISOString(),
         closed_at: null
@@ -555,7 +796,6 @@ class SettleMintApp {
 
   renderCurrentView() {
     const activeCase = this.getActiveCase();
-    if (!activeCase) return;
 
     let filteredCases = [...this.cases];
     if (this.disputeFilter === "credit_card") {
@@ -570,17 +810,36 @@ class SettleMintApp {
 
     switch (this.currentView) {
       case "dashboard":
-        this.viewDashboard.innerHTML = renderDashboard(activeCase, filteredCases, this.expandedCaseIds);
+        this.viewDashboard.innerHTML = renderDashboard(activeCase, filteredCases, this.expandedCaseIds, this.user, this.isDemoMode);
         const filterEl = document.getElementById("disputeFilterSelect");
         if (filterEl) {
           filterEl.value = this.disputeFilter;
         }
+
+        // Attach empty state & demo banner listeners
+        const firstRunNewBtn = document.getElementById("firstRunNewDisputeBtn");
+        if (firstRunNewBtn) firstRunNewBtn.addEventListener("click", () => this.openNewDisputeModal());
+        const firstRunProfileBtn = document.getElementById("firstRunProfileBtn");
+        if (firstRunProfileBtn) firstRunProfileBtn.addEventListener("click", () => this.openUserProfileModal());
+        const firstRunDemoBtn = document.getElementById("firstRunDemoBtn");
+        if (firstRunDemoBtn) firstRunDemoBtn.addEventListener("click", () => this.loadDemoData());
+
+        const demoNewBtn = document.getElementById("demoBannerNewDisputeBtn");
+        if (demoNewBtn) demoNewBtn.addEventListener("click", () => this.openNewDisputeModal());
+        const demoClearBtn = document.getElementById("demoBannerClearBtn");
+        if (demoClearBtn) demoClearBtn.addEventListener("click", () => this.clearAllData());
         break;
+
       case "interactions":
         this.viewInteractions.innerHTML = renderInteractions(this.interactions, activeCase);
+        const intEmptyBtn = document.getElementById("interactionEmptyNewCaseBtn");
+        if (intEmptyBtn) intEmptyBtn.addEventListener("click", () => this.openNewDisputeModal());
         break;
+
       case "letters":
-        this.viewLetters.innerHTML = renderLetterStudio(activeCase);
+        this.viewLetters.innerHTML = renderLetterStudio(activeCase, this.user);
+        const letterEmptyBtn = document.getElementById("letterStudioEmptyNewCaseBtn");
+        if (letterEmptyBtn) letterEmptyBtn.addEventListener("click", () => this.openNewDisputeModal());
         
         // Live input synchronization
         const templateRecipientInput = document.getElementById("templateRecipient");
@@ -750,9 +1009,14 @@ class SettleMintApp {
 
       case "evidence":
         this.viewEvidence.innerHTML = renderEvidenceVault(this.evidence, activeCase);
+        const evEmptyBtn = document.getElementById("evidenceEmptyNewCaseBtn");
+        if (evEmptyBtn) evEmptyBtn.addEventListener("click", () => this.openNewDisputeModal());
         break;
+
       case "credit":
         this.viewCredit.innerHTML = renderCreditAudit(this.tradelines, activeCase);
+        const crEmptyBtn = document.getElementById("creditEmptyNewCaseBtn");
+        if (crEmptyBtn) crEmptyBtn.addEventListener("click", () => this.openNewDisputeModal());
         break;
     }
   }
@@ -905,6 +1169,10 @@ class SettleMintApp {
 
   openQuickLogModal(caseId = null) {
     if (!this.quickLogModal) return;
+    if (this.cases.length === 0) {
+      this.openNewDisputeModal();
+      return;
+    }
     const targetCaseId = caseId || this.activeCaseId;
     if (this.logCaseSelect) {
       this.logCaseSelect.innerHTML = this.cases.map(c =>
@@ -925,6 +1193,10 @@ class SettleMintApp {
 
   openIngestEvidenceModal(caseId = null) {
     if (!this.ingestEvidenceModal) return;
+    if (this.cases.length === 0) {
+      this.openNewDisputeModal();
+      return;
+    }
     const targetCaseId = caseId || this.activeCaseId;
     if (this.evidenceCaseSelect) {
       this.evidenceCaseSelect.innerHTML = this.cases.map(c =>
@@ -1125,71 +1397,71 @@ class SettleMintApp {
       // 1. Fetch persistent cases from SQLite
       const backendCases = await ipc.getCases();
       if (backendCases && backendCases.length > 0) {
-        this.cases = backendCases.map(bc => ({
-          id: bc.id,
-          docketNumber: bc.docket_number,
-          debtorName: bc.debtor_name,
-          debtType: typeof bc.debt_type === 'string' ? bc.debt_type.toLowerCase() : 'credit_card',
-          originalProvider: bc.provider_name,
-          providerCategory: bc.debt_type,
-          iconType: typeof bc.debt_type === 'string' && bc.debt_type.toLowerCase().includes('card') ? 'credit_card' : 'medical',
-          collectionAgency: bc.collection_agency,
-          originalAccountNumber: bc.original_account_number,
-          collectionAccountNumber: bc.collection_account_number,
-          dateOfService: bc.date_of_service || bc.initial_notice_date,
-          initialNoticeDate: bc.initial_notice_date,
-          originalBalance: bc.original_balance,
-          disputedBalance: bc.disputed_balance,
-          currentPhase: bc.status,
-          statuteState: bc.jurisdiction_state,
-          statuteLimitYears: 3,
-          statutoryDaysRemaining: 30,
-          statusBadge: bc.status,
-          secondaryBadge: "Persistent SQLite Dossier",
-          certifiedMailDeliveredDate: null,
-          certifiedMailTracking: bc.certified_mail_tracking || '7021 0950 0001 9841 3320',
-          actionLabel: "View Details",
-          violationsCount: 0,
-          potentialDamages: 0.00,
-          collectionStatus: "Active",
-          notes: "Synchronized with local encrypted SQLite database.",
-          legalFramework: "FDCPA 15 U.S.C. § 1692"
-        }));
-        if (!this.cases.some(c => c.id === this.activeCaseId)) {
-          this.activeCaseId = this.cases[0].id;
-        }
-      } else {
-        // Seed initial mock dossiers into SQLite database
-        for (const c of INITIAL_CASES) {
-          const rustDebtType = c.debtType === 'credit_card' ? 'CreditCard' :
-                               c.debtType === 'medical' ? 'Medical' :
-                               c.debtType === 'auto_deficiency' ? 'AutoDeficiency' : 'PersonalLoan';
-          const payload = {
-            id: c.id.length === 36 ? c.id : crypto.randomUUID(),
-            docket_number: c.docketNumber,
-            debtor_name: c.debtorName,
-            debt_type: rustDebtType,
-            provider_name: c.originalProvider,
-            collection_agency: c.collectionAgency,
-            original_account_number: c.originalAccountNumber,
-            collection_account_number: c.collectionAccountNumber,
-            original_balance: c.originalBalance,
-            disputed_balance: c.disputedBalance,
-            status: "InitialNotice",
-            jurisdiction_state: c.statuteState || "NY",
-            date_of_service: c.dateOfService || null,
-            initial_notice_date: c.initialNoticeDate || new Date().toISOString().slice(0, 10),
-            certified_mail_tracking: c.certifiedMailTracking || null,
-            created_at: new Date().toISOString(),
-            closed_at: null
-          };
-          try {
-            await ipc.createCase(payload);
-          } catch (e) {
-            console.debug("Seed case note:", e);
+        // Check if all existing cases are the legacy mock data that was previously seeded
+        const isLegacySampleData = backendCases.every(bc => 
+          (bc.docket_number.startsWith("BATES-SM-2026-004") || bc.docket_number.startsWith("BATES-SM-2026-00")) && 
+          (bc.debtor_name === "Sarah Henderson" || bc.debtor_name === "Jordan Vance")
+        );
+
+        if (isLegacySampleData && !this.isDemoMode) {
+          // If the user hasn't explicitly enabled demo mode, purge the auto-seeded mock data
+          for (const bc of backendCases) {
+            try {
+              await ipc.deleteCase(bc.id);
+            } catch (e) {
+              console.debug("Purge legacy sample case note:", e);
+            }
+          }
+          this.cases = [];
+          this.activeCaseId = null;
+          this.expandedCaseIds = new Set();
+        } else {
+          this.cases = backendCases.map(bc => ({
+            id: bc.id,
+            docketNumber: bc.docket_number,
+            debtorName: bc.debtor_name,
+            debtType: typeof bc.debt_type === 'string' ? bc.debt_type.toLowerCase() : 'credit_card',
+            originalProvider: bc.provider_name,
+            providerCategory: bc.debt_type,
+            iconType: typeof bc.debt_type === 'string' && bc.debt_type.toLowerCase().includes('card') ? 'credit_card' : 'medical',
+            collectionAgency: bc.collection_agency,
+            originalAccountNumber: bc.original_account_number,
+            collectionAccountNumber: bc.collection_account_number,
+            dateOfService: bc.date_of_service || bc.initial_notice_date,
+            initialNoticeDate: bc.initial_notice_date,
+            originalBalance: bc.original_balance,
+            disputedBalance: bc.disputed_balance,
+            currentPhase: bc.status,
+            statuteState: bc.jurisdiction_state,
+            statuteLimitYears: 3,
+            statutoryDaysRemaining: 30,
+            statusBadge: bc.status,
+            secondaryBadge: "Persistent SQLite Dossier",
+            certifiedMailDeliveredDate: null,
+            certifiedMailTracking: bc.certified_mail_tracking || '7021 0950 0001 9841 3320',
+            actionLabel: "View Details",
+            violationsCount: 0,
+            potentialDamages: 0.00,
+            collectionStatus: "Active",
+            notes: "Synchronized with local encrypted SQLite database.",
+            legalFramework: "FDCPA 15 U.S.C. § 1692"
+          }));
+          if (!this.cases.some(c => c.id === this.activeCaseId)) {
+            this.activeCaseId = this.cases[0]?.id || null;
           }
         }
+      } else if (this.isDemoMode) {
+        await this.loadDemoData();
+      } else {
+        this.cases = [];
+        this.activeCaseId = null;
+        this.expandedCaseIds = new Set();
       }
+
+      if (this.sidebarBadgeCount) {
+        this.sidebarBadgeCount.textContent = this.cases.length;
+      }
+      this.render();
 
       // 2. Fetch persistent interactions for active case
       if (this.activeCaseId) {

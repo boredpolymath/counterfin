@@ -119,14 +119,14 @@
           </div>
         </div>
 
-        <!-- Sidebar Patient Profile -->
-        <div class="sidebar-user-card">
-          <div class="sidebar-user-avatar" title="Sarah Henderson">
-            <span>SH</span>
+        <!-- Sidebar Consumer Profile & Settings -->
+        <div class="sidebar-user-card" id="sidebarUserProfileBtn" title="Click to edit consumer profile & legal settings" role="button" tabindex="0" style="cursor: pointer;">
+          <div class="sidebar-user-avatar" id="sidebarUserAvatar">
+            <span id="sidebarUserInitials">CA</span>
           </div>
           <div class="sidebar-user-info">
-            <span class="sidebar-user-name">Sarah Henderson</span>
-            <span class="sidebar-user-sub">Protected Consumer</span>
+            <span class="sidebar-user-name" id="sidebarUserName">Consumer Profile</span>
+            <span class="sidebar-user-sub" id="sidebarUserJurisdiction">Click to configure</span>
           </div>
         </div>
       </div>
@@ -370,6 +370,73 @@
             <div class="form-group">
               <label class="form-label">Original Account / Card # (Last 4)</label>
               <input type="text" class="input-rounded" id="newAccountNumber" placeholder="CITI-4491-****-8812">
+            </div>
+          </div>
+
+          <div class="form-row form-cols-3" style="gap: 10px;">
+            <div class="form-group">
+              <label class="form-label">Jurisdiction State</label>
+              <select class="input-rounded studio-select" id="newState">
+                <option value="AL">AL - Alabama</option>
+                <option value="AK">AK - Alaska</option>
+                <option value="AZ">AZ - Arizona</option>
+                <option value="AR">AR - Arkansas</option>
+                <option value="CA">CA - California</option>
+                <option value="CO">CO - Colorado</option>
+                <option value="CT">CT - Connecticut</option>
+                <option value="DE">DE - Delaware</option>
+                <option value="DC">DC - District of Columbia</option>
+                <option value="FL">FL - Florida</option>
+                <option value="GA">GA - Georgia</option>
+                <option value="HI">HI - Hawaii</option>
+                <option value="ID">ID - Idaho</option>
+                <option value="IL">IL - Illinois</option>
+                <option value="IN">IN - Indiana</option>
+                <option value="IA">IA - Iowa</option>
+                <option value="KS">KS - Kansas</option>
+                <option value="KY">KY - Kentucky</option>
+                <option value="LA">LA - Louisiana</option>
+                <option value="ME">ME - Maine</option>
+                <option value="MD">MD - Maryland</option>
+                <option value="MA">MA - Massachusetts</option>
+                <option value="MI">MI - Michigan</option>
+                <option value="MN">MN - Minnesota</option>
+                <option value="MS">MS - Mississippi</option>
+                <option value="MO">MO - Missouri</option>
+                <option value="MT">MT - Montana</option>
+                <option value="NE">NE - Nebraska</option>
+                <option value="NV">NV - Nevada</option>
+                <option value="NH">NH - New Hampshire</option>
+                <option value="NJ">NJ - New Jersey</option>
+                <option value="NM">NM - New Mexico</option>
+                <option value="NY" selected>NY - New York</option>
+                <option value="NC">NC - North Carolina</option>
+                <option value="ND">ND - North Dakota</option>
+                <option value="OH">OH - Ohio</option>
+                <option value="OK">OK - Oklahoma</option>
+                <option value="OR">OR - Oregon</option>
+                <option value="PA">PA - Pennsylvania</option>
+                <option value="RI">RI - Rhode Island</option>
+                <option value="SC">SC - South Carolina</option>
+                <option value="SD">SD - South Dakota</option>
+                <option value="TN">TN - Tennessee</option>
+                <option value="TX">TX - Texas</option>
+                <option value="UT">UT - Utah</option>
+                <option value="VT">VT - Vermont</option>
+                <option value="VA">VA - Virginia</option>
+                <option value="WA">WA - Washington</option>
+                <option value="WV">WV - West Virginia</option>
+                <option value="WI">WI - Wisconsin</option>
+                <option value="WY">WY - Wyoming</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notice Received Date</label>
+              <input type="date" class="input-rounded" id="newNoticeDate">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Default / Service</label>
+              <input type="date" class="input-rounded" id="newServiceDate">
             </div>
           </div>
 
@@ -678,6 +745,130 @@
     </div>
   </dialog>
 
+  <!-- 7. End-User Profile & Legal Identity Configuration Modal -->
+  <dialog class="modal-dialog" id="userProfileModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#006948" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title">Consumer Profile & Letter Settings</h2>
+            <span class="modal-subtitle">Your identity remains strictly local and encrypted on your device</span>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="closeUserProfileModal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="userProfileForm" class="consumer-form">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label" for="profileFullName">FULL LEGAL NAME</label>
+            <input type="text" class="input-rounded" id="profileFullName" placeholder="e.g. Jane Doe" required>
+            <span style="font-size: 11px; color: #64748b; margin-top: 2px;">Appears on formal dispute letters and USPS certified mail demands.</span>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label" for="profileStreet">MAILING ADDRESS</label>
+            <input type="text" class="input-rounded" id="profileStreet" placeholder="e.g. 123 Main Street, Apt 4B">
+          </div>
+
+          <div class="form-row form-cols-3" style="gap: 10px; margin-bottom: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="profileCity">CITY</label>
+              <input type="text" class="input-rounded" id="profileCity" placeholder="City">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profileState">STATE / JURISDICTION</label>
+              <select class="input-rounded studio-select" id="profileState">
+                <option value="AL">Alabama (AL)</option>
+                <option value="AK">Alaska (AK)</option>
+                <option value="AZ">Arizona (AZ)</option>
+                <option value="AR">Arkansas (AR)</option>
+                <option value="CA">California (CA)</option>
+                <option value="CO">Colorado (CO)</option>
+                <option value="CT">Connecticut (CT)</option>
+                <option value="DE">Delaware (DE)</option>
+                <option value="DC">District of Columbia (DC)</option>
+                <option value="FL">Florida (FL)</option>
+                <option value="GA">Georgia (GA)</option>
+                <option value="HI">Hawaii (HI)</option>
+                <option value="ID">Idaho (ID)</option>
+                <option value="IL">Illinois (IL)</option>
+                <option value="IN">Indiana (IN)</option>
+                <option value="IA">Iowa (IA)</option>
+                <option value="KS">Kansas (KS)</option>
+                <option value="KY">Kentucky (KY)</option>
+                <option value="LA">Louisiana (LA)</option>
+                <option value="ME">Maine (ME)</option>
+                <option value="MD">Maryland (MD)</option>
+                <option value="MA">Massachusetts (MA)</option>
+                <option value="MI">Michigan (MI)</option>
+                <option value="MN">Minnesota (MN)</option>
+                <option value="MS">Mississippi (MS)</option>
+                <option value="MO">Missouri (MO)</option>
+                <option value="MT">Montana (MT)</option>
+                <option value="NE">Nebraska (NE)</option>
+                <option value="NV">Nevada (NV)</option>
+                <option value="NH">New Hampshire (NH)</option>
+                <option value="NJ">New Jersey (NJ)</option>
+                <option value="NM">New Mexico (NM)</option>
+                <option value="NY" selected>New York (NY)</option>
+                <option value="NC">North Carolina (NC)</option>
+                <option value="ND">North Dakota (ND)</option>
+                <option value="OH">Ohio (OH)</option>
+                <option value="OK">Oklahoma (OK)</option>
+                <option value="OR">Oregon (OR)</option>
+                <option value="PA">Pennsylvania (PA)</option>
+                <option value="RI">Rhode Island (RI)</option>
+                <option value="SC">South Carolina (SC)</option>
+                <option value="SD">South Dakota (SD)</option>
+                <option value="TN">Tennessee (TN)</option>
+                <option value="TX">Texas (TX)</option>
+                <option value="UT">Utah (UT)</option>
+                <option value="VT">Vermont (VT)</option>
+                <option value="VA">Virginia (VA)</option>
+                <option value="WA">Washington (WA)</option>
+                <option value="WV">West Virginia (WV)</option>
+                <option value="WI">Wisconsin (WI)</option>
+                <option value="WY">Wyoming (WY)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profileZip">ZIP CODE</label>
+              <input type="text" class="input-rounded" id="profileZip" placeholder="10001">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="profilePhone">TELEPHONE (OPTIONAL)</label>
+            <input type="text" class="input-rounded" id="profilePhone" placeholder="(555) 000-0000">
+          </div>
+
+          <div class="modal-footer" style="padding-top: 12px; margin-top: 12px; border-top: 1px solid var(--color-border-standard); display: flex; justify-content: space-between; align-items: center;">
+            <button type="button" class="btn btn-pill-outline" id="cancelUserProfileBtn">Cancel</button>
+            <button type="submit" class="btn btn-pill-primary">Save Profile Settings</button>
+          </div>
+        </form>
+
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--color-border-standard);">
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px;">Workspace & Educational Data Controls</div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-pill-outline btn-sm" id="loadDemoDataModalBtn" style="color: var(--color-primary); border-color: var(--color-primary);">
+              Load Sample Educational Cases
+            </button>
+            <button type="button" class="btn btn-pill-outline btn-sm" id="wipeAllDataModalBtn" style="color: #e11d48; border-color: #fecdd3;">
+              Clear All Cases & Start Fresh
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
 
   <!-- Core Application Scripts -->
   <script type="module" src="js/app.js"></script>

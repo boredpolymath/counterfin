@@ -119,6 +119,23 @@ impl DatabaseManager {
         CaseDao::update_status(&conn, case_id, new_status)
     }
 
+    pub fn delete_case(&self, case_id: &str) -> AppResult<bool> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        CaseDao::delete(&conn, case_id)
+    }
+
+    pub fn clear_all_cases(&self) -> AppResult<usize> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
+        let rows = conn.execute("DELETE FROM cases", [])?;
+        Ok(rows)
+    }
+
     pub fn create_creditor(&self, creditor: &Creditor) -> AppResult<Uuid> {
         let conn = self
             .conn

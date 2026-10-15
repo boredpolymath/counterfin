@@ -4,7 +4,20 @@
  */
 
 export function renderInteractions(interactions, activeCase) {
-  const caseInteractions = interactions.filter(i => i.caseId === activeCase.id);
+  if (!activeCase) {
+    return `
+      <div class="empty-state-card" style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:60px 24px; text-align:center; max-width:600px; margin:40px auto;">
+        <div style="width:48px; height:48px; border-radius:12px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Active Dossier Selected</h3>
+        <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.5;">Select a dispute case or open a new one to log debt collection phone calls, letters, and statutory violations.</p>
+        <button type="button" class="btn btn-pill-primary" id="interactionEmptyNewCaseBtn">+ Open New Dispute</button>
+      </div>
+    `;
+  }
+
+  const caseInteractions = (interactions || []).filter(i => i.caseId === activeCase.id);
 
   const headerHtml = `
     <div class="orderly-view-header">

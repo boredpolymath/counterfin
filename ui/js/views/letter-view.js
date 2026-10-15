@@ -14,7 +14,20 @@ export function escapeHtml(str) {
     .replace(/'/g, '&#x27;');
 }
 
-export function renderLetterStudio(activeCase) {
+export function renderLetterStudio(activeCase, userProfile = null) {
+  if (!activeCase) {
+    return `
+      <div class="empty-state-card" style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:60px 24px; text-align:center; max-width:600px; margin:40px auto;">
+        <div style="width:48px; height:48px; border-radius:12px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Dispute Dossier Selected</h3>
+        <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.5;">To draft and export statutory dispute letters, open a new dispute dossier or select an account from your dashboard.</p>
+        <button type="button" class="btn btn-pill-primary" id="letterStudioEmptyNewCaseBtn">+ Open New Dispute</button>
+      </div>
+    `;
+  }
+
   const isCreditCard = activeCase.debtType === 'credit_card' || activeCase.iconType === 'credit_card';
   const isAuto = activeCase.debtType === 'auto_deficiency' || activeCase.iconType === 'auto';
   const isMedical = activeCase.debtType === 'medical' || (!isCreditCard && !isAuto && activeCase.debtType !== 'personal_loan');
@@ -23,7 +36,13 @@ export function renderLetterStudio(activeCase) {
   if (isMedical) defaultTemplate = 'medical_dvl';
   else if (isAuto) defaultTemplate = 'auto_dvl';
 
-  const todayStr = "October 13, 2026";
+  const today = new Date();
+  const todayStr = today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const senderName = userProfile?.name || activeCase.debtorName || "Protected Consumer";
+  const senderStreet = userProfile?.address || "";
+  const senderCityStateZip = (userProfile?.city && userProfile?.state)
+    ? `${userProfile.city}, ${userProfile.state} ${userProfile.zip || ''}`.trim()
+    : (userProfile?.state ? `${userProfile.state} ${userProfile.zip || ''}`.trim() : '');
 
   return `
     <div class="studio-layout">
@@ -257,6 +276,7 @@ export function renderLetterStudio(activeCase) {
 
             <div class="doc-meta-table">
               <div class="meta-line"><strong>DATE:</strong> <span>${escapeHtml(todayStr)}</span></div>
+              <div class="meta-line"><strong>FROM:</strong> <span>${escapeHtml(senderName)}${senderCityStateZip ? ` (${escapeHtml(senderCityStateZip)})` : ''}</span></div>
               <div class="meta-line"><strong>TO:</strong> <span id="docRecipient">${escapeHtml(activeCase.collectionAgency)}</span></div>
               <div class="meta-line"><strong>RE:</strong> <span>NOTICE OF FORMAL DISPUTE & MANDATORY DEBT VALIDATION (15 U.S.C. § 1692g)</span></div>
               <div class="meta-line"><strong>ALLEGED ACCOUNT NO:</strong> <span class="label-code">${escapeHtml(activeCase.collectionAccountNumber)}</span></div>
@@ -308,7 +328,9 @@ export function renderLetterStudio(activeCase) {
 
             <p style="margin-top: 24px;">
               Respectfully submitted,<br><br>
-              <strong>${escapeHtml(activeCase.debtorName)}</strong><br>
+              <strong>${escapeHtml(senderName)}</strong><br>
+              ${senderStreet ? `<span>${escapeHtml(senderStreet)}</span><br>` : ''}
+              ${senderCityStateZip ? `<span>${escapeHtml(senderCityStateZip)}</span><br>` : ''}
               <em>(Signed electronically with evidentiary timestamp & certified mail tracking log)</em>
             </p>
 

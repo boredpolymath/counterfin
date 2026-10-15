@@ -4,7 +4,20 @@
  */
 
 export function renderEvidenceVault(evidenceList, activeCase) {
-  const caseEvidence = evidenceList.filter(e => e.caseId === activeCase.id);
+  if (!activeCase) {
+    return `
+      <div class="empty-state-card" style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:60px 24px; text-align:center; max-width:600px; margin:40px auto;">
+        <div style="width:48px; height:48px; border-radius:12px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Evidence Vault Selected</h3>
+        <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.5;">Evidence files and Bates stamps are associated with specific dispute dossiers. Select or create an account to vault evidence.</p>
+        <button type="button" class="btn btn-pill-primary" id="evidenceEmptyNewCaseBtn">+ Open New Dispute</button>
+      </div>
+    `;
+  }
+
+  const caseEvidence = (evidenceList || []).filter(e => e.caseId === activeCase.id);
 
   const cards = caseEvidence.length > 0 ? caseEvidence.map(item => `
     <div class="vault-item-card">
