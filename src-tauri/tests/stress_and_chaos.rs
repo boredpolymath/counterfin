@@ -35,7 +35,10 @@ fn get_current_rss_bytes() -> usize {
 fn test_memory_profiling_and_rss_leak_detection() {
     println!("\n--- [9.9.4] Memory Profiling & RSS Leak Detection ---");
     let initial_rss = get_current_rss_bytes();
-    println!("  -> Initial Resident Memory (RSS): {:.2} MB", initial_rss as f64 / (1024.0 * 1024.0));
+    println!(
+        "  -> Initial Resident Memory (RSS): {:.2} MB",
+        initial_rss as f64 / (1024.0 * 1024.0)
+    );
 
     // Perform 25,000 cycles of dynamic template compilation and token interpolation
     let template = TemplateEngine::credit_card_dvl_template();
@@ -61,7 +64,9 @@ fn test_memory_profiling_and_rss_leak_detection() {
 
     println!(
         "  -> Completed {} letter generations in {:.2?} ({:.1} ops/sec)",
-        cycles, elapsed, cycles as f64 / elapsed.as_secs_f64()
+        cycles,
+        elapsed,
+        cycles as f64 / elapsed.as_secs_f64()
     );
     println!("  -> Final Resident Memory (RSS): {:.2} MB", rss_mb);
 
@@ -104,7 +109,9 @@ fn test_large_file_ingestion_100mb_and_multi_page_pdf() {
         }
         let remainder = (target_audio_size - id3_header.len()) % chunk_size;
         if remainder > 0 {
-            audio_file.write_all(&vec![0x55u8; remainder]).expect("Write remainder");
+            audio_file
+                .write_all(&vec![0x55u8; remainder])
+                .expect("Write remainder");
         }
     }
 
@@ -125,7 +132,8 @@ fn test_large_file_ingestion_100mb_and_multi_page_pdf() {
     .expect("Ingest 100MB audio file");
 
     let ingest_elapsed = ingest_start.elapsed();
-    let throughput_mb_s = (target_audio_size as f64 / (1024.0 * 1024.0)) / ingest_elapsed.as_secs_f64();
+    let throughput_mb_s =
+        (target_audio_size as f64 / (1024.0 * 1024.0)) / ingest_elapsed.as_secs_f64();
     println!(
         "  -> 100 MB audio ingested and hashed in: {:.2?} ({:.1} MB/s)",
         ingest_elapsed, throughput_mb_s
@@ -151,11 +159,16 @@ fn test_large_file_ingestion_100mb_and_multi_page_pdf() {
         for page_num in 1..=500 {
             let page_content = format!(
                 "{} 0 obj\n<< /Type /Page /Contents [ 2 0 R ] >>\nendobj\n% Evidentiary Item Page {}\n",
-                page_num + 2, page_num
+                page_num + 2,
+                page_num
             );
-            pdf_file.write_all(page_content.as_bytes()).expect("Write page obj");
+            pdf_file
+                .write_all(page_content.as_bytes())
+                .expect("Write page obj");
         }
-        pdf_file.write_all(b"%%EOF\n").expect("Write PDF EOF trailer");
+        pdf_file
+            .write_all(b"%%EOF\n")
+            .expect("Write PDF EOF trailer");
     }
 
     let pdf_doc_id = Uuid::new_v4();
@@ -163,7 +176,10 @@ fn test_large_file_ingestion_100mb_and_multi_page_pdf() {
     let ingested_pdf = EvidenceVault::ingest_evidence(&sandbox, &pdf_path, &pdf_doc_id)
         .expect("Ingest 500-page PDF document");
     let pdf_elapsed = pdf_ingest_start.elapsed();
-    println!("  -> 500-Page PDF ingested and hashed in: {:.2?}", pdf_elapsed);
+    println!(
+        "  -> 500-Page PDF ingested and hashed in: {:.2?}",
+        pdf_elapsed
+    );
     assert!(ingested_pdf.file_size_bytes > 0);
     assert!(ingested_pdf.absolute_path.exists());
 
@@ -191,16 +207,22 @@ fn test_chaos_crash_resilience_and_wal_recovery() {
     fs::create_dir_all(&temp_dir).expect("Create temp crash dir");
     let db_path = temp_dir.join("settlemint_production.db");
 
-    println!("  -> Initializing production database in WAL mode on disk: {:?}", db_path);
+    println!(
+        "  -> Initializing production database in WAL mode on disk: {:?}",
+        db_path
+    );
     let case_id = Uuid::new_v4().to_string();
     let now_str = Utc::now().to_rfc3339();
 
     // Step 1: Open connection, set WAL mode, apply schema, and commit baseline case
     {
         let conn = Connection::open(&db_path).expect("Open SQLite DB");
-        conn.pragma_update(None, "journal_mode", "WAL").expect("Set WAL mode");
-        conn.pragma_update(None, "synchronous", "NORMAL").expect("Set synchronous NORMAL");
-        conn.execute_batch(CREATE_TABLES_SQL).expect("Create tables");
+        conn.pragma_update(None, "journal_mode", "WAL")
+            .expect("Set WAL mode");
+        conn.pragma_update(None, "synchronous", "NORMAL")
+            .expect("Set synchronous NORMAL");
+        conn.execute_batch(CREATE_TABLES_SQL)
+            .expect("Create tables");
 
         conn.execute(
             "INSERT INTO cases (
@@ -211,10 +233,23 @@ fn test_chaos_crash_resilience_and_wal_recovery() {
                 created_at, closed_at
             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)",
             rusqlite::params![
-                case_id, "SM-2026-CRASH01", "Jordan Vance", "CreditCard", "Midland Credit",
-                "Portfolio Recovery", "ORIG-9901", "COLL-9901", 3400.0, 3400.0,
-                "InitialNotice", "TX", "2024-01-15", "2026-09-10", "70200640000123456789",
-                now_str, Option::<String>::None
+                case_id,
+                "SM-2026-CRASH01",
+                "Jordan Vance",
+                "CreditCard",
+                "Midland Credit",
+                "Portfolio Recovery",
+                "ORIG-9901",
+                "COLL-9901",
+                3400.0,
+                3400.0,
+                "InitialNotice",
+                "TX",
+                "2024-01-15",
+                "2026-09-10",
+                "70200640000123456789",
+                now_str,
+                Option::<String>::None
             ],
         )
         .expect("Insert committed case");
@@ -222,7 +257,10 @@ fn test_chaos_crash_resilience_and_wal_recovery() {
 
     // Verify WAL and SHM files exist on disk
     let wal_path = temp_dir.join("settlemint_production.db-wal");
-    println!("  -> Database initialized. WAL file status: exists = {}", wal_path.exists());
+    println!(
+        "  -> Database initialized. WAL file status: exists = {}",
+        wal_path.exists()
+    );
 
     // Step 2: Simulate sudden ungraceful crash mid-transaction
     println!("  -> Simulating ungraceful process crash (SIGKILL) mid-transaction...");
@@ -269,7 +307,10 @@ fn test_chaos_crash_resilience_and_wal_recovery() {
         let integrity_check: String = conn3
             .query_row("PRAGMA integrity_check;", [], |row| row.get(0))
             .expect("PRAGMA integrity_check");
-        assert_eq!(integrity_check, "ok", "Database integrity check failed post-crash!");
+        assert_eq!(
+            integrity_check, "ok",
+            "Database integrity check failed post-crash!"
+        );
         println!("  -> PRAGMA integrity_check: {}", integrity_check);
 
         // Verify baseline case exists and is intact
@@ -295,14 +336,17 @@ fn test_chaos_crash_resilience_and_wal_recovery() {
             uncommitted_count, 0,
             "Uncommitted crash transaction leaked into database!"
         );
-        println!("  -> Uncommitted crash transaction was safely rolled back (0 interactions found).");
+        println!(
+            "  -> Uncommitted crash transaction was safely rolled back (0 interactions found)."
+        );
 
         // Verify subsequent writes succeed normally
-        conn3.execute(
-            "UPDATE cases SET status = 'ValidationPending' WHERE id = ?1",
-            rusqlite::params![case_id],
-        )
-        .expect("Update case status post-recovery");
+        conn3
+            .execute(
+                "UPDATE cases SET status = 'ValidationPending' WHERE id = ?1",
+                rusqlite::params![case_id],
+            )
+            .expect("Update case status post-recovery");
 
         let updated_status: String = conn3
             .query_row(

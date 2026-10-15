@@ -1,7 +1,7 @@
 use crate::db::DatabaseManager;
 use crate::error::AppResult;
 use crate::models::CreditTradeLine;
-use tauri::{command, State};
+use tauri::{State, command};
 use uuid::Uuid;
 
 #[command]

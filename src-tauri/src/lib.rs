@@ -37,7 +37,10 @@ pub fn run() {
 
             // Initialize System Tray daemon
             if let Err(err) = tray::setup_system_tray(app.handle()) {
-                log::warn!("System tray initialization deferred or unavailable: {}", err);
+                log::warn!(
+                    "System tray initialization deferred or unavailable: {}",
+                    err
+                );
             }
 
             // Initialize Background Monitor for statutory deadlines & USPS tracking (Section 6.3)
@@ -68,7 +71,6 @@ pub fn run() {
             commands::validate_template_tokens,
             commands::export_document_file,
             commands::calculate_fdcpa_deadline,
-
             commands::calculate_fdcpa_validation_window,
             commands::get_deadlines,
             commands::create_deadline,
@@ -97,4 +99,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while building SettleMint application");
 }
-

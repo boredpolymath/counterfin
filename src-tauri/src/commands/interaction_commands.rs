@@ -2,7 +2,7 @@ use crate::db::DatabaseManager;
 use crate::engine::fdcpa::{FdcpaEngine, StatutoryDamagesSummary};
 use crate::error::AppResult;
 use crate::models::{Interaction, Violation};
-use tauri::{command, State};
+use tauri::{State, command};
 use uuid::Uuid;
 
 #[command]
@@ -70,7 +70,9 @@ pub async fn log_interaction(
         let deadlines = db.get_deadlines(&interaction.case_id.to_string())?;
         let dvl_delivered = deadlines
             .iter()
-            .find(|d| d.deadline_type == crate::models::deadline::DeadlineType::Fdcpa30DayValidation)
+            .find(|d| {
+                d.deadline_type == crate::models::deadline::DeadlineType::Fdcpa30DayValidation
+            })
             .map(|d| d.target_date - chrono::Duration::days(30));
 
         let auto_detected = FdcpaEngine::evaluate_all_violations(
@@ -86,4 +88,3 @@ pub async fn log_interaction(
 
     db.log_interaction(&interaction, &violations)
 }
-

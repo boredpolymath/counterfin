@@ -79,10 +79,23 @@ fn test_live_production_benchmarks() {
                 let now_str = Utc::now().to_rfc3339();
 
                 stmt.execute(rusqlite::params![
-                    id, docket, debtor, debt_type, provider, agency,
-                    orig_acc, coll_acc, orig_bal, disp_bal, status, state,
-                    "2023-05-10", "2026-09-01", "9405511899560000123456",
-                    now_str, Option::<String>::None
+                    id,
+                    docket,
+                    debtor,
+                    debt_type,
+                    provider,
+                    agency,
+                    orig_acc,
+                    coll_acc,
+                    orig_bal,
+                    disp_bal,
+                    status,
+                    state,
+                    "2023-05-10",
+                    "2026-09-01",
+                    "9405511899560000123456",
+                    now_str,
+                    Option::<String>::None
                 ])
                 .expect("Failed to insert case row");
             }
@@ -345,7 +358,11 @@ fn test_live_production_benchmarks() {
         "  -> SHA-256 Merkle Hashing (10 MB payload): {:.2?} ({:.1} MB/sec, Digest: {:x})",
         hash_elapsed, hash_mb_per_sec, hash_result
     );
-    assert!(hash_mb_per_sec > 15.0, "Cryptographic hashing too slow: {:.1} MB/sec", hash_mb_per_sec);
+    assert!(
+        hash_mb_per_sec > 15.0,
+        "Cryptographic hashing too slow: {:.1} MB/sec",
+        hash_mb_per_sec
+    );
 
     println!("\n========================================================");
     println!("     ALL NON-FUNCTIONAL BENCHMARK TARGETS PASSED ✓     ");

@@ -13,13 +13,14 @@ pub async fn generate_dispute_document(
         "medical_dvl" => TemplateEngine::medical_dvl_template(),
         "credit_card_dvl" => TemplateEngine::credit_card_dvl_template(),
         "auto_dvl" | "auto_deficiency_dvl" => TemplateEngine::auto_deficiency_dvl_template(),
-        "cease_desist" | "limited_cease_and_desist" => TemplateEngine::limited_cease_and_desist_template(),
+        "cease_desist" | "limited_cease_and_desist" => {
+            TemplateEngine::limited_cease_and_desist_template()
+        }
         "cra_dispute" => TemplateEngine::cra_dispute_template(),
         "cfpb_complaint" => TemplateEngine::cfpb_complaint_template(),
         "pay_for_delete" => TemplateEngine::pay_for_delete_template(),
         _ => TemplateEngine::dvl_template(),
     };
-
 
     let token_refs: HashMap<&str, &str> = tokens
         .iter()
@@ -50,7 +51,9 @@ pub async fn validate_template_tokens(
         "medical_dvl" => TemplateEngine::medical_dvl_template(),
         "credit_card_dvl" => TemplateEngine::credit_card_dvl_template(),
         "auto_dvl" | "auto_deficiency_dvl" => TemplateEngine::auto_deficiency_dvl_template(),
-        "cease_desist" | "limited_cease_and_desist" => TemplateEngine::limited_cease_and_desist_template(),
+        "cease_desist" | "limited_cease_and_desist" => {
+            TemplateEngine::limited_cease_and_desist_template()
+        }
         "cra_dispute" => TemplateEngine::cra_dispute_template(),
         "cfpb_complaint" => TemplateEngine::cfpb_complaint_template(),
         "pay_for_delete" => TemplateEngine::pay_for_delete_template(),
@@ -96,4 +99,3 @@ pub async fn export_document_file(
     )?;
     Ok(path.to_string_lossy().to_string())
 }
-

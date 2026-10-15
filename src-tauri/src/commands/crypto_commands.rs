@@ -2,7 +2,7 @@ use crate::crypto::{CryptoEngine, SensitiveString, VaultAuthRecord};
 use crate::engine::EvidenceVault;
 use crate::error::{AppError, AppResult};
 use std::path::PathBuf;
-use tauri::{command, AppHandle, Manager};
+use tauri::{AppHandle, Manager, command};
 
 fn get_sandbox_paths(app: &AppHandle) -> crate::engine::vault::SandboxPaths {
     let app_data_dir = app
@@ -46,10 +46,7 @@ pub async fn enroll_master_passphrase(
 }
 
 #[command]
-pub async fn verify_master_passphrase(
-    passphrase: String,
-    app: AppHandle,
-) -> AppResult<bool> {
+pub async fn verify_master_passphrase(passphrase: String, app: AppHandle) -> AppResult<bool> {
     let auth_path = get_auth_file_path(&app);
     if !auth_path.exists() {
         return Err(AppError::NotFound(

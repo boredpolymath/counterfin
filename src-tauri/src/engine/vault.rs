@@ -58,7 +58,8 @@ impl SandboxPaths {
     pub fn resolve_safe_subpath(&self, subpath: &str) -> AppResult<PathBuf> {
         if Path::new(subpath).is_absolute() {
             return Err(AppError::Validation(
-                "Sandbox escape violation: absolute path cannot be used as a sandbox subpath".to_string(),
+                "Sandbox escape violation: absolute path cannot be used as a sandbox subpath"
+                    .to_string(),
             ));
         }
         EvidenceVault::validate_sandbox_containment(&self.base_dir, subpath)
@@ -166,7 +167,10 @@ impl FileTypeValidator {
     }
 
     /// Detects file type from magic bytes and cross-checks against file extension
-    pub fn detect_and_validate(header_bytes: &[u8], extension: &str) -> AppResult<SupportedFileType> {
+    pub fn detect_and_validate(
+        header_bytes: &[u8],
+        extension: &str,
+    ) -> AppResult<SupportedFileType> {
         // Strict executable check
         if Self::is_executable_binary(header_bytes) {
             return Err(AppError::Validation(
@@ -228,7 +232,10 @@ impl FileTypeValidator {
         }
 
         // WAV magic bytes: "RIFF....WAVE"
-        if header_bytes.len() >= 12 && &header_bytes[0..4] == b"RIFF" && &header_bytes[8..12] == b"WAVE" {
+        if header_bytes.len() >= 12
+            && &header_bytes[0..4] == b"RIFF"
+            && &header_bytes[8..12] == b"WAVE"
+        {
             if clean_ext == "wav" || clean_ext.is_empty() {
                 return Ok(SupportedFileType::Wav);
             } else {
@@ -549,9 +556,9 @@ impl EvidenceVault {
 
         // If candidate already exists, canonicalize directly (resolves symlinks)
         if candidate.exists() {
-            let canonical_target = candidate.canonicalize().map_err(|e| {
-                AppError::Io(format!("Failed to canonicalize target path: {}", e))
-            })?;
+            let canonical_target = candidate
+                .canonicalize()
+                .map_err(|e| AppError::Io(format!("Failed to canonicalize target path: {}", e)))?;
             if !canonical_target.starts_with(&canonical_base) {
                 return Err(AppError::Validation(format!(
                     "Sandbox escape violation: target {:?} canonicalizes outside sandbox {:?}",
@@ -666,7 +673,9 @@ impl EvidenceVault {
             .read(&mut header)
             .map_err(|e| AppError::Io(format!("Failed to read source header: {}", e)))?;
         if header_read == 0 {
-            return Err(AppError::Validation("Evidence file is empty (0 bytes)".to_string()));
+            return Err(AppError::Validation(
+                "Evidence file is empty (0 bytes)".to_string(),
+            ));
         }
 
         FileTypeValidator::detect_and_validate(&header[..header_read], ext)?;
@@ -681,9 +690,12 @@ impl EvidenceVault {
         let mut hasher = Sha256::new();
         let mut buffer = [0u8; 64 * 1024]; // 64 KB streaming buffer
         loop {
-            let bytes_read = file
-                .read(&mut buffer)
-                .map_err(|e| AppError::Io(format!("Failed to read chunk during streaming ingest: {}", e)))?;
+            let bytes_read = file.read(&mut buffer).map_err(|e| {
+                AppError::Io(format!(
+                    "Failed to read chunk during streaming ingest: {}",
+                    e
+                ))
+            })?;
             if bytes_read == 0 {
                 break;
             }
@@ -749,7 +761,8 @@ mod tests {
 
     #[test]
     fn test_evidence_ingestion_and_hashing() {
-        let temp_dir = std::env::temp_dir().join(format!("settlemint_vault_test_{}", Uuid::new_v4()));
+        let temp_dir =
+            std::env::temp_dir().join(format!("settlemint_vault_test_{}", Uuid::new_v4()));
         let sandbox = EvidenceVault::build_sandbox_paths(&temp_dir);
         sandbox.create_all().expect("Failed to create sandbox");
 
@@ -764,7 +777,10 @@ mod tests {
             .expect("Ingestion failed");
 
         assert_eq!(ingested.doc_id, doc_id);
-        assert_eq!(ingested.original_filename, "Hospital_Emergency_Bill_Sensitive.pdf");
+        assert_eq!(
+            ingested.original_filename,
+            "Hospital_Emergency_Bill_Sensitive.pdf"
+        );
         assert_eq!(ingested.vault_filename, format!("{}.pdf", doc_id));
         assert!(ingested.absolute_path.exists());
         assert_eq!(ingested.file_size_bytes, mock_content.len() as u64);
@@ -804,14 +820,17 @@ mod tests {
 
         // NIST FIPS 180-2 Test Vector 3: 448-bit string
         assert_eq!(
-            EvidenceVault::compute_sha256(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"),
+            EvidenceVault::compute_sha256(
+                b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+            ),
             "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
         );
     }
 
     #[test]
     fn test_evidence_file_tamper_and_hash_mismatch_detection() {
-        let temp_dir = std::env::temp_dir().join(format!("settlemint_tamper_test_{}", Uuid::new_v4()));
+        let temp_dir =
+            std::env::temp_dir().join(format!("settlemint_tamper_test_{}", Uuid::new_v4()));
         let sandbox = EvidenceVault::build_sandbox_paths(&temp_dir);
         sandbox.create_all().expect("Failed to create sandbox");
 
@@ -828,17 +847,23 @@ mod tests {
         assert_eq!(canonical_hash, EvidenceVault::compute_sha256(initial_bytes));
 
         // 2. Validate clean integrity state
-        assert!(EvidenceVault::verify_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap());
-        assert!(EvidenceVault::assert_file_integrity(&canonical_hash, &ingested.absolute_path).is_ok());
+        assert!(
+            EvidenceVault::verify_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap()
+        );
+        assert!(
+            EvidenceVault::assert_file_integrity(&canonical_hash, &ingested.absolute_path).is_ok()
+        );
 
-        let clean_report = EvidenceVault::audit_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap();
+        let clean_report =
+            EvidenceVault::audit_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap();
         assert!(clean_report.is_valid);
         assert!(!clean_report.is_tampered);
         assert_eq!(clean_report.expected_hash, canonical_hash);
         assert_eq!(clean_report.actual_hash, canonical_hash);
 
         // 3. Single-byte modification on disk (flip bit 0 of byte 10)
-        let mut disk_bytes = fs::read(&ingested.absolute_path).expect("Failed to read ingested file");
+        let mut disk_bytes =
+            fs::read(&ingested.absolute_path).expect("Failed to read ingested file");
         let original_byte = disk_bytes[10];
         disk_bytes[10] ^= 0x01; // flip single bit
         assert_ne!(disk_bytes[10], original_byte);
@@ -846,12 +871,20 @@ mod tests {
 
         // 4. Assert tamper detection and hash mismatch
         let tampered_hash = EvidenceVault::compute_file_sha256(&ingested.absolute_path).unwrap();
-        assert_ne!(tampered_hash, canonical_hash, "Avalanche effect must alter SHA-256 digest");
+        assert_ne!(
+            tampered_hash, canonical_hash,
+            "Avalanche effect must alter SHA-256 digest"
+        );
 
-        let is_valid = EvidenceVault::verify_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap();
-        assert!(!is_valid, "verify_file_integrity must report false when tampered");
+        let is_valid =
+            EvidenceVault::verify_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap();
+        assert!(
+            !is_valid,
+            "verify_file_integrity must report false when tampered"
+        );
 
-        let assert_res = EvidenceVault::assert_file_integrity(&canonical_hash, &ingested.absolute_path);
+        let assert_res =
+            EvidenceVault::assert_file_integrity(&canonical_hash, &ingested.absolute_path);
         match assert_res {
             Err(AppError::Validation(msg)) => {
                 assert!(msg.contains("Evidence file tamper detected"));
@@ -861,7 +894,8 @@ mod tests {
             other => panic!("Expected AppError::Validation, got {:?}", other),
         }
 
-        let tamper_report = EvidenceVault::audit_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap();
+        let tamper_report =
+            EvidenceVault::audit_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap();
         assert!(!tamper_report.is_valid);
         assert!(tamper_report.is_tampered);
         assert_eq!(tamper_report.expected_hash, canonical_hash);
@@ -870,15 +904,25 @@ mod tests {
         // 5. Truncation tamper (delete last byte)
         disk_bytes.pop();
         fs::write(&ingested.absolute_path, &disk_bytes).expect("Failed to write truncated file");
-        assert!(!EvidenceVault::verify_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap());
-        assert!(EvidenceVault::assert_file_integrity(&canonical_hash, &ingested.absolute_path).is_err());
+        assert!(
+            !EvidenceVault::verify_file_integrity(&canonical_hash, &ingested.absolute_path)
+                .unwrap()
+        );
+        assert!(
+            EvidenceVault::assert_file_integrity(&canonical_hash, &ingested.absolute_path).is_err()
+        );
 
         // 6. Byte appended tamper (append trailing bytes)
         disk_bytes.push(0x00);
         disk_bytes.push(0xFF);
         fs::write(&ingested.absolute_path, &disk_bytes).expect("Failed to write appended file");
-        assert!(!EvidenceVault::verify_file_integrity(&canonical_hash, &ingested.absolute_path).unwrap());
-        assert!(EvidenceVault::assert_file_integrity(&canonical_hash, &ingested.absolute_path).is_err());
+        assert!(
+            !EvidenceVault::verify_file_integrity(&canonical_hash, &ingested.absolute_path)
+                .unwrap()
+        );
+        assert!(
+            EvidenceVault::assert_file_integrity(&canonical_hash, &ingested.absolute_path).is_err()
+        );
 
         // 7. Non-existent file error handling
         let missing_path = temp_dir.join("non_existent_file.pdf");
@@ -891,9 +935,12 @@ mod tests {
 
     #[test]
     fn test_path_traversal_and_sandbox_escape_prevention() {
-        let temp_dir = std::env::temp_dir().join(format!("settlemint_escape_test_{}", Uuid::new_v4()));
+        let temp_dir =
+            std::env::temp_dir().join(format!("settlemint_escape_test_{}", Uuid::new_v4()));
         let sandbox = EvidenceVault::build_sandbox_paths(&temp_dir);
-        sandbox.create_all().expect("Failed to create sandbox hierarchy");
+        sandbox
+            .create_all()
+            .expect("Failed to create sandbox hierarchy");
 
         // 1. Parent directory traversal payloads
         let traversal_payloads = [
@@ -916,7 +963,8 @@ mod tests {
             match res {
                 Err(AppError::Validation(msg)) => {
                     assert!(
-                        msg.contains("Path traversal rejected") || msg.contains("Sandbox escape violation"),
+                        msg.contains("Path traversal rejected")
+                            || msg.contains("Sandbox escape violation"),
                         "Expected path traversal rejection message, got: {}",
                         msg
                     );
@@ -942,7 +990,11 @@ mod tests {
             );
             match res {
                 Err(AppError::Validation(msg)) => {
-                    assert!(msg.contains("null byte"), "Expected null byte alert, got: {}", msg);
+                    assert!(
+                        msg.contains("null byte"),
+                        "Expected null byte alert, got: {}",
+                        msg
+                    );
                 }
                 other => panic!("Expected AppError::Validation, got {:?}", other),
             }
@@ -965,7 +1017,8 @@ mod tests {
                 path
             );
 
-            let containment_res = EvidenceVault::validate_sandbox_containment(&sandbox.base_dir, path);
+            let containment_res =
+                EvidenceVault::validate_sandbox_containment(&sandbox.base_dir, path);
             assert!(
                 containment_res.is_err(),
                 "Absolute path '{}' outside sandbox base must be rejected",
@@ -976,10 +1029,12 @@ mod tests {
         // 4. Symlink escape prevention (Unix platforms)
         #[cfg(unix)]
         {
-            let external_dir = std::env::temp_dir().join(format!("external_secret_{}", Uuid::new_v4()));
+            let external_dir =
+                std::env::temp_dir().join(format!("external_secret_{}", Uuid::new_v4()));
             fs::create_dir_all(&external_dir).expect("Failed to create external test dir");
             let external_file = external_dir.join("secret_records.pdf");
-            fs::write(&external_file, b"CLASSIFIED DEBTOR MEDICAL RECORD").expect("Failed to write external file");
+            fs::write(&external_file, b"CLASSIFIED DEBTOR MEDICAL RECORD")
+                .expect("Failed to write external file");
 
             // Create symlink inside sandbox pointing outside
             let symlink_in_sandbox = sandbox.evidence_dir.join("symlink_to_external_file");
@@ -987,8 +1042,12 @@ mod tests {
                 .expect("Failed to create symlink");
 
             // Validating containment on symlink must detect external target and reject
-            let escape_res = EvidenceVault::validate_sandbox_containment(&sandbox.base_dir, &symlink_in_sandbox);
-            assert!(escape_res.is_err(), "Symlink pointing outside sandbox must be rejected");
+            let escape_res =
+                EvidenceVault::validate_sandbox_containment(&sandbox.base_dir, &symlink_in_sandbox);
+            assert!(
+                escape_res.is_err(),
+                "Symlink pointing outside sandbox must be rejected"
+            );
             match escape_res {
                 Err(AppError::Validation(msg)) => {
                     assert!(
@@ -1002,10 +1061,17 @@ mod tests {
 
             // Create symlink directory pointing outside
             let symlink_dir = sandbox.evidence_dir.join("symlink_to_external_dir");
-            std::os::unix::fs::symlink(&external_dir, &symlink_dir).expect("Failed to create symlink dir");
+            std::os::unix::fs::symlink(&external_dir, &symlink_dir)
+                .expect("Failed to create symlink dir");
             let file_in_symlink_dir = symlink_dir.join("non_existent_yet.pdf");
-            let dir_escape_res = EvidenceVault::validate_sandbox_containment(&sandbox.base_dir, &file_in_symlink_dir);
-            assert!(dir_escape_res.is_err(), "Path inside symlinked external dir must be rejected");
+            let dir_escape_res = EvidenceVault::validate_sandbox_containment(
+                &sandbox.base_dir,
+                &file_in_symlink_dir,
+            );
+            assert!(
+                dir_escape_res.is_err(),
+                "Path inside symlinked external dir must be rejected"
+            );
 
             let _ = fs::remove_dir_all(&external_dir);
         }
@@ -1018,7 +1084,8 @@ mod tests {
         assert!(EvidenceVault::sanitize_filename("evil/file.pdf").is_err());
         assert!(EvidenceVault::sanitize_filename("evil\\file.pdf").is_err());
 
-        let clean_filename = EvidenceVault::sanitize_filename("BATES-000001 Medical Notice 2026.pdf").unwrap();
+        let clean_filename =
+            EvidenceVault::sanitize_filename("BATES-000001 Medical Notice 2026.pdf").unwrap();
         assert_eq!(clean_filename, "BATES-000001 Medical Notice 2026.pdf");
 
         // 6. Legitimate subpaths inside sandbox
@@ -1029,7 +1096,9 @@ mod tests {
         let legit_2 = sandbox.resolve_safe_subpath("letters/dispute.txt").unwrap();
         assert!(legit_2.starts_with(&canonical_sandbox_base));
 
-        let legit_3 = sandbox.resolve_safe_subpath("backups/snapshot.aes").unwrap();
+        let legit_3 = sandbox
+            .resolve_safe_subpath("backups/snapshot.aes")
+            .unwrap();
         assert!(legit_3.starts_with(&canonical_sandbox_base));
 
         // Cleanup
@@ -1076,7 +1145,8 @@ mod tests {
 
         // MP3 raw frame sync (0xFF 0xFB)
         let mp3_sync = [0xFF, 0xFB, 0x90, 0x44, 0x00, 0x00];
-        let mp3_sync_info = EvidenceVault::validate_evidence_payload(&mp3_sync, "mp3", None).unwrap();
+        let mp3_sync_info =
+            EvidenceVault::validate_evidence_payload(&mp3_sync, "mp3", None).unwrap();
         assert_eq!(mp3_sync_info.file_type, SupportedFileType::Mp3);
 
         // 2. Executable binary rejection
@@ -1087,7 +1157,10 @@ mod tests {
 
         // Windows PE disguised as PDF (spoofed extension)
         let win_exe_disguised = EvidenceVault::validate_evidence_payload(&win_exe, "pdf", None);
-        assert!(win_exe_disguised.is_err(), "Spoofed Windows PE as .pdf must be rejected");
+        assert!(
+            win_exe_disguised.is_err(),
+            "Spoofed Windows PE as .pdf must be rejected"
+        );
 
         // Linux ELF ("\x7fELF")
         let linux_elf = [0x7F, 0x45, 0x4C, 0x46, 0x02, 0x01, 0x01, 0x00];
@@ -1096,7 +1169,10 @@ mod tests {
 
         // Linux ELF disguised as PNG
         let elf_png = EvidenceVault::validate_evidence_payload(&linux_elf, "png", None);
-        assert!(elf_png.is_err(), "Spoofed Linux ELF as .png must be rejected");
+        assert!(
+            elf_png.is_err(),
+            "Spoofed Linux ELF as .png must be rejected"
+        );
 
         // macOS Mach-O 64-bit
         let macho = [0xFE, 0xED, 0xFA, 0xCF, 0x00, 0x00, 0x00, 0x01];
@@ -1109,7 +1185,9 @@ mod tests {
         assert!(sh_res.is_err(), "Shell script must be rejected");
 
         // Prohibited extensions
-        for bad_ext in &["exe", "dll", "so", "dylib", "bat", "cmd", "ps1", "sh", "vbs"] {
+        for bad_ext in &[
+            "exe", "dll", "so", "dylib", "bat", "cmd", "ps1", "sh", "vbs",
+        ] {
             let res = EvidenceVault::validate_evidence_payload(pdf_bytes, bad_ext, None);
             assert!(res.is_err(), "Extension .{} must be rejected", bad_ext);
         }
@@ -1117,11 +1195,17 @@ mod tests {
         // 3. MIME / Extension mismatch
         // PNG header with .pdf extension
         let png_as_pdf = EvidenceVault::validate_evidence_payload(&png_bytes, "pdf", None);
-        assert!(png_as_pdf.is_err(), "MIME mismatch (PNG with .pdf) must be rejected");
+        assert!(
+            png_as_pdf.is_err(),
+            "MIME mismatch (PNG with .pdf) must be rejected"
+        );
 
         // PDF header with .mp3 extension
         let pdf_as_mp3 = EvidenceVault::validate_evidence_payload(pdf_bytes, "mp3", None);
-        assert!(pdf_as_mp3.is_err(), "MIME mismatch (PDF with .mp3) must be rejected");
+        assert!(
+            pdf_as_mp3.is_err(),
+            "MIME mismatch (PDF with .mp3) must be rejected"
+        );
 
         // 4. Empty file rejection (0 bytes)
         let empty_res = EvidenceVault::validate_evidence_payload(b"", "pdf", None);
@@ -1130,24 +1214,38 @@ mod tests {
         // 5. File size limit enforcement
         let max_test_limit = 500u64; // 500 bytes limit
         let small_content = b"%PDF-1.4 Mock document under 500 bytes limit";
-        assert!(EvidenceVault::validate_evidence_payload(small_content, "pdf", Some(max_test_limit)).is_ok());
+        assert!(
+            EvidenceVault::validate_evidence_payload(small_content, "pdf", Some(max_test_limit))
+                .is_ok()
+        );
 
         let mut large_content = Vec::new();
         large_content.extend_from_slice(b"%PDF-1.4 ");
         large_content.resize(600, b'A'); // 600 bytes exceeds 500 byte limit
-        let oversize_res = EvidenceVault::validate_evidence_payload(&large_content, "pdf", Some(max_test_limit));
-        assert!(oversize_res.is_err(), "Payload exceeding limit must be rejected");
+        let oversize_res =
+            EvidenceVault::validate_evidence_payload(&large_content, "pdf", Some(max_test_limit));
+        assert!(
+            oversize_res.is_err(),
+            "Payload exceeding limit must be rejected"
+        );
         match oversize_res {
             Err(AppError::Validation(msg)) => {
-                assert!(msg.contains("Evidence file size exceeds limit"), "Got: {}", msg);
+                assert!(
+                    msg.contains("Evidence file size exceeds limit"),
+                    "Got: {}",
+                    msg
+                );
             }
             other => panic!("Expected AppError::Validation, got {:?}", other),
         }
 
         // 6. Ingest evidence integration: rejection of malware disguised as evidence
-        let temp_dir = std::env::temp_dir().join(format!("settlemint_mime_test_{}", Uuid::new_v4()));
+        let temp_dir =
+            std::env::temp_dir().join(format!("settlemint_mime_test_{}", Uuid::new_v4()));
         let sandbox = EvidenceVault::build_sandbox_paths(&temp_dir);
-        sandbox.create_all().expect("Failed to create sandbox hierarchy");
+        sandbox
+            .create_all()
+            .expect("Failed to create sandbox hierarchy");
 
         let malicious_file = temp_dir.join("ransomware_trojan.pdf");
         fs::write(&malicious_file, win_exe).expect("Failed to write mock malicious file");
@@ -1159,5 +1257,3 @@ mod tests {
         let _ = fs::remove_dir_all(&temp_dir);
     }
 }
-
-

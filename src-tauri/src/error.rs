@@ -14,10 +14,7 @@ pub enum AppError {
     Validation(String),
 
     #[error("Invalid state transition: from {current} to {attempted}")]
-    InvalidStateTransition {
-        current: String,
-        attempted: String,
-    },
+    InvalidStateTransition { current: String, attempted: String },
 
     #[error("Cryptographic or I/O error: {0}")]
     Io(String),
