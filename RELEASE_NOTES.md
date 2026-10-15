@@ -44,9 +44,13 @@ SettleMint is a zero-telemetry, local-first consumer credit shield and debt disp
 
 ---
 
-## 📦 Production Package Verification (macOS Apple Silicon)
+## 📦 Production Package Verification
 
-| Artifact Name | Format | Size | SHA-256 Checksum |
-|---|---|---|---|
-| `SettleMint_0.1.0_aarch64.dmg` | macOS Installer DMG | 3.36 MB | `01578d8c6a34fd14b4a3b8159dfca0c4395d62e24c26436d733b7a695b90e8f7` |
-| `SettleMint.app` | macOS App Bundle | 6.51 MB | Built with LTO, `opt-level = 3`, and debug symbol stripping (`strip = true`) |
+| Artifact Name | Target Platform / Architecture | Format | Size | SHA-256 Checksum |
+|---|---|---|---|---|
+| `SettleMint_0.1.0_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | DMG Installer | 6.41 MiB | `e8a7730653fea61df35f62d87c47708ae550f6cf6e02f5d01a40ea0707d1a37d` |
+| `SettleMint_0.1.0_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.21 MiB | `5f82be65e28fc893f0af7bd9583bf83751b35f2be8fb18b02b227ea612ef9474` |
+| `SettleMint_0.1.0_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.20 MiB | `735ffd52fab9835911c134f77d55f5064151c044c3d1fd8ae040f2e9725be0a2` |
+| `SettleMint_0.1.0_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.31 MiB | `404b5e8a5599091f7c463abcb7954d1865971cccaeaca5a0d30e3bbb9a70f42c` |
+| `SettleMint_0.1.0_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 3.22 MiB | `c3b0b9a993981bb37b3e5d6c852468977d0e2321cf7171d6d483d8ef92ce98b7` |
+
