@@ -153,22 +153,22 @@ impl MedicalDebtEngine {
             (claim.service_type, claim.good_faith_estimate_amount)
         {
             let variance = claim.total_billed_amount - gfe_amount;
-                // Statutory threshold: $400 or more above the Good Faith Estimate
-                if variance >= 400.0 {
-                    is_gfe_violation = true;
-                    is_unlawful_balance_bill = true;
-                    statutory_citation = Some(
-                        "Public Law 116-260; 42 U.S.C. § 300gg-136; 45 C.F.R. § 149.610".to_string(),
-                    );
-                    violation_summary = Some(format!(
-                        "Good Faith Estimate (GFE) violation. Billed amount (${:.2}) exceeds the written Good Faith Estimate (${:.2}) by ${:.2}, exceeding the $400 statutory threshold and triggering Patient-Provider Dispute Resolution eligibility.",
-                        claim.total_billed_amount, gfe_amount, variance
-                    ));
-                    required_demands.push(
+            // Statutory threshold: $400 or more above the Good Faith Estimate
+            if variance >= 400.0 {
+                is_gfe_violation = true;
+                is_unlawful_balance_bill = true;
+                statutory_citation = Some(
+                    "Public Law 116-260; 42 U.S.C. § 300gg-136; 45 C.F.R. § 149.610".to_string(),
+                );
+                violation_summary = Some(format!(
+                    "Good Faith Estimate (GFE) violation. Billed amount (${:.2}) exceeds the written Good Faith Estimate (${:.2}) by ${:.2}, exceeding the $400 statutory threshold and triggering Patient-Provider Dispute Resolution eligibility.",
+                    claim.total_billed_amount, gfe_amount, variance
+                ));
+                required_demands.push(
                         "Detailed itemized reconciliation between billed medical charges and the pre-service written Good Faith Estimate."
                             .to_string(),
                     );
-                }
+            }
 
             return MedicalStatutoryAuditResult {
                 is_unlawful_balance_bill,
@@ -259,16 +259,20 @@ mod tests {
         assert!(result.is_unlawful_balance_bill);
         assert_eq!(result.lawful_consumer_liability, 250.0);
         assert_eq!(result.unlawful_balance_billed_amount, 2250.0);
-        assert!(result
-            .statutory_citation
-            .as_ref()
-            .unwrap()
-            .contains("No Surprises Act"));
-        assert!(result
-            .violation_summary
-            .as_ref()
-            .unwrap()
-            .contains("Unlawful emergency balance billing"));
+        assert!(
+            result
+                .statutory_citation
+                .as_ref()
+                .unwrap()
+                .contains("No Surprises Act")
+        );
+        assert!(
+            result
+                .violation_summary
+                .as_ref()
+                .unwrap()
+                .contains("Unlawful emergency balance billing")
+        );
     }
 
     #[test]
@@ -293,11 +297,13 @@ mod tests {
         assert!(result.is_unlawful_balance_bill);
         assert_eq!(result.lawful_consumer_liability, 50.0);
         assert_eq!(result.unlawful_balance_billed_amount, 1150.0);
-        assert!(result
-            .statutory_citation
-            .as_ref()
-            .unwrap()
-            .contains("45 C.F.R. § 149.420"));
+        assert!(
+            result
+                .statutory_citation
+                .as_ref()
+                .unwrap()
+                .contains("45 C.F.R. § 149.420")
+        );
     }
 
     #[test]
@@ -323,11 +329,13 @@ mod tests {
         assert!(result.is_unlawful_balance_bill);
         assert_eq!(result.lawful_consumer_liability, 800.0);
         assert_eq!(result.unlawful_balance_billed_amount, 550.0);
-        assert!(result
-            .statutory_citation
-            .as_ref()
-            .unwrap()
-            .contains("42 U.S.C. § 300gg-136"));
+        assert!(
+            result
+                .statutory_citation
+                .as_ref()
+                .unwrap()
+                .contains("42 U.S.C. § 300gg-136")
+        );
     }
 
     #[test]
@@ -349,13 +357,17 @@ mod tests {
 
         let result = MedicalDebtEngine::audit_claim(&claim);
         assert!(result.is_missing_statutory_validation_data);
-        assert!(result
-            .required_validation_demands
-            .iter()
-            .any(|d| d.contains("CMS-1500 or UB-04")));
-        assert!(result
-            .required_validation_demands
-            .iter()
-            .any(|d| d.contains("Unbroken chain of assignment")));
+        assert!(
+            result
+                .required_validation_demands
+                .iter()
+                .any(|d| d.contains("CMS-1500 or UB-04"))
+        );
+        assert!(
+            result
+                .required_validation_demands
+                .iter()
+                .any(|d| d.contains("Unbroken chain of assignment"))
+        );
     }
 }

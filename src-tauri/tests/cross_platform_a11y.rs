@@ -19,7 +19,12 @@ fn test_multi_os_sandbox_path_resolution_and_security() {
 
     #[cfg(target_os = "macos")]
     {
-        assert!(sandbox_dir.to_str().unwrap().contains("Library/Application Support/SettleMint"));
+        assert!(
+            sandbox_dir
+                .to_str()
+                .unwrap()
+                .contains("Library/Application Support/SettleMint")
+        );
     }
 
     #[cfg(target_os = "windows")]
@@ -29,7 +34,10 @@ fn test_multi_os_sandbox_path_resolution_and_security() {
 
     #[cfg(target_os = "linux")]
     {
-        assert!(sandbox_dir.to_str().unwrap().contains(".config/SettleMint") || sandbox_dir.to_str().unwrap().contains("SettleMint"));
+        assert!(
+            sandbox_dir.to_str().unwrap().contains(".config/SettleMint")
+                || sandbox_dir.to_str().unwrap().contains("SettleMint")
+        );
     }
 
     // 2. Verify cross-platform directory structure creation
@@ -41,7 +49,9 @@ fn test_multi_os_sandbox_path_resolution_and_security() {
     assert_eq!(sandbox.backups_dir, temp_root.join("backups"));
     assert_eq!(sandbox.temp_dir, temp_root.join("temp"));
 
-    sandbox.create_all().expect("Create multi-OS sandbox hierarchy");
+    sandbox
+        .create_all()
+        .expect("Create multi-OS sandbox hierarchy");
     assert!(sandbox.database_dir.exists());
     assert!(sandbox.evidence_dir.exists());
     assert!(sandbox.letters_dir.exists());
@@ -90,7 +100,12 @@ fn test_system_tray_menu_actions_and_notification_delivery() {
         (7, "2026-05-17T00:00:00Z", false, "7-Day Notice Alert"),
         (3, "2026-05-13T00:00:00Z", true, "3-Day Imminent Warning"),
         (1, "2026-05-11T00:00:00Z", true, "1-Day Critical Alert"),
-        (0, "2026-05-10T00:00:00Z", true, "0-Day Action Required Today"),
+        (
+            0,
+            "2026-05-10T00:00:00Z",
+            true,
+            "0-Day Action Required Today",
+        ),
     ];
 
     for (days_remaining, target_rfc3339, expected_urgent, description) in test_cases {
@@ -99,20 +114,26 @@ fn test_system_tray_menu_actions_and_notification_delivery() {
             case_id,
             deadline_type: DeadlineType::Fdcpa30DayValidation,
             title: format!("Dispute Task ({})", description),
-            target_date: chrono::DateTime::parse_from_rfc3339(target_rfc3339).unwrap().with_timezone(&Utc),
+            target_date: chrono::DateTime::parse_from_rfc3339(target_rfc3339)
+                .unwrap()
+                .with_timezone(&Utc),
             completed: false,
             reminder_days_prior: vec![days_remaining as u32],
             notes: "".to_string(),
         };
 
-        let alerts = BackgroundMonitor::evaluate_deadlines_with_drift(&[deadline], Some(today), None);
+        let alerts =
+            BackgroundMonitor::evaluate_deadlines_with_drift(&[deadline], Some(today), None);
         assert_eq!(alerts.len(), 1, "Expected alert for {}", description);
         let alert = &alerts[0];
         assert_eq!(alert.days_remaining, days_remaining);
         assert_eq!(alert.is_urgent, expected_urgent);
         assert!(!alert.title.is_empty());
         assert!(!alert.alert_message.is_empty());
-        println!("  -> Verified notification payload for {}: '{}' (Urgent: {})", description, alert.alert_message, alert.is_urgent);
+        println!(
+            "  -> Verified notification payload for {}: '{}' (Urgent: {})",
+            description, alert.alert_message, alert.is_urgent
+        );
     }
 
     // Days outside notification thresholds (> 30 days or not at 7, 3, 1, 0)
@@ -121,13 +142,19 @@ fn test_system_tray_menu_actions_and_notification_delivery() {
         case_id,
         deadline_type: DeadlineType::CustomTask,
         title: "Normal Schedule".to_string(),
-        target_date: chrono::DateTime::parse_from_rfc3339("2026-05-24T00:00:00Z").unwrap().with_timezone(&Utc),
+        target_date: chrono::DateTime::parse_from_rfc3339("2026-05-24T00:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc),
         completed: false,
         reminder_days_prior: vec![7],
         notes: "".to_string(),
     };
-    let benign_alerts = BackgroundMonitor::evaluate_deadlines_with_drift(&[benign_deadline], Some(today), None);
-    assert!(benign_alerts.is_empty(), "Days between milestones should not spam notifications");
+    let benign_alerts =
+        BackgroundMonitor::evaluate_deadlines_with_drift(&[benign_deadline], Some(today), None);
+    assert!(
+        benign_alerts.is_empty(),
+        "Days between milestones should not spam notifications"
+    );
 
     println!("  -> System tray action and native notification payload tests passed ✓");
 }

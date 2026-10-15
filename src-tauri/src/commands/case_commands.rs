@@ -1,7 +1,7 @@
 use crate::db::DatabaseManager;
 use crate::error::AppResult;
 use crate::models::{Case, CaseStatus};
-use tauri::{command, State};
+use tauri::{State, command};
 use uuid::Uuid;
 
 #[command]

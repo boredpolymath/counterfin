@@ -2,7 +2,7 @@ pub mod dao;
 pub mod schema;
 
 pub use dao::{
-    CaseDao, CreditorDao, CreditTradelineDao, DeadlineDao, DocumentDao, InteractionDao,
+    CaseDao, CreditTradelineDao, CreditorDao, DeadlineDao, DocumentDao, InteractionDao,
     ViolationDao,
 };
 
@@ -66,13 +66,19 @@ impl DatabaseManager {
 
     /// Force an explicit SQLite WAL checkpoint to flush all WAL journal pages into the main database file
     pub fn checkpoint(&self) -> AppResult<()> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         conn.execute_batch("PRAGMA wal_checkpoint(TRUNCATE);")?;
         Ok(())
     }
 
     pub fn create_case(&self, case: &Case) -> AppResult<Uuid> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CaseDao::insert(&conn, case)
     }
 
@@ -82,32 +88,50 @@ impl DatabaseManager {
         creditors: &[Creditor],
         documents: &[Document],
     ) -> AppResult<Uuid> {
-        let mut conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let mut conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CaseDao::insert_bundle(&mut conn, case, creditors, documents)
     }
 
     pub fn get_cases(&self) -> AppResult<Vec<Case>> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CaseDao::get_all(&conn)
     }
 
     pub fn get_case_by_id(&self, case_id: &str) -> AppResult<Option<Case>> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CaseDao::get_by_id(&conn, case_id)
     }
 
     pub fn update_case_status(&self, case_id: &str, new_status: &CaseStatus) -> AppResult<bool> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CaseDao::update_status(&conn, case_id, new_status)
     }
 
     pub fn create_creditor(&self, creditor: &Creditor) -> AppResult<Uuid> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CreditorDao::insert(&conn, creditor)
     }
 
     pub fn get_creditors(&self, case_id: &str) -> AppResult<Vec<Creditor>> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CreditorDao::get_by_case(&conn, case_id)
     }
 
@@ -116,47 +140,74 @@ impl DatabaseManager {
         interaction: &Interaction,
         violations: &[Violation],
     ) -> AppResult<Uuid> {
-        let mut conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let mut conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         InteractionDao::log(&mut conn, interaction, violations)
     }
 
     pub fn get_interactions(&self, case_id: &str) -> AppResult<Vec<Interaction>> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         InteractionDao::get_by_case(&conn, case_id)
     }
 
     pub fn get_violations(&self, case_id: &str) -> AppResult<Vec<Violation>> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         ViolationDao::get_by_case(&conn, case_id)
     }
 
     pub fn create_document(&self, doc: &Document) -> AppResult<Uuid> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         DocumentDao::insert(&conn, doc)
     }
 
     pub fn get_documents(&self, case_id: &str) -> AppResult<Vec<Document>> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         DocumentDao::get_by_case(&conn, case_id)
     }
 
     pub fn create_credit_tradeline(&self, tradeline: &CreditTradeLine) -> AppResult<Uuid> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CreditTradelineDao::insert(&conn, tradeline)
     }
 
     pub fn get_credit_tradelines(&self, case_id: &str) -> AppResult<Vec<CreditTradeLine>> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         CreditTradelineDao::get_by_case(&conn, case_id)
     }
 
     pub fn create_deadline(&self, deadline: &Deadline) -> AppResult<Uuid> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         DeadlineDao::insert(&conn, deadline)
     }
 
     pub fn get_deadlines(&self, case_id: &str) -> AppResult<Vec<Deadline>> {
-        let conn = self.conn.lock().map_err(|e| AppError::Internal(e.to_string()))?;
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| AppError::Internal(e.to_string()))?;
         DeadlineDao::get_by_case(&conn, case_id)
     }
 }
@@ -239,7 +290,9 @@ mod tests {
             state_license_id: Some("TX-BOND-2026-01".to_string()),
         };
         db.create_creditor(&creditor).expect("Create creditor");
-        let creditors = db.get_creditors(&case_id.to_string()).expect("Get creditors");
+        let creditors = db
+            .get_creditors(&case_id.to_string())
+            .expect("Get creditors");
         assert_eq!(creditors.len(), 1);
         assert_eq!(creditors[0].entity_name, "Apex Collections LLC");
 
@@ -296,12 +349,15 @@ mod tests {
             title: "Initial Dunning Notice".to_string(),
             document_type: DocumentType::DebtValidationLetter,
             relative_file_path: "evidence/bates-0001.pdf".to_string(),
-            sha256_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855".to_string(),
+            sha256_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                .to_string(),
             file_size_bytes: 4096,
             created_at: Utc::now(),
         };
         db.create_document(&doc).expect("Create document");
-        let docs = db.get_documents(&case_id.to_string()).expect("Get documents");
+        let docs = db
+            .get_documents(&case_id.to_string())
+            .expect("Get documents");
         assert_eq!(docs.len(), 1);
         assert_eq!(docs[0].bates_identifier, "BATES-0001");
 
@@ -317,7 +373,9 @@ mod tests {
             notes: "Send validation response before expiry".to_string(),
         };
         db.create_deadline(&deadline).expect("Create deadline");
-        let deadlines = db.get_deadlines(&case_id.to_string()).expect("Get deadlines");
+        let deadlines = db
+            .get_deadlines(&case_id.to_string())
+            .expect("Get deadlines");
         assert_eq!(deadlines.len(), 1);
         assert!(!deadlines[0].completed);
 
@@ -334,7 +392,8 @@ mod tests {
             fcra_violation_flag: false,
             last_reported_date: "2026-01-15".to_string(),
         };
-        db.create_credit_tradeline(&tradeline).expect("Create tradeline");
+        db.create_credit_tradeline(&tradeline)
+            .expect("Create tradeline");
         let tradelines = db
             .get_credit_tradelines(&case_id.to_string())
             .expect("Get tradelines");
@@ -368,7 +427,8 @@ mod tests {
         db.create_case(&case).expect("Create case");
 
         // 1. Invalid jump: InitialNotice -> CollectorResponded (skipped ValidationPending)
-        let invalid_jump = db.update_case_status(&case_id.to_string(), &CaseStatus::CollectorResponded);
+        let invalid_jump =
+            db.update_case_status(&case_id.to_string(), &CaseStatus::CollectorResponded);
         assert!(matches!(
             invalid_jump,
             Err(AppError::InvalidStateTransition { ref current, ref attempted })
@@ -393,7 +453,8 @@ mod tests {
         assert!(fetched.closed_at.is_some());
 
         // 5. Invalid transition: cannot reopen or jump from terminal DebtDismissed back to InitialNotice
-        let reopen_attempt = db.update_case_status(&case_id.to_string(), &CaseStatus::InitialNotice);
+        let reopen_attempt =
+            db.update_case_status(&case_id.to_string(), &CaseStatus::InitialNotice);
         assert!(matches!(
             reopen_attempt,
             Err(AppError::InvalidStateTransition { ref current, ref attempted })
@@ -438,7 +499,10 @@ mod tests {
         for _ in 0..10 {
             let db_clone = Arc::clone(&db);
             update_handles.push(thread::spawn(move || {
-                db_clone.update_case_status(&single_case_id.to_string(), &CaseStatus::CollectorResponded)
+                db_clone.update_case_status(
+                    &single_case_id.to_string(),
+                    &CaseStatus::CollectorResponded,
+                )
             }));
         }
 
@@ -501,12 +565,17 @@ mod tests {
             let db_clone = Arc::clone(&db);
             worker_handles.push(thread::spawn(move || {
                 // InitialNotice -> ValidationPending
-                let s1 = db_clone.update_case_status(&cid.to_string(), &CaseStatus::ValidationPending);
+                let s1 =
+                    db_clone.update_case_status(&cid.to_string(), &CaseStatus::ValidationPending);
                 assert!(s1.is_ok(), "Transition to ValidationPending should succeed");
 
                 // ValidationPending -> CollectorResponded
-                let s2 = db_clone.update_case_status(&cid.to_string(), &CaseStatus::CollectorResponded);
-                assert!(s2.is_ok(), "Transition to CollectorResponded should succeed");
+                let s2 =
+                    db_clone.update_case_status(&cid.to_string(), &CaseStatus::CollectorResponded);
+                assert!(
+                    s2.is_ok(),
+                    "Transition to CollectorResponded should succeed"
+                );
 
                 // CollectorResponded -> DebtDismissed (terminal)
                 let s3 = db_clone.update_case_status(&cid.to_string(), &CaseStatus::DebtDismissed);
@@ -604,7 +673,8 @@ mod tests {
             title: "Validation Notice".to_string(),
             document_type: DocumentType::DebtValidationLetter,
             relative_file_path: "evidence/doc1.pdf".to_string(),
-            sha256_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855".to_string(),
+            sha256_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                .to_string(),
             file_size_bytes: 1024,
             created_at: Utc::now(),
         };
@@ -617,20 +687,39 @@ mod tests {
             title: "Itemized Billing Statement".to_string(),
             document_type: DocumentType::ProviderBillingRecord,
             relative_file_path: "evidence/doc2.pdf".to_string(),
-            sha256_hash: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad".to_string(),
+            sha256_hash: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+                .to_string(),
             file_size_bytes: 2048,
             created_at: Utc::now(),
         };
 
         // Execute case bundle ingestion which MUST fail on doc2
         let bundle_result = db.create_case_bundle(&case, &[creditor], &[doc1, doc2]);
-        assert!(bundle_result.is_err(), "Bundle insertion must fail due to duplicate Bates identifier");
+        assert!(
+            bundle_result.is_err(),
+            "Bundle insertion must fail due to duplicate Bates identifier"
+        );
 
         // Verify complete rollback: Case, Creditor, and Document 1 MUST NOT exist in database!
-        assert!(db.get_case_by_id(&case_id.to_string()).unwrap().is_none(), "Case should have rolled back");
-        assert_eq!(db.get_cases().unwrap().len(), 0, "No cases should exist after rollback");
-        assert_eq!(db.get_creditors(&case_id.to_string()).unwrap().len(), 0, "Creditor should have rolled back");
-        assert_eq!(db.get_documents(&case_id.to_string()).unwrap().len(), 0, "Document 1 should have rolled back");
+        assert!(
+            db.get_case_by_id(&case_id.to_string()).unwrap().is_none(),
+            "Case should have rolled back"
+        );
+        assert_eq!(
+            db.get_cases().unwrap().len(),
+            0,
+            "No cases should exist after rollback"
+        );
+        assert_eq!(
+            db.get_creditors(&case_id.to_string()).unwrap().len(),
+            0,
+            "Creditor should have rolled back"
+        );
+        assert_eq!(
+            db.get_documents(&case_id.to_string()).unwrap().len(),
+            0,
+            "Document 1 should have rolled back"
+        );
 
         // Test 2: Interaction Logging Rollback on Violation Constraint Violation
         // First, insert a valid case
@@ -678,12 +767,24 @@ mod tests {
             evidence_references: vec![],
         };
 
-        let log_result = db.log_interaction(&interaction, &[violation_valid.clone(), violation_invalid]);
-        assert!(log_result.is_err(), "Interaction log must fail on duplicate violation ID");
+        let log_result =
+            db.log_interaction(&interaction, &[violation_valid.clone(), violation_invalid]);
+        assert!(
+            log_result.is_err(),
+            "Interaction log must fail on duplicate violation ID"
+        );
 
         // Verify complete rollback: interaction and violation 1 MUST NOT exist
-        assert_eq!(db.get_interactions(&case_id.to_string()).unwrap().len(), 0, "Interaction should have rolled back");
-        assert_eq!(db.get_violations(&case_id.to_string()).unwrap().len(), 0, "Violation 1 should have rolled back");
+        assert_eq!(
+            db.get_interactions(&case_id.to_string()).unwrap().len(),
+            0,
+            "Interaction should have rolled back"
+        );
+        assert_eq!(
+            db.get_violations(&case_id.to_string()).unwrap().len(),
+            0,
+            "Violation 1 should have rolled back"
+        );
 
         // Test 3: Successful Transaction Commit
         let violation2_valid = Violation {
@@ -699,7 +800,10 @@ mod tests {
         };
 
         let success_result = db.log_interaction(&interaction, &[violation_valid, violation2_valid]);
-        assert!(success_result.is_ok(), "Valid transaction should commit successfully");
+        assert!(
+            success_result.is_ok(),
+            "Valid transaction should commit successfully"
+        );
 
         assert_eq!(db.get_interactions(&case_id.to_string()).unwrap().len(), 1);
         assert_eq!(db.get_violations(&case_id.to_string()).unwrap().len(), 2);
@@ -762,17 +866,27 @@ mod tests {
 
             // Insertion must treat payload as pure literal string data without executing SQL commands
             let insert_res = db.create_case(&case);
-            assert!(insert_res.is_ok(), "Failed to safely insert case with payload: {}", payload);
+            assert!(
+                insert_res.is_ok(),
+                "Failed to safely insert case with payload: {}",
+                payload
+            );
 
             // Lookup by exact docket containing injection string
             let fetched = db.get_case_by_id(&docket).expect("Safe lookup by docket");
-            assert!(fetched.is_some(), "Should find case matching exact literal string");
+            assert!(
+                fetched.is_some(),
+                "Should find case matching exact literal string"
+            );
             assert_eq!(fetched.unwrap().docket_number, docket);
 
             // Attempt status update using injection payload as case_id
             let update_res = db.update_case_status(payload, &CaseStatus::ValidationPending);
             // Must safely return NotFound or InvalidStateTransition error, NEVER execute SQL injection
-            assert!(update_res.is_err(), "Update with injection case_id must not succeed");
+            assert!(
+                update_res.is_err(),
+                "Update with injection case_id must not succeed"
+            );
         }
 
         // Part 2: Fuzzing Creditor and Interaction DAOs with malicious payloads
@@ -847,7 +961,8 @@ mod tests {
                 title: format!("Doc Title {}", payload),
                 document_type: DocumentType::DebtValidationLetter,
                 relative_file_path: format!("evidence/path_{}.pdf", payload.replace('/', "_")),
-                sha256_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855".to_string(),
+                sha256_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                    .to_string(),
                 file_size_bytes: 1024,
                 created_at: Utc::now(),
             };
@@ -859,7 +974,10 @@ mod tests {
         let integrity: String = conn
             .query_row("PRAGMA integrity_check;", [], |row| row.get(0))
             .expect("Integrity check");
-        assert_eq!(integrity, "ok", "Database integrity check must be ok after fuzzing");
+        assert_eq!(
+            integrity, "ok",
+            "Database integrity check must be ok after fuzzing"
+        );
 
         // Verify table existence - 'cases' and 'interactions' MUST still exist and have all records
         let case_table_count: i64 = conn
@@ -869,7 +987,10 @@ mod tests {
                 |row| row.get(0),
             )
             .expect("Count tables");
-        assert_eq!(case_table_count, 5, "All 5 core tables must exist (no DROP TABLE attacks succeeded)");
+        assert_eq!(
+            case_table_count, 5,
+            "All 5 core tables must exist (no DROP TABLE attacks succeeded)"
+        );
 
         let count: i64 = conn
             .query_row("SELECT count(*) FROM cases", [], |row| row.get(0))
@@ -890,7 +1011,11 @@ mod tests {
             let mode: String = conn
                 .query_row("PRAGMA journal_mode;", [], |row| row.get(0))
                 .expect("Query journal_mode");
-            assert_eq!(mode.to_lowercase(), "wal", "Database must run in WAL journal mode");
+            assert_eq!(
+                mode.to_lowercase(),
+                "wal",
+                "Database must run in WAL journal mode"
+            );
         }
 
         let case1_id = Uuid::new_v4();
@@ -967,15 +1092,26 @@ mod tests {
             let integrity: String = conn
                 .query_row("PRAGMA integrity_check;", [], |row| row.get(0))
                 .expect("Integrity check");
-            assert_eq!(integrity, "ok", "Database integrity check must be ok after crash recovery");
+            assert_eq!(
+                integrity, "ok",
+                "Database integrity check must be ok after crash recovery"
+            );
             drop(conn);
 
             // Both cases must be intact
             let recovered_cases = db.get_cases().expect("Get recovered cases");
-            assert_eq!(recovered_cases.len(), 2, "Both committed cases must survive recovery");
+            assert_eq!(
+                recovered_cases.len(),
+                2,
+                "Both committed cases must survive recovery"
+            );
 
             let recovered_c1 = db.get_case_by_id(&case1_id.to_string()).unwrap().unwrap();
-            assert_eq!(recovered_c1.status, CaseStatus::ValidationPending, "State transition in WAL log must be replayed");
+            assert_eq!(
+                recovered_c1.status,
+                CaseStatus::ValidationPending,
+                "State transition in WAL log must be replayed"
+            );
 
             let recovered_c2 = db.get_case_by_id(&case2_id.to_string()).unwrap().unwrap();
             assert_eq!(recovered_c2.debtor_name, "Wal Customer 2");
@@ -985,4 +1121,3 @@ mod tests {
         std::fs::remove_dir_all(&test_dir).ok();
     }
 }
-

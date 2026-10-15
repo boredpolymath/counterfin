@@ -8,9 +8,8 @@ use crate::models::case::DebtType;
 use crate::models::deadline::Deadline;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
-use tauri::{command, State};
+use tauri::{State, command};
 use uuid::Uuid;
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TimeBarredCheckResult {
@@ -42,14 +41,14 @@ pub async fn calculate_fdcpa_validation_window(
 ) -> AppResult<crate::engine::fdcpa::ValidationWindow> {
     let date = NaiveDate::parse_from_str(&notice_date_str, "%Y-%m-%d")
         .map_err(|e| AppError::Validation(format!("Invalid notice date format: {}", e)))?;
-    let ref_date = if let Some(ref d) = reference_date_str {
-        Some(
-            NaiveDate::parse_from_str(d, "%Y-%m-%d")
-                .map_err(|e| AppError::Validation(format!("Invalid reference date format: {}", e)))?,
-        )
-    } else {
-        None
-    };
+    let ref_date =
+        if let Some(ref d) = reference_date_str {
+            Some(NaiveDate::parse_from_str(d, "%Y-%m-%d").map_err(|e| {
+                AppError::Validation(format!("Invalid reference date format: {}", e))
+            })?)
+        } else {
+            None
+        };
     Ok(FdcpaEngine::calculate_validation_window(date, ref_date))
 }
 
@@ -98,14 +97,14 @@ pub async fn calculate_sol_clock(
 ) -> AppResult<crate::engine::sol::SolClockResult> {
     let default_date = NaiveDate::parse_from_str(&default_date_str, "%Y-%m-%d")
         .map_err(|e| AppError::Validation(format!("Invalid default date format: {}", e)))?;
-    let ref_date = if let Some(ref d) = reference_date_str {
-        Some(
-            NaiveDate::parse_from_str(d, "%Y-%m-%d")
-                .map_err(|e| AppError::Validation(format!("Invalid reference date format: {}", e)))?,
-        )
-    } else {
-        None
-    };
+    let ref_date =
+        if let Some(ref d) = reference_date_str {
+            Some(NaiveDate::parse_from_str(d, "%Y-%m-%d").map_err(|e| {
+                AppError::Validation(format!("Invalid reference date format: {}", e))
+            })?)
+        } else {
+            None
+        };
 
     SolEngine::calculate_sol_clock(&state_code, &debt_type, default_date, ref_date)
         .ok_or_else(|| AppError::Calculation("Failed to calculate SOL clock".to_string()))
@@ -142,22 +141,22 @@ pub async fn check_deadlines_now(
     db: State<'_, DatabaseManager>,
     reference_date_str: Option<String>,
 ) -> AppResult<Vec<DeadlineAlert>> {
-    let ref_date = if let Some(ref d) = reference_date_str {
-        Some(
-            NaiveDate::parse_from_str(d, "%Y-%m-%d")
-                .map_err(|e| AppError::Validation(format!("Invalid reference date format: {}", e)))?,
-        )
-    } else {
-        None
-    };
+    let ref_date =
+        if let Some(ref d) = reference_date_str {
+            Some(NaiveDate::parse_from_str(d, "%Y-%m-%d").map_err(|e| {
+                AppError::Validation(format!("Invalid reference date format: {}", e))
+            })?)
+        } else {
+            None
+        };
     BackgroundMonitor::check_database_deadlines(&db, ref_date)
 }
 
 #[command]
-pub async fn query_certified_mail_status(
-    tracking_number: String,
-) -> AppResult<UspsTrackingResult> {
-    Ok(BackgroundMonitor::query_certified_mail_status(&tracking_number))
+pub async fn query_certified_mail_status(tracking_number: String) -> AppResult<UspsTrackingResult> {
+    Ok(BackgroundMonitor::query_certified_mail_status(
+        &tracking_number,
+    ))
 }
 
 #[command]
@@ -166,4 +165,3 @@ pub async fn poll_certified_mail_cases(
 ) -> AppResult<Vec<DeliveryAdvanceResult>> {
     BackgroundMonitor::poll_and_advance_certified_mail_cases(&db)
 }
-

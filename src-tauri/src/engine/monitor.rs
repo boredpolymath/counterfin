@@ -6,8 +6,8 @@ use crate::models::deadline::Deadline;
 use chrono::{NaiveDate, Utc};
 
 use serde::{Deserialize, Serialize};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 use tauri::{AppHandle, Manager, Runtime};
 
@@ -97,7 +97,8 @@ impl BackgroundMonitor {
             // 1. Direct hit on standard reminder thresholds (7, 3, 1, 0)
             // 2. Already expired (days_remaining < 0)
             // 3. Sleep/wake interval transition: a threshold was crossed between last_check_date and today
-            let mut should_alert = Self::REMINDER_THRESHOLDS_DAYS.contains(&days_remaining) || days_remaining < 0;
+            let mut should_alert =
+                Self::REMINDER_THRESHOLDS_DAYS.contains(&days_remaining) || days_remaining < 0;
 
             if let (false, Some(last_date)) = (should_alert, last_check_date) {
                 let prev_days_remaining = (d.target_date.date_naive() - last_date).num_days();
@@ -112,11 +113,17 @@ impl BackgroundMonitor {
             if should_alert {
                 let is_urgent = days_remaining <= 3;
                 let alert_message = if days_remaining < 0 {
-                    format!("STATUTORY DEADLINE EXPIRED: '{}' expired {} days ago.", d.title, -days_remaining)
+                    format!(
+                        "STATUTORY DEADLINE EXPIRED: '{}' expired {} days ago.",
+                        d.title, -days_remaining
+                    )
                 } else if days_remaining == 0 {
                     format!("ACTION REQUIRED TODAY: '{}' expires today!", d.title)
                 } else {
-                    format!("STATUTORY REMINDER: '{}' expires in {} days.", d.title, days_remaining)
+                    format!(
+                        "STATUTORY REMINDER: '{}' expires in {} days.",
+                        d.title, days_remaining
+                    )
                 };
 
                 alerts.push(DeadlineAlert {
@@ -153,7 +160,8 @@ impl BackgroundMonitor {
 
         for case in cases {
             let deadlines = db.get_deadlines(&case.id.to_string())?;
-            let alerts = Self::evaluate_deadlines_with_drift(&deadlines, reference_today, last_check_date);
+            let alerts =
+                Self::evaluate_deadlines_with_drift(&deadlines, reference_today, last_check_date);
             all_alerts.extend(alerts);
         }
 
@@ -210,14 +218,14 @@ impl BackgroundMonitor {
         let mut updates = Vec::new();
 
         for case in cases {
-            if let (CaseStatus::InitialNotice, Some(tracking)) = (&case.status, &case.certified_mail_tracking) {
+            if let (CaseStatus::InitialNotice, Some(tracking)) =
+                (&case.status, &case.certified_mail_tracking)
+            {
                 let result = Self::query_certified_mail_status(tracking);
                 if let UspsDeliveryStatus::Delivered { ref delivered_at } = result.status {
                     // Advance case state from InitialNotice to ValidationPending
-                    let updated = db.update_case_status(
-                        &case.id.to_string(),
-                        &CaseStatus::ValidationPending,
-                    )?;
+                    let updated = db
+                        .update_case_status(&case.id.to_string(), &CaseStatus::ValidationPending)?;
 
                     if updated {
                         updates.push(DeliveryAdvanceResult {
@@ -252,7 +260,9 @@ impl BackgroundMonitor {
                 // Access database manager
                 if let Some(db) = app_handle.try_state::<DatabaseManager>() {
                     // 1. Evaluate Deadlines & Emit Events with sleep/wake drift tolerance
-                    if let Ok(alerts) = Self::check_database_deadlines_with_drift(&db, Some(today), last_eval_date) {
+                    if let Ok(alerts) =
+                        Self::check_database_deadlines_with_drift(&db, Some(today), last_eval_date)
+                    {
                         for alert in alerts {
                             let _ = EventBus::emit(
                                 &app_handle,
@@ -311,7 +321,9 @@ mod tests {
                 case_id,
                 deadline_type: DeadlineType::Fdcpa30DayValidation,
                 title: "FDCPA Validation Notice Window".to_string(),
-                target_date: chrono::DateTime::parse_from_rfc3339("2026-05-17T00:00:00Z").unwrap().with_timezone(&Utc),
+                target_date: chrono::DateTime::parse_from_rfc3339("2026-05-17T00:00:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
                 completed: false,
                 reminder_days_prior: vec![7],
                 notes: "".to_string(),
@@ -322,7 +334,9 @@ mod tests {
                 case_id,
                 deadline_type: DeadlineType::Fcra30DayCraResponse,
                 title: "FCRA Credit Bureau Dispute".to_string(),
-                target_date: chrono::DateTime::parse_from_rfc3339("2026-05-13T00:00:00Z").unwrap().with_timezone(&Utc),
+                target_date: chrono::DateTime::parse_from_rfc3339("2026-05-13T00:00:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
                 completed: false,
                 reminder_days_prior: vec![3],
                 notes: "".to_string(),
@@ -333,7 +347,9 @@ mod tests {
                 case_id,
                 deadline_type: DeadlineType::CustomTask,
                 title: "Follow-up Call".to_string(),
-                target_date: chrono::DateTime::parse_from_rfc3339("2026-05-25T00:00:00Z").unwrap().with_timezone(&Utc),
+                target_date: chrono::DateTime::parse_from_rfc3339("2026-05-25T00:00:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
                 completed: false,
                 reminder_days_prior: vec![7],
                 notes: "".to_string(),
@@ -344,7 +360,9 @@ mod tests {
                 case_id,
                 deadline_type: DeadlineType::DemandLetterExpiration,
                 title: "Completed Validation".to_string(),
-                target_date: chrono::DateTime::parse_from_rfc3339("2026-05-11T00:00:00Z").unwrap().with_timezone(&Utc),
+                target_date: chrono::DateTime::parse_from_rfc3339("2026-05-11T00:00:00Z")
+                    .unwrap()
+                    .with_timezone(&Utc),
                 completed: true,
                 reminder_days_prior: vec![1],
                 notes: "".to_string(),
@@ -386,8 +404,8 @@ mod tests {
         db.create_case(&case).expect("Insert case");
 
         // Advance cases based on tracking
-        let updates = BackgroundMonitor::poll_and_advance_certified_mail_cases(&db)
-            .expect("Poll tracking");
+        let updates =
+            BackgroundMonitor::poll_and_advance_certified_mail_cases(&db).expect("Poll tracking");
 
         assert_eq!(updates.len(), 1);
         assert_eq!(updates[0].previous_status, "InitialNotice");
@@ -401,25 +419,30 @@ mod tests {
     #[test]
     fn test_system_clock_drift_and_sleep_wake_tolerance() {
         let case_id = Uuid::new_v4();
-        let target_date_time = chrono::DateTime::parse_from_rfc3339("2026-05-17T00:00:00Z").unwrap().with_timezone(&Utc);
+        let target_date_time = chrono::DateTime::parse_from_rfc3339("2026-05-17T00:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc);
 
-        let deadlines = vec![
-            Deadline {
-                id: Uuid::new_v4(),
-                case_id,
-                deadline_type: DeadlineType::Fdcpa30DayValidation,
-                title: "30-Day Debt Validation Window".to_string(),
-                target_date: target_date_time,
-                completed: false,
-                reminder_days_prior: vec![7, 3, 1],
-                notes: "".to_string(),
-            },
-        ];
+        let deadlines = vec![Deadline {
+            id: Uuid::new_v4(),
+            case_id,
+            deadline_type: DeadlineType::Fdcpa30DayValidation,
+            title: "30-Day Debt Validation Window".to_string(),
+            target_date: target_date_time,
+            completed: false,
+            reminder_days_prior: vec![7, 3, 1],
+            notes: "".to_string(),
+        }];
 
         // 1. Normal pre-threshold state: 8 days remaining (May 9) -> No alert
         let day_8_prior = NaiveDate::from_ymd_opt(2026, 5, 9).unwrap();
-        let alerts = BackgroundMonitor::evaluate_deadlines_with_drift(&deadlines, Some(day_8_prior), None);
-        assert_eq!(alerts.len(), 0, "No alert triggered when outside reminder thresholds");
+        let alerts =
+            BackgroundMonitor::evaluate_deadlines_with_drift(&deadlines, Some(day_8_prior), None);
+        assert_eq!(
+            alerts.len(),
+            0,
+            "No alert triggered when outside reminder thresholds"
+        );
 
         // 2. System sleep/wake transition across 7-day threshold:
         // System went to sleep on May 9 (8 days prior) and woke up on May 12 (5 days prior).
@@ -431,10 +454,17 @@ mod tests {
             Some(wake_day_5_prior),
             Some(day_8_prior),
         );
-        assert_eq!(alerts.len(), 1, "Must not drop 7-day alert when waking up 5 days prior");
+        assert_eq!(
+            alerts.len(),
+            1,
+            "Must not drop 7-day alert when waking up 5 days prior"
+        );
         assert_eq!(alerts[0].days_remaining, 5);
         assert!(!alerts[0].is_urgent);
-        assert_eq!(alerts[0].alert_message, "STATUTORY REMINDER: '30-Day Debt Validation Window' expires in 5 days.");
+        assert_eq!(
+            alerts[0].alert_message,
+            "STATUTORY REMINDER: '30-Day Debt Validation Window' expires in 5 days."
+        );
 
         // 3. System sleep/wake transition across 3-day and 1-day urgent thresholds:
         // System was suspended on May 13 (4 days prior) and woke up on May 15 (2 days prior).
@@ -445,10 +475,20 @@ mod tests {
             Some(wake_day_2_prior),
             Some(day_4_prior),
         );
-        assert_eq!(alerts.len(), 1, "Must not drop 3-day urgent alert when waking up 2 days prior");
+        assert_eq!(
+            alerts.len(),
+            1,
+            "Must not drop 3-day urgent alert when waking up 2 days prior"
+        );
         assert_eq!(alerts[0].days_remaining, 2);
-        assert!(alerts[0].is_urgent, "2 days remaining must be marked urgent");
-        assert_eq!(alerts[0].alert_message, "STATUTORY REMINDER: '30-Day Debt Validation Window' expires in 2 days.");
+        assert!(
+            alerts[0].is_urgent,
+            "2 days remaining must be marked urgent"
+        );
+        assert_eq!(
+            alerts[0].alert_message,
+            "STATUTORY REMINDER: '30-Day Debt Validation Window' expires in 2 days."
+        );
 
         // 4. System sleep/wake transition across expiration date:
         // System was suspended on May 16 (1 day prior) and woke up on May 21 (expired 4 days ago).
@@ -459,7 +499,11 @@ mod tests {
             Some(wake_expired),
             Some(day_1_prior),
         );
-        assert_eq!(alerts.len(), 1, "Must immediately flag expired deadline upon waking");
+        assert_eq!(
+            alerts.len(),
+            1,
+            "Must immediately flag expired deadline upon waking"
+        );
         assert_eq!(alerts[0].days_remaining, -4);
         assert!(alerts[0].is_urgent);
         assert_eq!(
@@ -470,11 +514,15 @@ mod tests {
         // 5. Clock drift backwards (e.g. NTP time correction or westward timezone travel):
         // Clock adjusted back from May 18 to May 17 (due date).
         let due_date = NaiveDate::from_ymd_opt(2026, 5, 17).unwrap();
-        let alerts = BackgroundMonitor::evaluate_deadlines_with_drift(&deadlines, Some(due_date), None);
+        let alerts =
+            BackgroundMonitor::evaluate_deadlines_with_drift(&deadlines, Some(due_date), None);
         assert_eq!(alerts.len(), 1);
         assert_eq!(alerts[0].days_remaining, 0);
         assert!(alerts[0].is_urgent);
-        assert_eq!(alerts[0].alert_message, "ACTION REQUIRED TODAY: '30-Day Debt Validation Window' expires today!");
+        assert_eq!(
+            alerts[0].alert_message,
+            "ACTION REQUIRED TODAY: '30-Day Debt Validation Window' expires today!"
+        );
 
         // 6. Database integration with drift tolerance
         let db = DatabaseManager::init_in_memory().expect("Init DB");
@@ -505,7 +553,8 @@ mod tests {
             &db,
             Some(wake_day_5_prior),
             Some(day_8_prior),
-        ).unwrap();
+        )
+        .unwrap();
         assert_eq!(db_alerts.len(), 1);
         assert_eq!(db_alerts[0].case_id, case_id.to_string());
         assert_eq!(db_alerts[0].days_remaining, 5);

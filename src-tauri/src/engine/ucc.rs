@@ -98,7 +98,8 @@ impl UccArticle9Engine {
 
         // 1. Audit Pre-Sale Notice Timing & Content (UCC § 9-611, § 9-612, § 9-614)
         if let Some(notice) = pre_sale_notice {
-            notice_days_provided = (notice.scheduled_disposition_date - notice.date_notice_sent).num_days();
+            notice_days_provided =
+                (notice.scheduled_disposition_date - notice.date_notice_sent).num_days();
 
             // In consumer goods transactions, 10 days before disposition is standard reasonableness (UCC § 9-612(b))
             if notice_days_provided < 10 {
@@ -115,13 +116,17 @@ impl UccArticle9Engine {
 
             // Audit mandatory disclosure content under UCC § 9-614
             if !notice.describes_debtor_and_secured_party {
-                missing_notice_elements.push("Description of debtor and secured party (UCC § 9-614(1)(A))".to_string());
+                missing_notice_elements.push(
+                    "Description of debtor and secured party (UCC § 9-614(1)(A))".to_string(),
+                );
             }
             if !notice.describes_collateral_vin {
-                missing_notice_elements.push("Description of collateral and VIN (UCC § 9-614(1)(B))".to_string());
+                missing_notice_elements
+                    .push("Description of collateral and VIN (UCC § 9-614(1)(B))".to_string());
             }
             if !notice.states_method_of_disposition {
-                missing_notice_elements.push("Method of intended disposition (UCC § 9-614(1)(C))".to_string());
+                missing_notice_elements
+                    .push("Method of intended disposition (UCC § 9-614(1)(C))".to_string());
             }
             if !notice.states_time_and_place_of_sale {
                 missing_notice_elements.push("Time and place of public auction or date after which private sale will occur (UCC § 9-614(1)(E))".to_string());
@@ -178,7 +183,8 @@ impl UccArticle9Engine {
             + post_sale_accounting.unearned_interest_and_rebates;
         let audited_statutory_deficiency = total_charges - total_credits;
 
-        let discrepancy = (post_sale_accounting.claimed_deficiency_amount - audited_statutory_deficiency).abs();
+        let discrepancy =
+            (post_sale_accounting.claimed_deficiency_amount - audited_statutory_deficiency).abs();
         let has_accounting_discrepancy = discrepancy > 0.01;
 
         if has_accounting_discrepancy {
@@ -265,10 +271,12 @@ mod tests {
         assert!(!result.is_defective_notice_content);
         // UCC § 9-625(c)(2) penalty = 3000 + 0.10 * 12000 = $4,200
         assert_eq!(result.potential_ucc_statutory_penalty, 4200.0);
-        assert!(result
-            .statutory_violations
-            .iter()
-            .any(|v| v.contains("UCC § 9-611 & § 9-612 violation")));
+        assert!(
+            result
+                .statutory_violations
+                .iter()
+                .any(|v| v.contains("UCC § 9-611 & § 9-612 violation"))
+        );
     }
 
     #[test]
@@ -281,8 +289,8 @@ mod tests {
             describes_debtor_and_secured_party: true,
             describes_collateral_vin: true,
             states_method_of_disposition: true,
-            states_time_and_place_of_sale: false,         // MISSING
-            states_debtor_entitled_to_accounting: false,  // MISSING
+            states_time_and_place_of_sale: false, // MISSING
+            states_debtor_entitled_to_accounting: false, // MISSING
             states_liability_for_deficiency: true,
         };
 
@@ -300,14 +308,18 @@ mod tests {
         assert!(!result.is_untimely_notice);
         assert!(result.is_defective_notice_content);
         assert_eq!(result.missing_notice_elements.len(), 2);
-        assert!(result
-            .missing_notice_elements
-            .iter()
-            .any(|m| m.contains("Time and place")));
-        assert!(result
-            .missing_notice_elements
-            .iter()
-            .any(|m| m.contains("entitled to an accounting")));
+        assert!(
+            result
+                .missing_notice_elements
+                .iter()
+                .any(|m| m.contains("Time and place"))
+        );
+        assert!(
+            result
+                .missing_notice_elements
+                .iter()
+                .any(|m| m.contains("entitled to an accounting"))
+        );
     }
 
     #[test]
@@ -330,10 +342,12 @@ mod tests {
         assert!(result.has_accounting_discrepancy);
         assert_eq!(result.accounting_discrepancy_amount, 1200.0);
         assert!(!result.is_untimely_post_sale_accounting);
-        assert!(result
-            .statutory_violations
-            .iter()
-            .any(|v| v.contains("UCC § 9-616 accounting discrepancy")));
+        assert!(
+            result
+                .statutory_violations
+                .iter()
+                .any(|v| v.contains("UCC § 9-616 accounting discrepancy"))
+        );
     }
 
     #[test]
@@ -351,9 +365,11 @@ mod tests {
 
         let result = UccArticle9Engine::audit_deficiency(None, &accounting, None, None);
         assert!(result.is_untimely_post_sale_accounting);
-        assert!(result
-            .statutory_violations
-            .iter()
-            .any(|v| v.contains("UCC § 9-616(b)(1) violation")));
+        assert!(
+            result
+                .statutory_violations
+                .iter()
+                .any(|v| v.contains("UCC § 9-616(b)(1) violation"))
+        );
     }
 }

@@ -7,7 +7,7 @@ use crate::models::document::{Document, DocumentType};
 use crate::models::interaction::{Channel, Direction, Interaction};
 use crate::models::violation::{FdcpaViolationType, Violation};
 use chrono::{DateTime, Utc};
-use rusqlite::{params, Connection};
+use rusqlite::{Connection, params};
 use std::str::FromStr;
 use uuid::Uuid;
 
@@ -227,7 +227,9 @@ impl CaseDao {
 
     pub fn get_by_id(conn: &Connection, case_id: &str) -> AppResult<Option<Case>> {
         let cases = Self::get_all(conn)?;
-        Ok(cases.into_iter().find(|c| c.id.to_string() == case_id || c.docket_number == case_id))
+        Ok(cases
+            .into_iter()
+            .find(|c| c.id.to_string() == case_id || c.docket_number == case_id))
     }
 
     pub fn update_status(
@@ -250,7 +252,10 @@ impl CaseDao {
             .map_err(|e| AppError::Validation(format!("Invalid status: {}", e)))?;
         let status_trimmed = status_str.trim_matches('"');
 
-        let is_terminal = matches!(new_status, CaseStatus::DebtSettled | CaseStatus::DebtDismissed);
+        let is_terminal = matches!(
+            new_status,
+            CaseStatus::DebtSettled | CaseStatus::DebtDismissed
+        );
         let closed_at_clause = if is_terminal && existing_case.closed_at.is_none() {
             Some(Utc::now().to_rfc3339())
         } else {
@@ -275,7 +280,6 @@ impl CaseDao {
             Ok(true)
         }
     }
-
 
     pub fn update_balances(
         conn: &Connection,
@@ -417,8 +421,8 @@ impl InteractionDao {
                 .map_err(|e| AppError::Validation(format!("Invalid violation type: {}", e)))?;
             let v_type_trimmed = v_type_str.trim_matches('"');
 
-            let evidence_json = serde_json::to_string(&v.evidence_references)
-                .unwrap_or_else(|_| "[]".to_string());
+            let evidence_json =
+                serde_json::to_string(&v.evidence_references).unwrap_or_else(|_| "[]".to_string());
 
             tx.execute(
                 "INSERT INTO violations (
@@ -799,9 +803,8 @@ impl DeadlineDao {
 
             let id = Uuid::from_str(&id_str).unwrap_or_default();
             let case_id = Uuid::from_str(&case_id_str).unwrap_or_default();
-            let deadline_type: DeadlineType =
-                serde_json::from_str(&format!("\"{}\"", d_type_str))
-                    .unwrap_or(DeadlineType::CustomTask);
+            let deadline_type: DeadlineType = serde_json::from_str(&format!("\"{}\"", d_type_str))
+                .unwrap_or(DeadlineType::CustomTask);
             let target_date = DateTime::parse_from_rfc3339(&target_date_str)
                 .map(|dt| dt.with_timezone(&Utc))
                 .unwrap_or_else(|_| Utc::now());

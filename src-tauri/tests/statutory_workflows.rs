@@ -71,9 +71,15 @@ fn test_e2e_medical_debt_statutory_workflow() {
         good_faith_estimate_amount: None,
     };
     let audit = MedicalDebtEngine::audit_claim(&claim);
-    assert!(audit.is_unlawful_balance_bill, "Out-of-network emergency balance billing must be unlawful");
+    assert!(
+        audit.is_unlawful_balance_bill,
+        "Out-of-network emergency balance billing must be unlawful"
+    );
     assert_eq!(audit.unlawful_balance_billed_amount, 4000.00);
-    assert!(audit.is_missing_statutory_validation_data, "Must flag missing itemized CPT/ICD codes");
+    assert!(
+        audit.is_missing_statutory_validation_data,
+        "Must flag missing itemized CPT/ICD codes"
+    );
 
     // 3. Medical DVL Letter Generation & Token Resolution
     let template = TemplateEngine::medical_dvl_template();
@@ -104,7 +110,8 @@ fn test_e2e_medical_debt_statutory_workflow() {
     ).unwrap();
 
     let doc_id = Uuid::new_v4();
-    let ingested = EvidenceVault::ingest_evidence(&sandbox, &source_bill, &doc_id).expect("Ingest evidence");
+    let ingested =
+        EvidenceVault::ingest_evidence(&sandbox, &source_bill, &doc_id).expect("Ingest evidence");
     assert_eq!(ingested.sha256_hash.len(), 64);
     assert!(ingested.absolute_path.exists());
 
@@ -123,7 +130,10 @@ fn test_e2e_medical_debt_statutory_workflow() {
 
     // 5. USPS Certified Mail Tracking Confirmation & State Advancement
     let mail_status = BackgroundMonitor::query_certified_mail_status("7021 0950 0001 8492 1104");
-    assert!(matches!(mail_status.status, UspsDeliveryStatus::Delivered { .. }));
+    assert!(matches!(
+        mail_status.status,
+        UspsDeliveryStatus::Delivered { .. }
+    ));
 
     let updates = BackgroundMonitor::poll_and_advance_certified_mail_cases(&db).expect("Poll mail");
     assert_eq!(updates.len(), 1);
@@ -142,7 +152,9 @@ fn test_e2e_medical_debt_statutory_workflow() {
         case_id,
         deadline_type: DeadlineType::Fdcpa30DayValidation,
         title: "FDCPA Statutory Verification Stay Window".to_string(),
-        target_date: chrono::DateTime::parse_from_rfc3339("2026-04-01T00:00:00Z").unwrap().with_timezone(&Utc),
+        target_date: chrono::DateTime::parse_from_rfc3339("2026-04-01T00:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc),
         completed: false,
         reminder_days_prior: vec![7, 3, 1],
         notes: "Collector legally stayed from collection efforts pending verification".to_string(),
@@ -150,12 +162,18 @@ fn test_e2e_medical_debt_statutory_workflow() {
     db.create_deadline(&deadline).expect("Insert deadline");
 
     // 7. Collector Fails to Verify -> Debt Dismissal (Terminal State Immutability)
-    let dismissed = db.update_case_status(&case_id.to_string(), &CaseStatus::DebtDismissed).expect("Dismiss case");
+    let dismissed = db
+        .update_case_status(&case_id.to_string(), &CaseStatus::DebtDismissed)
+        .expect("Dismiss case");
     assert!(dismissed);
 
     let final_case = db.get_case_by_id(&case_id.to_string()).unwrap().unwrap();
     assert_eq!(final_case.status, CaseStatus::DebtDismissed);
-    assert!(!final_case.status.can_transition_to(&CaseStatus::InitialNotice));
+    assert!(
+        !final_case
+            .status
+            .can_transition_to(&CaseStatus::InitialNotice)
+    );
 
     let _ = std::fs::remove_dir_all(&temp_dir);
 }
@@ -196,7 +214,10 @@ fn test_e2e_call_harassment_statutory_workflow() {
 
     // 2. Inconvenient Hours Violation (15 U.S.C. 1692c(a)(1)) - Hour 21 (9:30 PM)
     let is_inconvenient = FdcpaEngine::is_inconvenient_hour(21);
-    assert!(is_inconvenient, "Call at 21:00-22:00 must violate convenient call hours");
+    assert!(
+        is_inconvenient,
+        "Call at 21:00-22:00 must violate convenient call hours"
+    );
 
     // 3. 7-in-7 Rule Call Frequency Violation (12 C.F.R. § 1006.14(b) & 15 U.S.C. § 1692d(5))
     let base_time = Utc::now();
@@ -246,16 +267,23 @@ fn test_e2e_call_harassment_statutory_workflow() {
         statutory_citation: "15 U.S.C. § 1692c(a)(1)".to_string(),
         statutory_penalty_cap: 1000.0,
         actual_damages: 0.0,
-        factual_summary: "Placed debt collection call at 9:30 PM outside 8:00 AM - 9:00 PM statutory window.".to_string(),
+        factual_summary:
+            "Placed debt collection call at 9:30 PM outside 8:00 AM - 9:00 PM statutory window."
+                .to_string(),
         evidence_references: vec!["Phone_Call_Log_20260408_2130.png".to_string()],
     };
 
     // 4. Log Interaction with Both Violations Atomically
-    db.log_interaction(&eighth_call, &[violation_inconvenient, violation_harassment])
-        .expect("Log interaction with violations");
+    db.log_interaction(
+        &eighth_call,
+        &[violation_inconvenient, violation_harassment],
+    )
+    .expect("Log interaction with violations");
 
     // 5. Statutory Damages Ledger Aggregation ($2,000 Total Statutory Base)
-    let violations = db.get_violations(&case_id.to_string()).expect("Fetch violations");
+    let violations = db
+        .get_violations(&case_id.to_string())
+        .expect("Fetch violations");
     assert_eq!(violations.len(), 2);
 
     let damages = FdcpaEngine::summarize_damages(&case_id.to_string(), &violations);
@@ -288,7 +316,8 @@ fn test_e2e_call_harassment_statutory_workflow() {
         "Cease_and_Desist_Demand",
         &letter,
         ExportFormat::Pdf,
-    ).expect("Export PDF");
+    )
+    .expect("Export PDF");
     assert!(pdf_path.exists());
 
     let pdf_bytes = std::fs::read(&pdf_path).unwrap();
@@ -381,8 +410,15 @@ fn test_e2e_cra_trade_line_dispute_workflow() {
     let tradelines = db.get_credit_tradelines(&case_id.to_string()).unwrap();
     assert_eq!(tradelines.len(), 3);
 
-    let violations: Vec<_> = tradelines.iter().filter(|t| t.fcra_violation_flag).collect();
-    assert_eq!(violations.len(), 2, "Equifax and Experian must be flagged for missing dispute remark");
+    let violations: Vec<_> = tradelines
+        .iter()
+        .filter(|t| t.fcra_violation_flag)
+        .collect();
+    assert_eq!(
+        violations.len(),
+        2,
+        "Equifax and Experian must be flagged for missing dispute remark"
+    );
 
     // 3. Generate 3-Bureau Direct CRA Dispute Package
     let template = TemplateEngine::cra_dispute_template();
@@ -407,7 +443,9 @@ fn test_e2e_cra_trade_line_dispute_workflow() {
         case_id,
         deadline_type: DeadlineType::Fcra30DayCraResponse,
         title: "FCRA 30-Day Mandatory Investigation Window".to_string(),
-        target_date: chrono::DateTime::parse_from_rfc3339("2026-06-20T00:00:00Z").unwrap().with_timezone(&Utc),
+        target_date: chrono::DateTime::parse_from_rfc3339("2026-06-20T00:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc),
         completed: false,
         reminder_days_prior: vec![7, 3, 1],
         notes: "Bureaus must delete disputed tradeline if unverified within 30 days".to_string(),
@@ -416,7 +454,8 @@ fn test_e2e_cra_trade_line_dispute_workflow() {
 
     // Verify statutory threshold reminders with sleep/wake drift tolerance
     let check_date = NaiveDate::from_ymd_opt(2026, 6, 17).unwrap(); // 3 days remaining
-    let alerts = BackgroundMonitor::evaluate_deadlines_with_drift(&[deadline], Some(check_date), None);
+    let alerts =
+        BackgroundMonitor::evaluate_deadlines_with_drift(&[deadline], Some(check_date), None);
     assert_eq!(alerts.len(), 1);
     assert_eq!(alerts[0].days_remaining, 3);
     assert!(alerts[0].is_urgent);
@@ -475,15 +514,25 @@ fn test_e2e_pay_for_delete_settlement_workflow() {
     assert!(settlement_doc.contains(docket));
 
     // 3. State Machine Advance to Terminal Settled State
-    let advanced = db.update_case_status(&case_id.to_string(), &CaseStatus::DebtSettled).unwrap();
+    let advanced = db
+        .update_case_status(&case_id.to_string(), &CaseStatus::DebtSettled)
+        .unwrap();
     assert!(advanced);
 
     let settled_case = db.get_case_by_id(&case_id.to_string()).unwrap().unwrap();
     assert_eq!(settled_case.status, CaseStatus::DebtSettled);
 
     // Assert terminal state immutability
-    assert!(!settled_case.status.can_transition_to(&CaseStatus::ValidationPending));
-    assert!(!settled_case.status.can_transition_to(&CaseStatus::InitialNotice));
+    assert!(
+        !settled_case
+            .status
+            .can_transition_to(&CaseStatus::ValidationPending)
+    );
+    assert!(
+        !settled_case
+            .status
+            .can_transition_to(&CaseStatus::InitialNotice)
+    );
 }
 
 /// =========================================================================
@@ -539,7 +588,7 @@ fn test_e2e_auto_deficiency_dispute_workflow() {
         gross_sale_proceeds: 12000.0,
         allowable_repossession_expenses: 1500.0,
         unearned_interest_and_rebates: 1500.0, // GAP insurance rebate
-        claimed_deficiency_amount: 10000.0,   // Failed to credit $1,500 GAP rebate
+        claimed_deficiency_amount: 10000.0,    // Failed to credit $1,500 GAP rebate
     };
 
     let audit = UccArticle9Engine::audit_deficiency(
@@ -548,9 +597,18 @@ fn test_e2e_auto_deficiency_dispute_workflow() {
         Some(20500.0),
         Some(3000.0),
     );
-    assert!(!audit.is_untimely_notice, "Notice provided with 14 days was timely");
-    assert!(audit.is_untimely_post_sale_accounting, "Post-sale accounting beyond 14 days violates UCC § 9-616");
-    assert!(audit.has_accounting_discrepancy, "Failure to credit GAP rebate creates accounting discrepancy");
+    assert!(
+        !audit.is_untimely_notice,
+        "Notice provided with 14 days was timely"
+    );
+    assert!(
+        audit.is_untimely_post_sale_accounting,
+        "Post-sale accounting beyond 14 days violates UCC § 9-616"
+    );
+    assert!(
+        audit.has_accounting_discrepancy,
+        "Failure to credit GAP rebate creates accounting discrepancy"
+    );
     assert_eq!(audit.audited_statutory_deficiency, 8500.0);
     assert_eq!(audit.accounting_discrepancy_amount, 1500.0);
 
@@ -583,7 +641,8 @@ fn test_e2e_auto_deficiency_dispute_workflow() {
         "Auto_Deficiency_Dispute",
         &auto_doc,
         ExportFormat::Markdown,
-    ).expect("Export MD");
+    )
+    .expect("Export MD");
     assert!(md_path.exists());
 
     let _ = std::fs::remove_dir_all(&temp_dir);
@@ -662,13 +721,26 @@ fn test_concurrency_100_parallel_interaction_writes() {
     // Join all 100 worker threads and assert zero lock errors
     for (idx, handle) in handles.into_iter().enumerate() {
         let res = handle.join().expect("Worker thread panicked");
-        assert!(res.is_ok(), "Thread {} failed with error: {:?}", idx, res.err());
+        assert!(
+            res.is_ok(),
+            "Thread {} failed with error: {:?}",
+            idx,
+            res.err()
+        );
     }
 
     // Verify exactly 100 interactions and 100 violations were persisted cleanly in SQLite
-    let interactions = db.get_interactions(&case_id.to_string()).expect("Fetch interactions");
-    assert_eq!(interactions.len(), 100, "Must persist exactly 100 interactions");
+    let interactions = db
+        .get_interactions(&case_id.to_string())
+        .expect("Fetch interactions");
+    assert_eq!(
+        interactions.len(),
+        100,
+        "Must persist exactly 100 interactions"
+    );
 
-    let violations = db.get_violations(&case_id.to_string()).expect("Fetch violations");
+    let violations = db
+        .get_violations(&case_id.to_string())
+        .expect("Fetch violations");
     assert_eq!(violations.len(), 100, "Must persist exactly 100 violations");
 }

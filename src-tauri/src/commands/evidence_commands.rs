@@ -35,6 +35,3 @@ pub async fn validate_evidence_upload(
         .unwrap_or("");
     EvidenceVault::validate_evidence_payload(&payload_bytes, ext, None)
 }
-
-
-

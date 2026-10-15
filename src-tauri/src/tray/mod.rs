@@ -1,14 +1,26 @@
 use tauri::{
+    AppHandle, Emitter, Manager,
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
-    AppHandle, Emitter, Manager,
 };
 
 /// Initialize System Tray background daemon (Section 4.6)
 pub fn setup_system_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let show_i = MenuItem::with_id(app, "show", "Open Dispute Console", true, None::<&str>)?;
-    let quick_log_i = MenuItem::with_id(app, "quick_log", "Quick-Log Collector Call", true, None::<&str>)?;
-    let silence_i = MenuItem::with_id(app, "silence_24h", "Silence Reminders (24h)", true, None::<&str>)?;
+    let quick_log_i = MenuItem::with_id(
+        app,
+        "quick_log",
+        "Quick-Log Collector Call",
+        true,
+        None::<&str>,
+    )?;
+    let silence_i = MenuItem::with_id(
+        app,
+        "silence_24h",
+        "Silence Reminders (24h)",
+        true,
+        None::<&str>,
+    )?;
     let quit_i = MenuItem::with_id(app, "quit", "Exit SettleMint", true, None::<&str>)?;
 
     let menu = Menu::with_items(app, &[&show_i, &quick_log_i, &silence_i, &quit_i])?;

@@ -668,12 +668,10 @@ impl SolEngine {
 
     /// List of all 50 US States, DC, and territories codified in SettleMint
     pub const ALL_STATE_CODES: [&'static str; 54] = [
-        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL",
-        "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME",
-        "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
-        "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
-        "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI",
-        "WY", "PR", "GU", "VI",
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN",
+        "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
+        "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT",
+        "VT", "VA", "WA", "WV", "WI", "WY", "PR", "GU", "VI",
     ];
 
     /// Retrieve all codified state and territory rules
@@ -692,7 +690,7 @@ impl SolEngine {
     ) -> Option<NaiveDate> {
         let rule = Self::get_rule(state_code);
         let sol_years = rule.get_sol_years(debt_type);
-        
+
         let new_year = default_or_activity_date.year() + sol_years as i32;
         let month = default_or_activity_date.month();
         let day = default_or_activity_date.day();
@@ -866,7 +864,10 @@ mod tests {
     fn test_leap_year_handling() {
         let leap_date = NaiveDate::from_ymd_opt(2020, 2, 29).unwrap();
         let exp_date = SolEngine::calculate_expiration_date("NY", &DebtType::CreditCard, leap_date);
-        assert_eq!(exp_date, Some(NaiveDate::from_ymd_opt(2023, 2, 28).unwrap()));
+        assert_eq!(
+            exp_date,
+            Some(NaiveDate::from_ymd_opt(2023, 2, 28).unwrap())
+        );
     }
 
     #[test]
@@ -881,13 +882,24 @@ mod tests {
             &DebtType::CreditCard,
             default_date,
             Some(today_approaching),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert_eq!(clock_approaching.days_remaining, 10);
         assert!(!clock_approaching.is_time_barred);
         assert!(clock_approaching.is_approaching_time_barred);
-        assert!(clock_approaching.approach_warning.unwrap().contains("HIGH SEVERITY"));
-        assert!(clock_approaching.revival_warning.unwrap().contains("ANTI-REVIVAL"));
+        assert!(
+            clock_approaching
+                .approach_warning
+                .unwrap()
+                .contains("HIGH SEVERITY")
+        );
+        assert!(
+            clock_approaching
+                .revival_warning
+                .unwrap()
+                .contains("ANTI-REVIVAL")
+        );
 
         // 2. Fully Expired: July 1, 2026
         let today_expired = NaiveDate::from_ymd_opt(2026, 7, 1).unwrap();
@@ -896,12 +908,18 @@ mod tests {
             &DebtType::CreditCard,
             default_date,
             Some(today_expired),
-        ).unwrap();
+        )
+        .unwrap();
 
         assert!(clock_expired.is_time_barred);
         assert!(!clock_expired.is_approaching_time_barred);
         assert!(clock_expired.days_remaining < 0);
-        assert!(clock_expired.approach_warning.unwrap().contains("STATUTE EXPIRED"));
+        assert!(
+            clock_expired
+                .approach_warning
+                .unwrap()
+                .contains("STATUTE EXPIRED")
+        );
 
         // 3. Revival Warning in partial payment reset state (Alabama)
         let clock_al = SolEngine::calculate_sol_clock(
@@ -909,8 +927,14 @@ mod tests {
             &DebtType::CreditCard,
             default_date,
             Some(today_approaching),
-        ).unwrap();
+        )
+        .unwrap();
         assert!(clock_al.partial_payment_resets_clock);
-        assert!(clock_al.revival_warning.unwrap().contains("EXPLICIT WARNING"));
+        assert!(
+            clock_al
+                .revival_warning
+                .unwrap()
+                .contains("EXPLICIT WARNING")
+        );
     }
 }

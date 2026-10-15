@@ -46,13 +46,15 @@ impl TemplateEngine {
                 }
                 if token_name.contains("{{") {
                     return Err(AppError::Validation(
-                        "Malformed template token syntax: nested or unclosed '{{' detected".to_string(),
+                        "Malformed template token syntax: nested or unclosed '{{' detected"
+                            .to_string(),
                     ));
                 }
                 cursor = actual_start + 2 + end_idx + 2;
             } else {
                 return Err(AppError::Validation(
-                    "Malformed template token syntax: unclosed token '{{' without matching '}}'".to_string(),
+                    "Malformed template token syntax: unclosed token '{{' without matching '}}'"
+                        .to_string(),
                 ));
             }
         }
@@ -63,7 +65,8 @@ impl TemplateEngine {
             let actual_idx = cursor + idx;
             if !template[..actual_idx].contains("{{") {
                 return Err(AppError::Validation(
-                    "Malformed template token syntax: orphaned closing '}}' without matching '{{'".to_string(),
+                    "Malformed template token syntax: orphaned closing '}}' without matching '{{'"
+                        .to_string(),
                 ));
             }
             cursor = actual_idx + 2;
@@ -452,7 +455,9 @@ impl DocumentExporter {
     pub fn generate_txt(docket_number: &str, title: &str, content: &str) -> String {
         format!(
             "================================================================================\n{}\nBATES DOCKET: {}\n================================================================================\n\n{}\n\n================================================================================\nSTATUTORY NOTICE: Formal Legal Dispute Demand (15 U.S.C. § 1692g & CFPB Reg F)\n================================================================================\n",
-            title.to_uppercase(), docket_number, content
+            title.to_uppercase(),
+            docket_number,
+            content
         )
     }
 
@@ -473,7 +478,10 @@ impl DocumentExporter {
         stream_content.push_str("BT\n");
         stream_content.push_str("/F1 9 Tf\n");
         // Bates Watermark / Header (1-inch from top: Y=740pt, Left: 72pt)
-        stream_content.push_str(&format!("72 740 Td\n(BATES DOCKET WATERMARK: {}) Tj\n", safe_docket));
+        stream_content.push_str(&format!(
+            "72 740 Td\n(BATES DOCKET WATERMARK: {}) Tj\n",
+            safe_docket
+        ));
 
         // 1-inch margins (Left: 72pt, Top: 700pt)
         stream_content.push_str("/F1 10 Tf\n");
@@ -500,7 +508,10 @@ impl DocumentExporter {
         let obj2 = "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n";
         let obj3 = "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>\nendobj\n";
         let obj4 = "4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n";
-        let obj5 = format!("5 0 obj\n<< /Length {} >>\nstream\n{}\nendstream\nendobj\n", stream_len, stream_content);
+        let obj5 = format!(
+            "5 0 obj\n<< /Length {} >>\nstream\n{}\nendstream\nendobj\n",
+            stream_len, stream_content
+        );
 
         let mut pdf = Vec::new();
         pdf.extend_from_slice(b"%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
@@ -521,7 +532,10 @@ impl DocumentExporter {
             offset1, offset2, offset3, offset4, offset5
         );
         pdf.extend_from_slice(xref.as_bytes());
-        let trailer = format!("trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n{}\n%%EOF\n", xref_offset);
+        let trailer = format!(
+            "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n{}\n%%EOF\n",
+            xref_offset
+        );
         pdf.extend_from_slice(trailer.as_bytes());
 
         pdf
@@ -633,7 +647,10 @@ mod tests {
         // Missing DEBTOR_NAME, DISPUTED_AMOUNT, CERTIFIED_MAIL_TRACKING, etc.
 
         let strict_res = TemplateEngine::interpolate_strict(template, &incomplete_tokens);
-        assert!(strict_res.is_err(), "Strict interpolation must fail when required tokens are missing");
+        assert!(
+            strict_res.is_err(),
+            "Strict interpolation must fail when required tokens are missing"
+        );
         match strict_res {
             Err(AppError::Validation(msg)) => {
                 assert!(msg.contains("Template token validation failed"));
@@ -648,7 +665,10 @@ mod tests {
         whitespace_tokens.insert("DEBTOR_NAME", "   ");
         whitespace_tokens.insert("DISPUTED_AMOUNT", "\t\n ");
         let whitespace_res = TemplateEngine::interpolate_strict(template, &whitespace_tokens);
-        assert!(whitespace_res.is_err(), "Whitespace-only tokens must be treated as missing/invalid");
+        assert!(
+            whitespace_res.is_err(),
+            "Whitespace-only tokens must be treated as missing/invalid"
+        );
 
         // 4. Safe fallback interpolation with default placeholder
         let fallback_output = TemplateEngine::interpolate_with_fallback(
@@ -757,9 +777,15 @@ mod tests {
         tokens.insert("COLLECTION_AGENCY", "<script>alert('Compromised')</script>");
         tokens.insert("COLLECTION_ACCOUNT_NO", "MCM-12345\" onfocus=\"alert(1)");
         tokens.insert("ORIGINAL_PROVIDER", "Citibank <iframe src=x></iframe>");
-        tokens.insert("DISPUTED_AMOUNT", "$5,000.00<img src=x onerror=alert('steal')>");
+        tokens.insert(
+            "DISPUTED_AMOUNT",
+            "$5,000.00<img src=x onerror=alert('steal')>",
+        );
         tokens.insert("BATES_DOCKET", "BATES-0001<svg/onload=alert(1)>");
-        tokens.insert("DEBTOR_NAME", "Jane Doe & Co. <script src='http://evil.com/xss.js'></script>");
+        tokens.insert(
+            "DEBTOR_NAME",
+            "Jane Doe & Co. <script src='http://evil.com/xss.js'></script>",
+        );
 
         let escaped_doc = TemplateEngine::interpolate_escaped(template, &tokens, None);
 
@@ -772,7 +798,9 @@ mod tests {
         assert!(!escaped_doc.contains("\" onfocus=\""));
 
         // Assert escaped entities exist
-        assert!(escaped_doc.contains("&lt;script&gt;alert(&#x27;Compromised&#x27;)&lt;/script&gt;"));
+        assert!(
+            escaped_doc.contains("&lt;script&gt;alert(&#x27;Compromised&#x27;)&lt;/script&gt;")
+        );
         assert!(escaped_doc.contains("MCM-12345&quot; onfocus=&quot;alert(1)"));
         assert!(escaped_doc.contains("&lt;iframe src=x&gt;&lt;/iframe&gt;"));
         assert!(escaped_doc.contains("&lt;img src=x onerror=alert(&#x27;steal&#x27;)&gt;"));
@@ -781,18 +809,25 @@ mod tests {
 
         // 4. Sanitize input method
         let sanitized = TemplateEngine::sanitize_input("<script>alert('test')</script>");
-        assert_eq!(sanitized, "&lt;script&gt;alert(&#x27;test&#x27;)&lt;/script&gt;");
+        assert_eq!(
+            sanitized,
+            "&lt;script&gt;alert(&#x27;test&#x27;)&lt;/script&gt;"
+        );
     }
 
     #[test]
     fn test_multi_format_export_pipeline_verification() {
-        let temp_dir = std::env::temp_dir().join(format!("settlemint_export_test_{}", uuid::Uuid::new_v4()));
+        let temp_dir =
+            std::env::temp_dir().join(format!("settlemint_export_test_{}", uuid::Uuid::new_v4()));
         let sandbox = EvidenceVault::build_sandbox_paths(&temp_dir);
-        sandbox.create_all().expect("Failed to create sandbox hierarchy");
+        sandbox
+            .create_all()
+            .expect("Failed to create sandbox hierarchy");
 
         let docket = "BATES-2026-00042";
         let title = "Formal Dispute Demand";
-        let content = "Please validate alleged credit card balance of $3,420.00 pursuant to 15 U.S.C. 1692g.";
+        let content =
+            "Please validate alleged credit card balance of $3,420.00 pursuant to 15 U.S.C. 1692g.";
 
         // 1. Plain Text (.txt) Export
         let txt_path = DocumentExporter::export_to_sandbox(
@@ -801,7 +836,8 @@ mod tests {
             title,
             content,
             ExportFormat::Txt,
-        ).expect("Txt export failed");
+        )
+        .expect("Txt export failed");
 
         assert!(txt_path.exists());
         assert_eq!(txt_path.extension().and_then(|s| s.to_str()), Some("txt"));
@@ -820,7 +856,8 @@ mod tests {
             title,
             content,
             ExportFormat::Markdown,
-        ).expect("Markdown export failed");
+        )
+        .expect("Markdown export failed");
 
         assert!(md_path.exists());
         assert_eq!(md_path.extension().and_then(|s| s.to_str()), Some("md"));
@@ -839,7 +876,8 @@ mod tests {
             title,
             content,
             ExportFormat::Pdf,
-        ).expect("PDF export failed");
+        )
+        .expect("PDF export failed");
 
         assert!(pdf_path.exists());
         assert_eq!(pdf_path.extension().and_then(|s| s.to_str()), Some("pdf"));
@@ -856,17 +894,29 @@ mod tests {
         assert!(pdf_str.contains("/Type /Page"));
 
         // Assert 1-inch margins (US Letter MediaBox [0 0 612 792])
-        assert!(pdf_str.contains("/MediaBox [0 0 612 792]"), "Must set standard 8.5x11 in geometry");
+        assert!(
+            pdf_str.contains("/MediaBox [0 0 612 792]"),
+            "Must set standard 8.5x11 in geometry"
+        );
 
         // Assert Bates watermark header positioning (72 740 Td)
-        assert!(pdf_str.contains("72 740 Td"), "Bates watermark must be positioned 1 inch from top margin");
+        assert!(
+            pdf_str.contains("72 740 Td"),
+            "Bates watermark must be positioned 1 inch from top margin"
+        );
         assert!(pdf_str.contains("BATES DOCKET WATERMARK: BATES-2026-00042"));
 
         // Assert 1-inch top margin start (0 -40 Td from 740 is 700)
-        assert!(pdf_str.contains("0 -40 Td"), "Text body must respect 1-inch top margin");
+        assert!(
+            pdf_str.contains("0 -40 Td"),
+            "Text body must respect 1-inch top margin"
+        );
 
         // Assert statutory notice embedding at 1-inch bottom margin (72 72 Td)
-        assert!(pdf_str.contains("72 72 Td"), "Statutory notice must be embedded 1 inch from bottom margin");
+        assert!(
+            pdf_str.contains("72 72 Td"),
+            "Statutory notice must be embedded 1 inch from bottom margin"
+        );
         assert!(pdf_str.contains("STATUTORY NOTICE: 15 U.S.C."));
 
         // Assert cross-reference table and trailer
@@ -881,7 +931,10 @@ mod tests {
             content,
             ExportFormat::Txt,
         );
-        assert!(traversal_res.is_err(), "Path traversal in docket name must be rejected");
+        assert!(
+            traversal_res.is_err(),
+            "Path traversal in docket name must be rejected"
+        );
 
         let _ = std::fs::remove_dir_all(&temp_dir);
     }
@@ -897,26 +950,26 @@ mod tests {
 
         // 2. Validate HTML escaping retains all UTF-8 characters without corruption
         let escaped_name = TemplateEngine::escape_html(consumer_name);
-        assert_eq!(escaped_name, "José Ramón García-Núñez", "Accented characters must not be corrupted");
+        assert_eq!(
+            escaped_name, "José Ramón García-Núñez",
+            "Accented characters must not be corrupted"
+        );
 
         let escaped_legal = TemplateEngine::escape_html(legal_statutes);
         assert_eq!(
-            escaped_legal,
-            "15 U.S.C. § 1692g, 15 U.S.C. §§ 1692e &amp; 1692f, ¶ 4",
+            escaped_legal, "15 U.S.C. § 1692g, 15 U.S.C. §§ 1692e &amp; 1692f, ¶ 4",
             "Legal symbols (§, ¶) must be preserved while ampersand is safely escaped"
         );
 
         let escaped_copyright = TemplateEngine::escape_html(copyright_notice);
         assert_eq!(
-            escaped_copyright,
-            "Copyright © 2026 SettleMint™ • All Rights Reserved",
+            escaped_copyright, "Copyright © 2026 SettleMint™ • All Rights Reserved",
             "Copyright symbol and typographic bullet must be preserved"
         );
 
         let escaped_currency = TemplateEngine::escape_html(multi_currency_amounts);
         assert_eq!(
-            escaped_currency,
-            "USD $3,450.75 | EUR €3,120.50 | GBP £2,680.00 | JPY ¥480,000",
+            escaped_currency, "USD $3,450.75 | EUR €3,120.50 | GBP £2,680.00 | JPY ¥480,000",
             "Multi-currency symbols ($, €, £, ¥) must be preserved"
         );
 
@@ -944,12 +997,18 @@ mod tests {
         let escaped_rendered = TemplateEngine::interpolate_escaped(template, &tokens, None);
         assert!(escaped_rendered.contains("José Ramón García-Núñez"));
         assert!(escaped_rendered.contains("Hospital Ángeles &amp; Clinique Santé"));
-        assert!(escaped_rendered.contains("USD $3,450.75 | EUR €3,120.50 | GBP £2,680.00 | JPY ¥480,000"));
+        assert!(
+            escaped_rendered
+                .contains("USD $3,450.75 | EUR €3,120.50 | GBP £2,680.00 | JPY ¥480,000")
+        );
 
         // 5. Multi-format export pipeline UTF-8 preservation (.txt, .md, .pdf)
-        let temp_dir = std::env::temp_dir().join(format!("settlemint_i18n_test_{}", uuid::Uuid::new_v4()));
+        let temp_dir =
+            std::env::temp_dir().join(format!("settlemint_i18n_test_{}", uuid::Uuid::new_v4()));
         let sandbox = EvidenceVault::build_sandbox_paths(&temp_dir);
-        sandbox.create_all().expect("Failed to create sandbox paths");
+        sandbox
+            .create_all()
+            .expect("Failed to create sandbox paths");
 
         let docket = "BATES-2026-I18N-001";
         let title = "Reclamación Formal de Validación";
@@ -959,13 +1018,9 @@ mod tests {
         );
 
         // Export TXT
-        let txt_path = DocumentExporter::export_to_sandbox(
-            &sandbox,
-            docket,
-            title,
-            &body,
-            ExportFormat::Txt,
-        ).expect("Export TXT failed");
+        let txt_path =
+            DocumentExporter::export_to_sandbox(&sandbox, docket, title, &body, ExportFormat::Txt)
+                .expect("Export TXT failed");
         let txt_read = std::fs::read_to_string(&txt_path).expect("Read TXT failed");
         assert!(txt_read.contains("RECLAMACIÓN FORMAL DE VALIDACIÓN"));
         assert!(txt_read.contains(consumer_name));
@@ -985,7 +1040,8 @@ mod tests {
             title,
             &body,
             ExportFormat::Markdown,
-        ).expect("Export MD failed");
+        )
+        .expect("Export MD failed");
         let md_read = std::fs::read_to_string(&md_path).expect("Read MD failed");
         assert!(md_read.contains("# Reclamación Formal de Validación"));
         assert!(md_read.contains(consumer_name));
@@ -997,22 +1053,39 @@ mod tests {
         assert!(md_read.contains("¥480,000"));
 
         // Export PDF
-        let pdf_path = DocumentExporter::export_to_sandbox(
-            &sandbox,
-            docket,
-            title,
-            &body,
-            ExportFormat::Pdf,
-        ).expect("Export PDF failed");
+        let pdf_path =
+            DocumentExporter::export_to_sandbox(&sandbox, docket, title, &body, ExportFormat::Pdf)
+                .expect("Export PDF failed");
         let pdf_bytes = std::fs::read(&pdf_path).expect("Read PDF failed");
         let pdf_str = String::from_utf8_lossy(&pdf_bytes);
-        assert!(pdf_str.contains(consumer_name), "PDF stream must preserve accented UTF-8 characters");
-        assert!(pdf_str.contains("§ 1692g"), "PDF stream must preserve section sign §");
-        assert!(pdf_str.contains("¶ 4"), "PDF stream must preserve paragraph sign ¶");
-        assert!(pdf_str.contains("© 2026"), "PDF stream must preserve copyright sign ©");
-        assert!(pdf_str.contains("€3,120.50"), "PDF stream must preserve Euro symbol €");
-        assert!(pdf_str.contains("£2,680.00"), "PDF stream must preserve Pound symbol £");
-        assert!(pdf_str.contains("¥480,000"), "PDF stream must preserve Yen symbol ¥");
+        assert!(
+            pdf_str.contains(consumer_name),
+            "PDF stream must preserve accented UTF-8 characters"
+        );
+        assert!(
+            pdf_str.contains("§ 1692g"),
+            "PDF stream must preserve section sign §"
+        );
+        assert!(
+            pdf_str.contains("¶ 4"),
+            "PDF stream must preserve paragraph sign ¶"
+        );
+        assert!(
+            pdf_str.contains("© 2026"),
+            "PDF stream must preserve copyright sign ©"
+        );
+        assert!(
+            pdf_str.contains("€3,120.50"),
+            "PDF stream must preserve Euro symbol €"
+        );
+        assert!(
+            pdf_str.contains("£2,680.00"),
+            "PDF stream must preserve Pound symbol £"
+        );
+        assert!(
+            pdf_str.contains("¥480,000"),
+            "PDF stream must preserve Yen symbol ¥"
+        );
 
         let _ = std::fs::remove_dir_all(&temp_dir);
     }

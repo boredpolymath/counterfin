@@ -30,7 +30,9 @@ fn hex_encode(bytes: &[u8]) -> String {
 /// Helper for decoding hex string to bytes
 fn hex_decode(s: &str) -> AppResult<Vec<u8>> {
     if !s.len().is_multiple_of(2) {
-        return Err(AppError::Validation("Hex string length must be even".to_string()));
+        return Err(AppError::Validation(
+            "Hex string length must be even".to_string(),
+        ));
     }
     (0..s.len())
         .step_by(2)
@@ -152,10 +154,7 @@ pub struct CryptoEngine;
 impl CryptoEngine {
     /// Derive a 256-bit master encryption key from user passphrase using Argon2id
     /// Settings: memory_cost = 64MB, iterations = 3, parallelism = 4
-    pub fn derive_master_key(
-        passphrase: &SensitiveString,
-        salt: &[u8],
-    ) -> AppResult<MasterKey> {
+    pub fn derive_master_key(passphrase: &SensitiveString, salt: &[u8]) -> AppResult<MasterKey> {
         let params = Params::new(
             ARGON2_MEMORY_COST_KIB,
             ARGON2_TIME_COST,
@@ -193,7 +192,9 @@ impl CryptoEngine {
     /// 2. Derives 256-bit MasterKey via Argon2id (64MB/3/4)
     /// 3. Computes SHA-256 verification hash of derived key
     /// 4. Returns VaultAuthRecord and zeroizing MasterKey
-    pub fn enroll_passphrase(passphrase: &SensitiveString) -> AppResult<(VaultAuthRecord, MasterKey)> {
+    pub fn enroll_passphrase(
+        passphrase: &SensitiveString,
+    ) -> AppResult<(VaultAuthRecord, MasterKey)> {
         let salt = Self::generate_random_bytes(SALT_SIZE_BYTES);
         let master_key = Self::derive_master_key(passphrase, &salt)?;
         let verification_hash = Self::compute_sha256(&master_key.0);
@@ -415,7 +416,9 @@ impl CryptoEngine {
                     File::open(&path)
                         .map_err(|e| AppError::Io(format!("Failed to open evidence file: {}", e)))?
                         .read_to_end(&mut file_bytes)
-                        .map_err(|e| AppError::Io(format!("Failed to read evidence file: {}", e)))?;
+                        .map_err(|e| {
+                            AppError::Io(format!("Failed to read evidence file: {}", e))
+                        })?;
                     let hash = Self::compute_sha256(&file_bytes);
                     items.push(BackupArchiveItem {
                         relative_path: format!("evidence/{}", filename),
@@ -557,7 +560,8 @@ mod tests {
 
         // Different salt yields completely distinct keys
         let salt_diff = CryptoEngine::generate_random_bytes(SALT_SIZE_BYTES);
-        let key3 = CryptoEngine::derive_master_key(&pass, &salt_diff).expect("Key derivation failed");
+        let key3 =
+            CryptoEngine::derive_master_key(&pass, &salt_diff).expect("Key derivation failed");
         assert_ne!(key1.0, key3.0);
     }
 
@@ -567,17 +571,21 @@ mod tests {
         let salt = CryptoEngine::generate_random_bytes(SALT_SIZE_BYTES);
         let master_key = CryptoEngine::derive_master_key(&pass, &salt).expect("Derivation failed");
 
-        let secret_ssn_and_account = b"DEBTOR_SSN: 000-12-3456 | CITIBANK_CARD: 4111-2222-3333-4444";
+        let secret_ssn_and_account =
+            b"DEBTOR_SSN: 000-12-3456 | CITIBANK_CARD: 4111-2222-3333-4444";
         let aad = b"test-case-aad";
 
         let encrypted = CryptoEngine::encrypt(&master_key, secret_ssn_and_account, Some(aad))
             .expect("Encryption failed");
 
         // Ciphertext must not match plaintext
-        assert_ne!(&encrypted.ciphertext_with_tag[..secret_ssn_and_account.len()], secret_ssn_and_account);
+        assert_ne!(
+            &encrypted.ciphertext_with_tag[..secret_ssn_and_account.len()],
+            secret_ssn_and_account
+        );
 
-        let decrypted = CryptoEngine::decrypt(&master_key, &encrypted, Some(aad))
-            .expect("Decryption failed");
+        let decrypted =
+            CryptoEngine::decrypt(&master_key, &encrypted, Some(aad)).expect("Decryption failed");
         assert_eq!(&decrypted.0, secret_ssn_and_account);
 
         // Tampering with ciphertext fails authentication
@@ -622,7 +630,8 @@ mod tests {
 
     #[test]
     fn test_backup_archive_packaging_and_restoration() {
-        let temp_dir = std::env::temp_dir().join(format!("settlemint_test_{}", uuid::Uuid::new_v4()));
+        let temp_dir =
+            std::env::temp_dir().join(format!("settlemint_test_{}", uuid::Uuid::new_v4()));
         let db_file = temp_dir.join("dbs").join("test_settlemint.db");
         let evidence_dir = temp_dir.join("evidence");
         let backup_file = temp_dir.join("backup.smbak");
@@ -654,19 +663,30 @@ mod tests {
         .expect("Restore backup failed");
 
         assert_eq!(count, 3); // 1 DB + 2 evidence files
-        assert_eq!(fs::read(&restore_db_file).unwrap(), b"SQLITE_FORMAT_3_TEST_DATA");
-        assert_eq!(fs::read(restore_evidence_dir.join("doc1.pdf")).unwrap(), b"PDF_EVIDENCE_1");
-        assert_eq!(fs::read(restore_evidence_dir.join("audio.wav")).unwrap(), b"WAV_RECORDING_DATA");
+        assert_eq!(
+            fs::read(&restore_db_file).unwrap(),
+            b"SQLITE_FORMAT_3_TEST_DATA"
+        );
+        assert_eq!(
+            fs::read(restore_evidence_dir.join("doc1.pdf")).unwrap(),
+            b"PDF_EVIDENCE_1"
+        );
+        assert_eq!(
+            fs::read(restore_evidence_dir.join("audio.wav")).unwrap(),
+            b"WAV_RECORDING_DATA"
+        );
 
         // Wrong passphrase restore fails
         let wrong_pass = SensitiveString::new("BadPassword");
-        assert!(CryptoEngine::restore_backup_archive(
-            &backup_file,
-            &restore_db_file,
-            &restore_evidence_dir,
-            &wrong_pass
-        )
-        .is_err());
+        assert!(
+            CryptoEngine::restore_backup_archive(
+                &backup_file,
+                &restore_db_file,
+                &restore_evidence_dir,
+                &wrong_pass
+            )
+            .is_err()
+        );
 
         // Clean up
         let _ = fs::remove_dir_all(&temp_dir);

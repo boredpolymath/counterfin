@@ -142,7 +142,8 @@ impl FdcpaEngine {
         // Handle Dec 31 observed for New Year's Day when Jan 1 is Saturday
         if month == 1 && day == 1 {
             let next_year_jan1 = NaiveDate::from_ymd_opt(year + 1, 1, 1);
-            if matches!(next_year_jan1, Some(ny) if ny.weekday() == Weekday::Sat && date == ny.pred_opt().unwrap_or(ny)) {
+            if matches!(next_year_jan1, Some(ny) if ny.weekday() == Weekday::Sat && date == ny.pred_opt().unwrap_or(ny))
+            {
                 return true;
             }
         }
@@ -309,7 +310,8 @@ impl FdcpaEngine {
                     id: uuid::Uuid::new_v4(),
                     interaction_id: target_interaction.id,
                     case_id: target_interaction.case_id,
-                    violation_type: crate::models::violation::FdcpaViolationType::CollectionDuringValidation,
+                    violation_type:
+                        crate::models::violation::FdcpaViolationType::CollectionDuringValidation,
                     statutory_citation: "15 U.S.C. § 1692g(b)".to_string(),
                     statutory_penalty_cap: 1000.0,
                     actual_damages: 0.0,
@@ -318,7 +320,9 @@ impl FdcpaEngine {
                         target_interaction.timestamp.format("%Y-%m-%d"),
                         dvl_date.format("%Y-%m-%d")
                     ),
-                    evidence_references: vec!["USPS Certified Mail Delivery Confirmation".to_string()],
+                    evidence_references: vec![
+                        "USPS Certified Mail Delivery Confirmation".to_string(),
+                    ],
                 });
             }
         }
@@ -366,7 +370,9 @@ impl FdcpaEngine {
     ) -> Vec<crate::models::violation::Violation> {
         let mut violations = Vec::new();
 
-        if let Some(v) = Self::check_inconvenient_time_violation(target_interaction, debtor_tz_offset_hours) {
+        if let Some(v) =
+            Self::check_inconvenient_time_violation(target_interaction, debtor_tz_offset_hours)
+        {
             violations.push(v);
         }
         if let Some(v) = Self::check_call_frequency_violation(target_interaction, history) {
@@ -379,10 +385,9 @@ impl FdcpaEngine {
         ) {
             violations.push(v);
         }
-        if let Some(v) = Self::check_cease_and_desist_violation(
-            target_interaction,
-            cease_desist_delivered_date,
-        ) {
+        if let Some(v) =
+            Self::check_cease_and_desist_violation(target_interaction, cease_desist_delivered_date)
+        {
             violations.push(v);
         }
 
@@ -491,7 +496,8 @@ mod tests {
         // 2025 is NOT a leap year (Feb 28 days)
         // Notice on Feb 1, 2025 -> +30 days = Monday, March 3, 2025
         let notice_non_leap = NaiveDate::from_ymd_opt(2025, 2, 1).unwrap();
-        let window_non_leap = FdcpaEngine::calculate_validation_window(notice_non_leap, Some(notice_non_leap));
+        let window_non_leap =
+            FdcpaEngine::calculate_validation_window(notice_non_leap, Some(notice_non_leap));
         assert_eq!(window_non_leap.raw_30_day_deadline, "2025-03-03");
         assert_eq!(window_non_leap.adjusted_deadline, "2025-03-03");
     }
@@ -510,7 +516,7 @@ mod tests {
 
     #[test]
     fn test_inconvenient_hours() {
-        assert!(FdcpaEngine::is_inconvenient_hour(7));  // 7 AM is prohibited
+        assert!(FdcpaEngine::is_inconvenient_hour(7)); // 7 AM is prohibited
         assert!(!FdcpaEngine::is_inconvenient_hour(8)); // 8 AM is allowed
         assert!(!FdcpaEngine::is_inconvenient_hour(20)); // 8 PM is allowed
         assert!(FdcpaEngine::is_inconvenient_hour(21)); // 9 PM is prohibited
@@ -525,7 +531,9 @@ mod tests {
             id: uuid::Uuid::new_v4(),
             case_id,
             creditor_id: None,
-            timestamp: chrono::DateTime::parse_from_rfc3339("2026-05-10T02:30:00Z").unwrap().with_timezone(&Utc),
+            timestamp: chrono::DateTime::parse_from_rfc3339("2026-05-10T02:30:00Z")
+                .unwrap()
+                .with_timezone(&Utc),
             channel: crate::models::interaction::Channel::Phone,
             direction: crate::models::interaction::Direction::Incoming,
             contact_name: "Apex Coll".to_string(),
@@ -539,14 +547,19 @@ mod tests {
         let violation = FdcpaEngine::check_inconvenient_time_violation(&interaction, -5);
         assert!(violation.is_some());
         let v = violation.unwrap();
-        assert_eq!(v.violation_type, crate::models::violation::FdcpaViolationType::InconvenientTime);
+        assert_eq!(
+            v.violation_type,
+            crate::models::violation::FdcpaViolationType::InconvenientTime
+        );
         assert_eq!(v.statutory_citation, "15 U.S.C. § 1692c(a)(1)");
     }
 
     #[test]
     fn test_call_frequency_rule_7_in_7() {
         let case_id = uuid::Uuid::new_v4();
-        let base_time = chrono::DateTime::parse_from_rfc3339("2026-05-10T14:00:00Z").unwrap().with_timezone(&Utc);
+        let base_time = chrono::DateTime::parse_from_rfc3339("2026-05-10T14:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc);
 
         let mut history = Vec::new();
         // Create 7 prior phone calls within 5 days
@@ -586,14 +599,19 @@ mod tests {
         let violation = FdcpaEngine::check_call_frequency_violation(&eighth_call, &history);
         assert!(violation.is_some());
         let v = violation.unwrap();
-        assert_eq!(v.violation_type, crate::models::violation::FdcpaViolationType::ContinuousHarassment);
+        assert_eq!(
+            v.violation_type,
+            crate::models::violation::FdcpaViolationType::ContinuousHarassment
+        );
         assert!(v.statutory_citation.contains("12 C.F.R. § 1006.14(b)"));
     }
 
     #[test]
     fn test_validation_stay_rule() {
         let case_id = uuid::Uuid::new_v4();
-        let dvl_delivered = chrono::DateTime::parse_from_rfc3339("2026-05-01T10:00:00Z").unwrap().with_timezone(&Utc);
+        let dvl_delivered = chrono::DateTime::parse_from_rfc3339("2026-05-01T10:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc);
 
         // Incoming call 5 days after DVL delivered, no verification provided
         let call_during_stay = crate::models::interaction::Interaction {
@@ -611,17 +629,26 @@ mod tests {
             recorded_flag: false,
         };
 
-        let violation = FdcpaEngine::check_validation_stay_violation(&call_during_stay, Some(dvl_delivered), None);
+        let violation = FdcpaEngine::check_validation_stay_violation(
+            &call_during_stay,
+            Some(dvl_delivered),
+            None,
+        );
         assert!(violation.is_some());
         let v = violation.unwrap();
-        assert_eq!(v.violation_type, crate::models::violation::FdcpaViolationType::CollectionDuringValidation);
+        assert_eq!(
+            v.violation_type,
+            crate::models::violation::FdcpaViolationType::CollectionDuringValidation
+        );
         assert_eq!(v.statutory_citation, "15 U.S.C. § 1692g(b)");
     }
 
     #[test]
     fn test_cease_and_desist_rule() {
         let case_id = uuid::Uuid::new_v4();
-        let cd_delivered = chrono::DateTime::parse_from_rfc3339("2026-05-01T10:00:00Z").unwrap().with_timezone(&Utc);
+        let cd_delivered = chrono::DateTime::parse_from_rfc3339("2026-05-01T10:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc);
 
         let call_after_cd = crate::models::interaction::Interaction {
             id: uuid::Uuid::new_v4(),
@@ -638,10 +665,14 @@ mod tests {
             recorded_flag: false,
         };
 
-        let violation = FdcpaEngine::check_cease_and_desist_violation(&call_after_cd, Some(cd_delivered));
+        let violation =
+            FdcpaEngine::check_cease_and_desist_violation(&call_after_cd, Some(cd_delivered));
         assert!(violation.is_some());
         let v = violation.unwrap();
-        assert_eq!(v.violation_type, crate::models::violation::FdcpaViolationType::PostCeaseContact);
+        assert_eq!(
+            v.violation_type,
+            crate::models::violation::FdcpaViolationType::PostCeaseContact
+        );
         assert_eq!(v.statutory_citation, "15 U.S.C. § 1692c(c)");
     }
 
@@ -680,4 +711,3 @@ mod tests {
         assert_eq!(summary.grand_total_damages, 2350.0);
     }
 }
-

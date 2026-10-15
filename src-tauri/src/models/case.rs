@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 /// Rigid state machine representing the lifecycle of a debt dispute case
@@ -65,14 +65,10 @@ impl CaseStatus {
                     | CaseStatus::DebtSettled
                     | CaseStatus::DebtDismissed
             ),
-            CaseStatus::InLitigation => matches!(
-                next,
-                CaseStatus::DebtSettled | CaseStatus::DebtDismissed
-            ),
-            CaseStatus::DebtSettled => matches!(
-                next,
-                CaseStatus::DebtDismissed
-            ),
+            CaseStatus::InLitigation => {
+                matches!(next, CaseStatus::DebtSettled | CaseStatus::DebtDismissed)
+            }
+            CaseStatus::DebtSettled => matches!(next, CaseStatus::DebtDismissed),
             CaseStatus::DebtDismissed => false, // Terminal closed state; cannot reopen
         }
     }
