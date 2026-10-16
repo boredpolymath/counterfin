@@ -77,91 +77,93 @@ function initOsDetection() {
   }
 }
 
-/* ==========================================================================
-   2. Interactive Showcase Gallery Tabs
-   ========================================================================== */
+const SHOWCASE_TAB_DATA = {
+  dashboard: {
+    src: 'assets/images/dashboard.webp',
+    fallback: 'assets/images/dashboard.png',
+    title: 'Live Statutory Dashboard:',
+    desc: 'Real-time tracking of 30-day FDCPA dispute windows, 7-in-7 call violations, and accrued statutory damages.'
+  },
+  letters: {
+    src: 'assets/images/letters.webp',
+    fallback: 'assets/images/letters.png',
+    title: '7 Automated Legal Dispute Generators:',
+    desc: 'Context-aware statutory demand letter generation with live PDF & Markdown export.'
+  },
+  interactions: {
+    src: 'assets/images/interactions.webp',
+    fallback: 'assets/images/interactions.png',
+    title: 'Interaction & Violation Log:',
+    desc: 'Precise tracking of phone calls, voicemails, and written notices under 12 CFR § 1006 Regulation F.'
+  },
+  evidence: {
+    src: 'assets/images/evidence.webp',
+    fallback: 'assets/images/evidence.png',
+    title: 'NIST SHA-256 Evidence Vault:',
+    desc: 'Cryptographic file integrity hashing with automated tamper detection and chain of custody.'
+  },
+  credit: {
+    src: 'assets/images/credit.webp',
+    fallback: 'assets/images/credit.png',
+    title: 'Credit Bureau Audit (FCRA § 623):',
+    desc: 'Direct CRA trade-line dispute engine for Experian, Equifax, and TransUnion records.'
+  },
+  callScript: {
+    src: 'assets/images/callScriptModal.webp',
+    fallback: 'assets/images/callScriptModal.png',
+    title: 'Real-Time Defense Scripts:',
+    desc: 'Step-by-step interactive script cards during incoming phone calls to record violations and stop harassment.'
+  }
+};
+
+function switchShowcaseTab(key, screenImg, pictureSource, captionEl) {
+  const data = SHOWCASE_TAB_DATA[key];
+  if (!data || !screenImg) return;
+
+  screenImg.style.opacity = '0.3';
+  setTimeout(() => {
+    if (pictureSource) {
+      pictureSource.srcset = data.src;
+    }
+    screenImg.src = data.src;
+    if (captionEl) {
+      captionEl.textContent = '';
+      const strongEl = document.createElement('strong');
+      strongEl.textContent = data.title;
+      captionEl.append(strongEl, ' ' + data.desc);
+    }
+    screenImg.style.opacity = '1';
+  }, 120);
+}
+
+function preloadShowcaseTabImages() {
+  const preload = () => {
+    Object.values(SHOWCASE_TAB_DATA).forEach(item => {
+      const img = new Image();
+      img.src = item.src;
+    });
+  };
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(preload, { timeout: 2000 });
+  } else {
+    setTimeout(preload, 1000);
+  }
+}
+
 function initShowcaseTabs() {
   const tabs = document.querySelectorAll('.showcase-tab');
   const screenImg = document.getElementById('showcaseImage');
   const pictureSource = screenImg?.parentElement?.querySelector('source');
   const captionEl = document.getElementById('showcaseCaptionText');
 
-  const tabData = {
-    dashboard: {
-      src: 'assets/images/dashboard.webp',
-      fallback: 'assets/images/dashboard.png',
-      title: 'Live Statutory Dashboard:',
-      desc: 'Real-time tracking of 30-day FDCPA dispute windows, 7-in-7 call violations, and accrued statutory damages.'
-    },
-    letters: {
-      src: 'assets/images/letters.webp',
-      fallback: 'assets/images/letters.png',
-      title: '7 Automated Legal Dispute Generators:',
-      desc: 'Context-aware statutory demand letter generation with live PDF & Markdown export.'
-    },
-    interactions: {
-      src: 'assets/images/interactions.webp',
-      fallback: 'assets/images/interactions.png',
-      title: 'Interaction & Violation Log:',
-      desc: 'Precise tracking of phone calls, voicemails, and written notices under 12 CFR § 1006 Regulation F.'
-    },
-    evidence: {
-      src: 'assets/images/evidence.webp',
-      fallback: 'assets/images/evidence.png',
-      title: 'NIST SHA-256 Evidence Vault:',
-      desc: 'Cryptographic file integrity hashing with automated tamper detection and chain of custody.'
-    },
-    credit: {
-      src: 'assets/images/credit.webp',
-      fallback: 'assets/images/credit.png',
-      title: 'Credit Bureau Audit (FCRA § 623):',
-      desc: 'Direct CRA trade-line dispute engine for Experian, Equifax, and TransUnion records.'
-    },
-    callScript: {
-      src: 'assets/images/callScriptModal.webp',
-      fallback: 'assets/images/callScriptModal.png',
-      title: 'Real-Time Defense Scripts:',
-      desc: 'Step-by-step interactive script cards during incoming phone calls to record violations and stop harassment.'
-    }
-  };
-
-  // Preload tab images in background idle time
-  const preloadTabImages = () => {
-    Object.values(tabData).forEach(item => {
-      const img = new Image();
-      img.src = item.src;
-    });
-  };
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(preloadTabImages, { timeout: 2000 });
-  } else {
-    setTimeout(preloadTabImages, 1000);
-  }
+  preloadShowcaseTabImages();
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => {
-        t.classList.remove('active');
-      });
+      tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-
       const key = tab.getAttribute('data-tab');
-      if (tabData[key] && screenImg) {
-        screenImg.style.opacity = '0.3';
-        setTimeout(() => {
-          if (pictureSource) {
-            pictureSource.srcset = tabData[key].src;
-          }
-          screenImg.src = tabData[key].src;
-          if (captionEl) {
-            captionEl.textContent = '';
-            const strongEl = document.createElement('strong');
-            strongEl.textContent = tabData[key].title;
-            captionEl.append(strongEl, ' ' + tabData[key].desc);
-          }
-          screenImg.style.opacity = '1';
-        }, 120);
-      }
+      switchShowcaseTab(key, screenImg, pictureSource, captionEl);
     });
   });
 }

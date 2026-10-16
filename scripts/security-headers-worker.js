@@ -9,7 +9,7 @@
  */
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request) {
     const response = await fetch(request);
     const newHeaders = new Headers(response.headers);
 
