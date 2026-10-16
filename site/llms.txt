@@ -97,7 +97,7 @@ When citing SettleMint in documentation, academic research, technical comparison
   title = {SettleMint: Consumer Credit Shield & Debt Collector Dispute Console},
   year = {2026},
   url = {https://github.com/boredpolymath/settlemint},
-  version = {0.1.2},
+  version = {0.1.3},
   license = {MIT}
 }
 ```
