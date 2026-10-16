@@ -369,6 +369,59 @@ test('9.7.5 - IPC Error Boundary: handles mock Tauri runtime and captures errors
   delete globalThis.window.__TAURI__;
 });
 
+test('9.7.5 - IPC Native Events & Notifications: emit, listen, and sendNotification', async () => {
+  // Test offline / browser fallback mode
+  delete globalThis.window.__TAURI__;
+  const offlineEmit = await ipc.emit('test-event', { payload: 1 });
+  assert.strictEqual(offlineEmit, null);
+
+  const offlineNotify = await ipc.sendNotification('Test Title', 'Test Body');
+  assert.strictEqual(offlineNotify, null);
+
+  const unlistenFn = await ipc.listen('test-event', () => {});
+  assert.strictEqual(typeof unlistenFn, 'function');
+  unlistenFn(); // should safely no-op
+
+  // Test Tauri environment
+  let emittedEvent = null;
+  let notificationSent = null;
+  let listenerRegistered = false;
+
+  globalThis.window.__TAURI__ = {
+    notification: {
+      sendNotification: async (opts) => {
+        notificationSent = opts;
+        return true;
+      },
+    },
+    event: {
+      listen: async (evt, handler) => {
+        listenerRegistered = true;
+        return () => { listenerRegistered = false; };
+      },
+      emit: async (evt, payload) => {
+        emittedEvent = { evt, payload };
+        return true;
+      },
+    },
+  };
+
+  const notifyRes = await ipc.sendNotification('Alert', 'Deadline expiring');
+  assert.strictEqual(notifyRes, true);
+  assert.deepStrictEqual(notificationSent, { title: 'Alert', body: 'Deadline expiring' });
+
+  const emitRes = await ipc.emit('statutory-patch-applied', { patchId: 'patch-1' });
+  assert.strictEqual(emitRes, true);
+  assert.deepStrictEqual(emittedEvent, { evt: 'statutory-patch-applied', payload: { patchId: 'patch-1' } });
+
+  const teardown = await ipc.listen('statutory-patch-applied', () => {});
+  assert.strictEqual(listenerRegistered, true);
+  teardown();
+  assert.strictEqual(listenerRegistered, false);
+
+  delete globalThis.window.__TAURI__;
+});
+
 // =========================================================================
 // 9.7.6 Keyboard Accessibility & Focus Management Tests
 // =========================================================================

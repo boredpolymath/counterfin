@@ -212,22 +212,38 @@ export const ipc = {
   // Native OS Notifications & System Events
   // -------------------------------------------------------------------------
   async sendNotification(title, body) {
-    if (window.__TAURI__ && window.__TAURI__.notification) {
-      return await window.__TAURI__.notification.sendNotification({ title, body });
+    if (window.__TAURI__ && window.__TAURI__.notification && window.__TAURI__.notification.sendNotification) {
+      try {
+        return await window.__TAURI__.notification.sendNotification({ title, body });
+      } catch (err) {
+        console.error('[IPC Error] sendNotification failed:', err);
+        throw err;
+      }
     }
+    return null;
   },
 
   async listen(event, callback) {
     if (window.__TAURI__ && window.__TAURI__.event && window.__TAURI__.event.listen) {
-      return await window.__TAURI__.event.listen(event, callback);
-    } else {
-      return () => {};
+      try {
+        return await window.__TAURI__.event.listen(event, callback);
+      } catch (err) {
+        console.error(`[IPC Error] Event '${event}' listen failed:`, err);
+        throw err;
+      }
     }
+    return () => {};
   },
 
   async emit(event, payload = {}) {
     if (window.__TAURI__ && window.__TAURI__.event && window.__TAURI__.event.emit) {
-      return await window.__TAURI__.event.emit(event, payload);
+      try {
+        return await window.__TAURI__.event.emit(event, payload);
+      } catch (err) {
+        console.error(`[IPC Error] Event '${event}' emit failed:`, err);
+        throw err;
+      }
     }
+    return null;
   }
 };
