@@ -24,7 +24,7 @@ import { renderLetterStudio, escapeHtml } from '../js/views/letter-view.js';
 import { renderEvidenceVault } from '../js/views/evidence-view.js';
 import { renderCreditAudit } from '../js/views/credit-view.js';
 import { ipc } from '../js/ipc.js';
-import { INITIAL_CASES, USER_PROFILE } from '../js/data/mock-dossiers.js';
+import { INITIAL_CASES } from '../js/data/mock-dossiers.js';
 
 // =========================================================================
 // 9.7.1 Component & UI View Rendering Tests

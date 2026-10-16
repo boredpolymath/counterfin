@@ -13,24 +13,37 @@ function escapeHtml(str) {
     .replace(/'/g, '&#x27;');
 }
 
-export function renderCreditAudit(tradelines, activeCase) {
-  if (!activeCase) {
-    return `
-      <div class="empty-state-card" style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:60px 24px; text-align:center; max-width:600px; margin:40px auto;">
-        <div style="width:48px; height:48px; border-radius:12px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        </div>
-        <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Credit Audit Account Selected</h3>
-        <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.5;">Select a dispute case from your dashboard to audit associated credit bureau trade lines.</p>
-        <button type="button" class="btn btn-pill-primary" id="creditEmptyNewCaseBtn">+ Open New Dispute</button>
+function renderEmptyCreditState() {
+  return `
+    <div class="empty-state-card" style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:60px 24px; text-align:center; max-width:600px; margin:40px auto;">
+      <div style="width:48px; height:48px; border-radius:12px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
       </div>
-    `;
-  }
+      <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Credit Audit Account Selected</h3>
+      <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.5;">Select a dispute case from your dashboard to audit associated credit bureau trade lines.</p>
+      <button type="button" class="btn btn-pill-primary" id="creditEmptyNewCaseBtn">+ Open New Dispute</button>
+    </div>
+  `;
+}
 
-  const caseTradelines = (tradelines || []).filter(t => t.caseId === activeCase.id);
+function renderTradelineCard(item) {
+  const isCompliant = item.compliant;
+  const balance = (Number(item.reportedBalance) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const infractionHtml = !isCompliant ? `
+    <div class="tradeline-infraction-alert">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:1px;">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <div>
+        <strong>FCRA § 623(a)(3) Infraction:</strong> Collector was notified in writing that this balance is disputed, but furnished inaccurate data or failed to communicate dispute status to ${escapeHtml(item.bureau)}.
+      </div>
+    </div>
+  ` : '';
 
-  const cards = caseTradelines.length > 0 ? caseTradelines.map(item => `
-    <div class="tradeline-card ${!item.compliant ? 'dispute-inaccurate' : ''}">
+  return `
+    <div class="tradeline-card ${!isCompliant ? 'dispute-inaccurate' : ''}">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           <div style="width:32px; height:32px; border-radius:8px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;">
@@ -46,7 +59,7 @@ export function renderCreditAudit(tradelines, activeCase) {
           </div>
         </div>
         <div>
-          ${item.compliant 
+          ${isCompliant 
             ? `<span class="status-pill status-pill-mint">✓ Compliant (Disputed)</span>` 
             : `<span class="status-pill status-pill-rose">⚠️ FCRA / FDCPA Inaccuracy</span>`
           }
@@ -57,12 +70,12 @@ export function renderCreditAudit(tradelines, activeCase) {
         <div>
           <span style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748b;">Reported Balance</span>
           <div style="font-family:var(--font-family-mono); font-size:16px; font-weight:700; color:#0f172a; margin-top:2px;">
-            $${(Number(item.reportedBalance) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            $${balance}
           </div>
         </div>
         <div>
           <span style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748b;">Tradeline Remark</span>
-          <div style="font-size:12.5px; font-weight:600; color:${item.compliant ? '#006948' : '#e11d48'}; margin-top:2px;">
+          <div style="font-size:12.5px; font-weight:600; color:${isCompliant ? '#006948' : '#e11d48'}; margin-top:2px;">
             ${escapeHtml(item.disputeRemarkStatus)}
           </div>
         </div>
@@ -74,25 +87,18 @@ export function renderCreditAudit(tradelines, activeCase) {
         </div>
       </div>
 
-      ${!item.compliant ? `
-        <div class="tradeline-infraction-alert">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:1px;">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <div>
-            <strong>FCRA § 623(a)(3) Infraction:</strong> Collector was notified in writing that this balance is disputed, but furnished inaccurate data or failed to communicate dispute status to ${escapeHtml(item.bureau)}.
-          </div>
-        </div>
-      ` : ''}
+      ${infractionHtml}
 
       <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:4px;">
         <button class="btn-pill-outline btn-sm" style="font-size:11px;">Diff Historical Snapshot</button>
         <button class="btn-pill-primary btn-sm" style="font-size:11px;">Generate CRA Dispute Packet</button>
       </div>
     </div>
-  `).join("") : `
+  `;
+}
+
+function renderEmptyTradelinesList() {
+  return `
     <div style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:40px 24px; text-align:center;">
       <div style="width:48px; height:48px; border-radius:50%; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:12px;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -105,6 +111,15 @@ export function renderCreditAudit(tradelines, activeCase) {
       <button class="btn-pill-primary btn-sm" onclick="document.getElementById('importCreditReportBtn')?.click()">+ Ingest Credit Report</button>
     </div>
   `;
+}
+
+export function renderCreditAudit(tradelines, activeCase) {
+  if (!activeCase) return renderEmptyCreditState();
+
+  const caseTradelines = (tradelines || []).filter(t => t.caseId === activeCase.id);
+  const cards = caseTradelines.length > 0 
+    ? caseTradelines.map(renderTradelineCard).join("") 
+    : renderEmptyTradelinesList();
 
   return `
     <div style="display: flex; flex-direction: column; gap: var(--space-md);">
@@ -123,11 +138,11 @@ export function renderCreditAudit(tradelines, activeCase) {
             </div>
             <div class="view-header-subtitle">
               <span>Active Dossier:</span>
-              <strong style="color: #334155;">${activeCase.originalProvider || activeCase.collectionAgency}</strong>
+              <strong style="color: #334155;">${escapeHtml(activeCase.originalProvider || activeCase.collectionAgency)}</strong>
               <span>•</span>
-              <span class="label-code" style="font-size: 11px;">${activeCase.docketNumber || activeCase.id}</span>
+              <span class="label-code" style="font-size: 11px;">${escapeHtml(activeCase.docketNumber || activeCase.id)}</span>
               <span>•</span>
-              <span>Collector: ${activeCase.collectionAgency}</span>
+              <span>Collector: ${escapeHtml(activeCase.collectionAgency)}</span>
             </div>
           </div>
         </div>

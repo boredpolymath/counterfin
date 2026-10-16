@@ -13,23 +13,21 @@ function escapeHtml(str) {
     .replace(/'/g, '&#x27;');
 }
 
-export function renderEvidenceVault(evidenceList, activeCase) {
-  if (!activeCase) {
-    return `
-      <div class="empty-state-card" style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:60px 24px; text-align:center; max-width:600px; margin:40px auto;">
-        <div style="width:48px; height:48px; border-radius:12px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-        </div>
-        <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Evidence Vault Selected</h3>
-        <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.5;">Evidence files and Bates stamps are associated with specific dispute dossiers. Select or create an account to vault evidence.</p>
-        <button type="button" class="btn btn-pill-primary" id="evidenceEmptyNewCaseBtn">+ Open New Dispute</button>
+function renderEmptyEvidenceState() {
+  return `
+    <div class="empty-state-card" style="background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:60px 24px; text-align:center; max-width:600px; margin:40px auto;">
+      <div style="width:48px; height:48px; border-radius:12px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
       </div>
-    `;
-  }
+      <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Evidence Vault Selected</h3>
+      <p style="font-size:14px; color:#64748b; margin-bottom:20px; line-height:1.5;">Evidence files and Bates stamps are associated with specific dispute dossiers. Select or create an account to vault evidence.</p>
+      <button type="button" class="btn btn-pill-primary" id="evidenceEmptyNewCaseBtn">+ Open New Dispute</button>
+    </div>
+  `;
+}
 
-  const caseEvidence = (evidenceList || []).filter(e => e.caseId === activeCase.id);
-
-  const cards = caseEvidence.length > 0 ? caseEvidence.map(item => `
+function renderEvidenceCard(item) {
+  return `
     <div class="vault-item-card">
       <div class="vault-thumb">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -59,7 +57,11 @@ export function renderEvidenceVault(evidenceList, activeCase) {
         <button class="btn-pill-outline btn-sm" style="font-size:11px; padding:4px 10px;">Inspect Artifact ›</button>
       </div>
     </div>
-  `).join("") : `
+  `;
+}
+
+function renderEmptyEvidenceGallery() {
+  return `
     <div style="grid-column: 1 / -1; background:#ffffff; border:1px dashed var(--color-border-standard); border-radius:var(--radius-xl); padding:40px 24px; text-align:center;">
       <div style="width:48px; height:48px; border-radius:50%; background:var(--color-primary-mint-wash); color:var(--color-primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:12px;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -71,6 +73,15 @@ export function renderEvidenceVault(evidenceList, activeCase) {
       <button class="btn-pill-primary btn-sm" id="emptyIngestEvidenceBtn" onclick="document.getElementById('ingestEvidenceBtn')?.click()">+ Ingest First Evidence File</button>
     </div>
   `;
+}
+
+export function renderEvidenceVault(evidenceList, activeCase) {
+  if (!activeCase) return renderEmptyEvidenceState();
+
+  const caseEvidence = (evidenceList || []).filter(e => e.caseId === activeCase.id);
+  const cards = caseEvidence.length > 0 
+    ? caseEvidence.map(renderEvidenceCard).join("") 
+    : renderEmptyEvidenceGallery();
 
   return `
     <div style="display: flex; flex-direction: column; gap: var(--space-md);">
@@ -88,11 +99,11 @@ export function renderEvidenceVault(evidenceList, activeCase) {
             </div>
             <div class="view-header-subtitle">
               <span>Active Dossier:</span>
-              <strong style="color: #334155;">${activeCase.originalProvider || activeCase.collectionAgency}</strong>
+              <strong style="color: #334155;">${escapeHtml(activeCase.originalProvider || activeCase.collectionAgency)}</strong>
               <span>•</span>
-              <span class="label-code" style="font-size: 11px;">${activeCase.docketNumber || activeCase.id}</span>
+              <span class="label-code" style="font-size: 11px;">${escapeHtml(activeCase.docketNumber || activeCase.id)}</span>
               <span>•</span>
-              <span>Collector: ${activeCase.collectionAgency}</span>
+              <span>Collector: ${escapeHtml(activeCase.collectionAgency)}</span>
             </div>
           </div>
         </div>
