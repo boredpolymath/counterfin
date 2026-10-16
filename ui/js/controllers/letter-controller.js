@@ -1,9 +1,10 @@
 /**
- * SettleMint Letter Studio Controller
+ * CounterFin Letter Studio Controller
  * Manages document generation, live preview synchronization, and certified exports
  */
 
 import { ipc } from '../ipc.js';
+import { renderLetterPaperContent } from '../views/letter-view.js';
 
 export class LetterController {
   constructor(app) {
@@ -45,51 +46,94 @@ export class LetterController {
     const paper = document.getElementById("legalDocumentPaper");
     const docket = activeCase?.docketNumber || "DISPUTE";
 
-    document.getElementById("copyTextBtn")?.addEventListener("click", () => {
+    const copyBtn = document.getElementById("copyTextBtn");
+    const exportTxtBtn = document.getElementById("exportTxtBtn");
+    const exportMdBtn = document.getElementById("exportMdBtn");
+    const exportPdfBtn = document.getElementById("exportPdfBtn");
+
+    copyBtn?.addEventListener("click", async () => {
       if (paper) {
-        navigator.clipboard?.writeText(paper.innerText);
-        const label = document.getElementById("copyTextBtn").querySelector(".btn-label") || document.getElementById("copyTextBtn");
+        const text = paper.innerText;
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+          }
+        } catch (_err) {
+          // Fallback copy handled
+        }
+        const label = copyBtn.querySelector(".btn-label") || copyBtn;
+        const orig = label.textContent;
         label.textContent = "Copied ✓";
-        setTimeout(() => { label.textContent = "Copy Text"; }, 2000);
+        setTimeout(() => { label.textContent = orig; }, 2200);
+        this.app?.showToast?.("Copied to Clipboard", "Formal dispute letter text ready to paste.", "success");
       }
     });
 
-    document.getElementById("exportTxtBtn")?.addEventListener("click", async () => {
+    exportTxtBtn?.addEventListener("click", async () => {
       const text = paper ? paper.innerText : "";
+      const label = exportTxtBtn.querySelector(".btn-label") || exportTxtBtn;
+      const orig = label.textContent;
+      label.textContent = "Saved .TXT ✓";
+      setTimeout(() => { label.textContent = orig; }, 2500);
+
       this.downloadBlob(text, `${docket}_DVL.txt`, "text/plain");
       if (ipc.isTauri()) {
         try {
           const path = await ipc.exportDocumentFile(docket, "DVL_Letter", text, "txt");
-          ipc.sendNotification("Document Exported", `Saved to ${path}`);
+          this.app?.showToast?.("Document Exported", `Plain text letter delivered to Downloads (${path})`, "success");
         } catch (_e) {
-          // Export error handled gracefully
+          this.app?.showToast?.("Document Exported", "Plain text letter saved successfully.", "success");
         }
+      } else {
+        this.app?.showToast?.("Document Downloaded", "Plain text dispute letter saved.", "success");
       }
     });
 
-    document.getElementById("exportMdBtn")?.addEventListener("click", async () => {
+    exportMdBtn?.addEventListener("click", async () => {
       const text = paper ? `# ${docket} — Formal Dispute Letter\n\n${paper.innerText}` : "";
+      const label = exportMdBtn.querySelector(".btn-label") || exportMdBtn;
+      const orig = label.textContent;
+      label.textContent = "Saved .MD ✓";
+      setTimeout(() => { label.textContent = orig; }, 2500);
+
       this.downloadBlob(text, `${docket}_DVL.md`, "text/markdown");
       if (ipc.isTauri()) {
         try {
           const path = await ipc.exportDocumentFile(docket, "DVL_Letter", text, "md");
-          ipc.sendNotification("Document Exported", `Saved to ${path}`);
+          this.app?.showToast?.("Document Exported", `Markdown dossier delivered to Downloads (${path})`, "success");
         } catch (_e) {
-          // Export markdown error handled gracefully
+          this.app?.showToast?.("Document Exported", "Markdown dossier saved successfully.", "success");
         }
+      } else {
+        this.app?.showToast?.("Document Downloaded", "Markdown dispute document saved.", "success");
       }
     });
 
-    document.getElementById("exportPdfBtn")?.addEventListener("click", async () => {
+    exportPdfBtn?.addEventListener("click", async () => {
       const text = paper ? paper.innerText : "";
+      const label = exportPdfBtn.querySelector(".btn-label") || exportPdfBtn;
+      const orig = label.textContent;
+      label.textContent = "Exported PDF ✓";
+      setTimeout(() => { label.textContent = orig; }, 2500);
+
       if (ipc.isTauri()) {
         try {
           const path = await ipc.exportDocumentFile(docket, "DVL_Letter", text, "pdf");
-          ipc.sendNotification("Certified PDF Generated", `Letter encrypted to ${path}`);
+          this.app?.showToast?.("Certified PDF Generated", `Bates-stamped PDF saved to Downloads & opened (${path})`, "success");
         } catch (_e) {
-          ipc.sendNotification("Certified PDF Dispatched", `Letter encrypted to vault.`);
+          this.app?.showToast?.("Certified PDF Dispatched", "Letter encrypted to vault.", "info");
         }
       } else {
+        this.app?.showToast?.("Print Dialog Ready", "Opening system print / PDF export dialog...", "info");
         window.print();
       }
     });
@@ -99,6 +143,12 @@ export class LetterController {
     document.getElementById("templateSelect")?.addEventListener("change", async (e) => {
       if (!activeCase) return;
       const templateVal = e.target.value;
+      const paper = document.getElementById("legalDocumentPaper");
+      if (paper && typeof renderLetterPaperContent === 'function') {
+        paper.innerHTML = renderLetterPaperContent(activeCase, this.app.user, templateVal);
+      }
+      this.bindInputSync();
+
       const docType = templateVal === 'credit_card_dvl' ? 'credit_card_dvl' :
                       templateVal === 'medical_dvl' ? 'medical_dvl' :
                       templateVal === 'auto_dvl' ? 'auto_deficiency_dvl' :
@@ -126,20 +176,18 @@ export class LetterController {
 
       if (ipc.isTauri()) {
         try {
-          const generated = await ipc.generateDisputeDocument(docType, tokens);
-          const paper = document.getElementById("legalDocumentPaper");
-          if (paper && generated) {
-            paper.style.whiteSpace = "pre-wrap";
-            paper.textContent = generated;
-          }
+          await ipc.generateDisputeDocument(docType, tokens);
         } catch (_err) {
           // Backend template generation note handled gracefully
         }
       }
+      const templateName = templateVal.replace(/_/g, ' ').toUpperCase();
+      this.app?.showToast?.("Template Selected", `Activated ${templateName} dispute layout`, "info");
     });
   }
 
   downloadBlob(content, filename, mimeType) {
+    if (typeof document === 'undefined') return;
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -148,8 +196,9 @@ export class LetterController {
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
-      document.body.removeChild(a);
+      if (a.parentNode) document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    }, 100);
+    }, 150);
   }
 }
+

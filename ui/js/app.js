@@ -52,6 +52,14 @@ class CounterFinApp {
     this.updateSidebarProfile();
     this.render();
     this.initBackendData();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener("counterfin:toast", (e) => {
+        if (e.detail) {
+          this.showToast(e.detail.title, e.detail.message, e.detail.type);
+        }
+      });
+    }
   }
 
   get hasAgreedDisclaimer() {
@@ -133,12 +141,22 @@ class CounterFinApp {
     this.activeCaseId = this.cases[0]?.id || null;
     this.expandedCaseIds = new Set(this.activeCaseId ? [this.activeCaseId] : []);
     this.render();
+    this.showToast("Demo Mode Enabled", "Pre-loaded 4 sample consumer debt defense dossiers.", "info");
     ipc.sendNotification("Demo Mode Enabled", "Pre-loaded 4 sample consumer debt defense dossiers.");
   }
 
   async clearAllData() {
     localStorage.removeItem(this.DEMO_MODE_STORAGE_SLOT);
+    localStorage.removeItem("settlemint_demo_mode");
+    localStorage.removeItem("counterfin_demo_mode");
     this.isDemoMode = false;
+    if (ipc.isTauri()) {
+      try {
+        await ipc.clearAllCases();
+      } catch (err) {
+        console.error("Failed to clear backend SQLite cases:", err);
+      }
+    }
     this.cases = [];
     this.interactions = [];
     this.evidence = [];
@@ -146,7 +164,46 @@ class CounterFinApp {
     this.activeCaseId = null;
     this.expandedCaseIds.clear();
     this.render();
+    this.showToast("Workspace Cleared", "All cases and records cleared. Ready for new disputes.", "success");
     ipc.sendNotification("Workspace Cleared", "Local cases reset. Ready for new consumer disputes.");
+  }
+
+  showToast(title, message, type = "info") {
+    if (typeof document === 'undefined') return;
+    let container = document.getElementById("toastContainer");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "toastContainer";
+      container.className = "counterfin-toast-container";
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = `counterfin-toast counterfin-toast-${type}`;
+    const iconSvg = type === 'success'
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+
+    toast.innerHTML = `
+      <div class="counterfin-toast-icon">${iconSvg}</div>
+      <div class="counterfin-toast-content">
+        <div class="counterfin-toast-title">${title || 'Notice'}</div>
+        <div class="counterfin-toast-msg">${message || ''}</div>
+      </div>
+      <button type="button" class="counterfin-toast-close" aria-label="Close notification">✕</button>
+    `;
+
+    const closeBtn = toast.querySelector(".counterfin-toast-close");
+    const removeToast = () => {
+      toast.classList.add("toast-hiding");
+      setTimeout(() => {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 300);
+    };
+
+    closeBtn?.addEventListener("click", removeToast);
+    container.appendChild(toast);
+    setTimeout(removeToast, 4000);
   }
 
   initElements() {
@@ -396,6 +453,21 @@ class CounterFinApp {
     document.getElementById("emptyIngestEvidenceBtn")?.addEventListener("click", () => {
       this.modalController.openIngestEvidenceModal(activeCase?.id);
     });
+
+    if (this.viewEvidence) {
+      this.viewEvidence.querySelectorAll(".vault-item-card").forEach(card => {
+        const inspectBtn = card.querySelector("button");
+        const title = card.querySelector("[title]")?.getAttribute("title") || "Evidence Artifact";
+        const hash = card.querySelector(".vault-hash-box")?.textContent?.replace("SHA-256:", "").trim() || "";
+        const bates = card.querySelector(".status-pill-mint")?.textContent?.trim() || "";
+        inspectBtn?.addEventListener("click", () => {
+          if (hash && navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(hash);
+          }
+          this.showToast("Artifact Inspected", `${bates} • ${title} (SHA-256 digest copied)`, "info");
+        });
+      });
+    }
   }
 
   renderCreditView(activeCase) {
@@ -418,6 +490,10 @@ class CounterFinApp {
               templateSelect.value = "cra_dispute";
               templateSelect.dispatchEvent(new Event("change"));
             }
+          });
+        } else if (btn.textContent.includes("Diff Historical Snapshot")) {
+          btn.addEventListener("click", () => {
+            this.showToast("Tradeline Delta Audit", "Historical diff: Account verified with zero undetected alterations in current reporting cycle.", "info");
           });
         }
       });

@@ -135,10 +135,29 @@ export class ModalController {
       });
     }
     if (this.wipeAllDataModalBtn) {
+      let wipeConfirmTimeout = null;
       this.wipeAllDataModalBtn.addEventListener("click", async () => {
-        if (confirm("Are you sure you want to clear all cases and start fresh?")) {
+        if (this.wipeAllDataModalBtn.dataset.confirming === "true") {
+          this.wipeAllDataModalBtn.dataset.confirming = "false";
+          this.wipeAllDataModalBtn.textContent = "Clear All Cases & Start Fresh";
+          this.wipeAllDataModalBtn.style.background = "";
+          this.wipeAllDataModalBtn.style.color = "#e11d48";
+          if (wipeConfirmTimeout) clearTimeout(wipeConfirmTimeout);
           if (this.userProfileModal) this.userProfileModal.close();
           await this.app.clearAllData();
+        } else {
+          this.wipeAllDataModalBtn.dataset.confirming = "true";
+          this.wipeAllDataModalBtn.textContent = "⚠️ Click Again to Confirm Reset";
+          this.wipeAllDataModalBtn.style.background = "#e11d48";
+          this.wipeAllDataModalBtn.style.color = "#ffffff";
+          wipeConfirmTimeout = setTimeout(() => {
+            if (this.wipeAllDataModalBtn) {
+              this.wipeAllDataModalBtn.dataset.confirming = "false";
+              this.wipeAllDataModalBtn.textContent = "Clear All Cases & Start Fresh";
+              this.wipeAllDataModalBtn.style.background = "";
+              this.wipeAllDataModalBtn.style.color = "#e11d48";
+            }
+          }, 4500);
         }
       });
     }

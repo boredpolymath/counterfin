@@ -76,6 +76,45 @@ pub async fn validate_template_tokens(
     Ok(missing)
 }
 
+fn resolve_downloads_dir() -> Option<std::path::PathBuf> {
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(profile) = std::env::var("USERPROFILE") {
+            let p = std::path::PathBuf::from(profile).join("Downloads");
+            if p.exists() {
+                return Some(p);
+            }
+        }
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        if let Ok(home) = std::env::var("HOME") {
+            let p = std::path::PathBuf::from(home).join("Downloads");
+            if p.exists() {
+                return Some(p);
+            }
+        }
+    }
+    None
+}
+
+fn open_in_system_viewer(path: &std::path::Path) {
+    #[cfg(target_os = "macos")]
+    {
+        let _ = std::process::Command::new("open").arg(path).spawn();
+    }
+    #[cfg(target_os = "windows")]
+    {
+        let _ = std::process::Command::new("cmd")
+            .args(["/C", "start", "", path.to_str().unwrap_or("")])
+            .spawn();
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        let _ = std::process::Command::new("xdg-open").arg(path).spawn();
+    }
+}
+
 #[command]
 pub async fn export_document_file(
     docket_number: String,
@@ -97,5 +136,26 @@ pub async fn export_document_file(
         &content,
         export_format,
     )?;
-    Ok(path.to_string_lossy().to_string())
+
+    // Deliver directly to the user's Downloads directory for immediate visibility
+    let final_path = if let Some(downloads_dir) = resolve_downloads_dir() {
+        if let Some(file_name) = path.file_name() {
+            let dest = downloads_dir.join(file_name);
+            if std::fs::copy(&path, &dest).is_ok() {
+                dest
+            } else {
+                path
+            }
+        } else {
+            path
+        }
+    } else {
+        path
+    };
+
+    // Open file in default system application (Preview, Adobe Reader, TextEdit, Notepad)
+    open_in_system_viewer(&final_path);
+
+    Ok(final_path.to_string_lossy().to_string())
 }
+

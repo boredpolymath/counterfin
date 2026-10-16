@@ -294,7 +294,22 @@ function renderDocDemandsList(isCreditCard, isAuto) {
   `;
 }
 
-function renderDocHeader(activeCase, todayStr, senderName, senderCityStateZip) {
+export function renderDocHeader(activeCase, todayStr, senderName, senderCityStateZip, templateType = 'credit_card_dvl') {
+  let reSubject = "NOTICE OF FORMAL DISPUTE & MANDATORY DEBT VALIDATION (15 U.S.C. § 1692g)";
+  if (templateType === 'cease_desist') {
+    reSubject = "FORMAL CEASE AND DESIST DEMAND (15 U.S.C. § 1692c(c) — POSTAL WRITTEN MAIL ONLY)";
+  } else if (templateType === 'cra_dispute') {
+    reSubject = "NOTICE OF DIRECT CONSUMER DISPUTE (FCRA § 623 / 15 U.S.C. § 1681s-2)";
+  } else if (templateType === 'cfpb_complaint') {
+    reSubject = "FORMAL CFPB REGULATORY COMPLAINT NARRATIVE & STATUTORY ENFORCEMENT PRAYER";
+  } else if (templateType === 'pay_for_delete') {
+    reSubject = "CONDITIONAL SETTLEMENT & COMPLETE TRADELINE DELETION PROPOSAL (RULE 408)";
+  } else if (templateType === 'auto_dvl') {
+    reSubject = "DEFICIENCY ACCOUNTING DEMAND & NOTICE OF DISPUTE (UCC § 9-616 & FDCPA § 1692g)";
+  } else if (templateType === 'medical_dvl') {
+    reSubject = "DEMAND FOR MEDICAL DEBT VALIDATION & CLINICAL ITEMIZATION (NO SURPRISES ACT & FDCPA)";
+  }
+
   return `
     <div class="watermark-bates">${activeCase.docketNumber}</div>
     <div class="doc-certified-banner">
@@ -311,7 +326,7 @@ function renderDocHeader(activeCase, todayStr, senderName, senderCityStateZip) {
       <div class="meta-line"><strong>DATE:</strong> <span>${escapeHtml(todayStr)}</span></div>
       <div class="meta-line"><strong>FROM:</strong> <span>${escapeHtml(senderName)}${senderCityStateZip ? ` (${escapeHtml(senderCityStateZip)})` : ''}</span></div>
       <div class="meta-line"><strong>TO:</strong> <span id="docRecipient">${escapeHtml(activeCase.collectionAgency)}</span></div>
-      <div class="meta-line"><strong>RE:</strong> <span>NOTICE OF FORMAL DISPUTE & MANDATORY DEBT VALIDATION (15 U.S.C. § 1692g)</span></div>
+      <div class="meta-line"><strong>RE:</strong> <span id="docSubject">${escapeHtml(reSubject)}</span></div>
       <div class="meta-line"><strong>ALLEGED ACCOUNT NO:</strong> <span class="label-code">${escapeHtml(activeCase.collectionAccountNumber)}</span></div>
       <div class="meta-line"><strong>ORIGINAL CREDITOR:</strong> <span>${escapeHtml(activeCase.originalProvider)}</span></div>
       <div class="meta-line"><strong>DISPUTED AMOUNT:</strong> <span class="label-code" id="docDisputedAmount" style="font-weight: 700; color: #0f172a;">$${activeCase.disputedBalance.toFixed(2)}</span></div>
@@ -319,12 +334,120 @@ function renderDocHeader(activeCase, todayStr, senderName, senderCityStateZip) {
   `;
 }
 
-function renderDocBody(isCreditCard, isAuto, senderName, senderStreet, senderCityStateZip) {
+export function renderDocBody(templateType, isCreditCard, isAuto, senderName, senderStreet, senderCityStateZip, activeCase) {
+  if (templateType === 'cease_desist') {
+    return `
+      <p style="margin-bottom: 12px; font-weight: 600;">To the Compliance Department & Collection Supervisors:</p>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        Pursuant to 15 U.S.C. § 1692c(c) of the Fair Debt Collection Practices Act (FDCPA), you are hereby officially notified and commanded to <strong>CEASE AND DESIST ALL COMMUNICATIONS</strong> with me regarding the alleged debt referenced above.
+      </p>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        This demand applies to all telephone calls, text messages, automated dialing systems (ATDS), artificial voice transmissions, and workplace communications to either my place of employment, cell phone, or residential premises. My employer strictly prohibits personal debt communications.
+      </p>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        The sole permissible communication from your agency is written correspondence delivered via the United States Postal Service advising me that collection efforts are being formally terminated or that specific legal remedies are actively being invoked. Any additional telephonic outreach will be logged as an intentional violation under 15 U.S.C. § 1692k.
+      </p>
+      <p style="margin-top: 24px;">
+        Respectfully submitted,<br><br>
+        <strong>${escapeHtml(senderName)}</strong><br>
+        ${senderStreet ? `<span>${escapeHtml(senderStreet)}</span><br>` : ''}
+        ${senderCityStateZip ? `<span>${escapeHtml(senderCityStateZip)}</span><br>` : ''}
+        <em>(Transmitted via USPS Certified Mail tracking log)</em>
+      </p>
+      <div class="legal-document-disclaimer">
+        <strong>Mandatory Compliance Notice:</strong> Cease and Desist demand pursuant to 15 U.S.C. § 1692c(c). Generated for self-represented consumer recordkeeping.
+      </div>
+    `;
+  }
+
+  if (templateType === 'cra_dispute') {
+    return `
+      <p style="margin-bottom: 12px; font-weight: 600;">To the Credit Dispute Resolution & Furnisher Compliance Division:</p>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        This letter constitutes a formal direct consumer dispute pursuant to Section 623 of the Fair Credit Reporting Act (FCRA), 15 U.S.C. § 1681s-2, and CFPB Bulletin 2013-09.
+      </p>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        I am formally disputing the accuracy and completeness of the tradeline reported by your agency to nationwide consumer reporting agencies (Equifax, Experian, TransUnion) under alleged account number <strong>${escapeHtml(activeCase.collectionAccountNumber)}</strong>.
+      </p>
+      <p style="margin-bottom: 12px; font-weight: 600;">Specifically, your agency has furnished inaccurate information by:</p>
+      <ol style="margin-left: 20px; margin-bottom: 14px; line-height: 1.65;">
+        <li>Failing to mark the account as 'Disputed by Consumer' pursuant to 15 U.S.C. § 1692e(8).</li>
+        <li>Reporting an inflated balance unverified by original periodic account statements.</li>
+        <li>Failing to maintain reasonable procedures to avoid inaccurate reporting under FCRA § 623(a)(3).</li>
+      </ol>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        You have thirty (30) days from receipt of this notice to conduct an expedited investigation, provide full documentary substantiation, and modify or delete the derogatory tradeline from all consumer reporting agencies.
+      </p>
+      <p style="margin-top: 24px;">
+        Respectfully submitted,<br><br>
+        <strong>${escapeHtml(senderName)}</strong><br>
+        ${senderStreet ? `<span>${escapeHtml(senderStreet)}</span><br>` : ''}
+        ${senderCityStateZip ? `<span>${escapeHtml(senderCityStateZip)}</span><br>` : ''}
+      </p>
+      <div class="legal-document-disclaimer">
+        <strong>Mandatory Compliance Notice:</strong> Direct dispute pursuant to FCRA § 623, 15 U.S.C. § 1681s-2.
+      </div>
+    `;
+  }
+
+  if (templateType === 'pay_for_delete') {
+    const offer = `$${((activeCase.disputedBalance || 0) * 0.4).toFixed(2)}`;
+    return `
+      <p style="margin-bottom: 12px; font-weight: 600; color: #b45309;">CONFIDENTIAL COMPROMISE SETTLEMENT OFFER — INADMISSIBLE UNDER FED. R. EVID. 408</p>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        Without prejudice to any statutory rights, claims, or defenses under the FDCPA or FCRA, the consumer proposes a full and final compromised settlement under the following express terms:
+      </p>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px;">
+        <p style="margin-bottom: 6px;"><strong>1. Compromised Sum:</strong> Consumer will pay the sum of <strong>${offer}</strong> via certified bank cashier's check upon mutual execution of this agreement.</p>
+        <p style="margin-bottom: 6px;"><strong>2. Complete Tradeline Deletion:</strong> In consideration of payment, your agency covenants to permanently delete and purge all derogatory reporting, remarks, and tradelines associated with this account from Equifax, Experian, and TransUnion within ten (10) business days.</p>
+        <p style="margin-bottom: 0;"><strong>3. No Resale or Assignment:</strong> Your agency warrants that the remaining balance will be fully extinguished and never transferred, assigned, or sold to secondary collection entities.</p>
+      </div>
+      <p style="margin-top: 24px;">
+        Respectfully submitted,<br><br>
+        <strong>${escapeHtml(senderName)}</strong><br>
+        ${senderStreet ? `<span>${escapeHtml(senderStreet)}</span><br>` : ''}
+        ${senderCityStateZip ? `<span>${escapeHtml(senderCityStateZip)}</span><br>` : ''}
+      </p>
+      <div class="legal-document-disclaimer">
+        <strong>Mandatory Compliance Notice:</strong> Settlement negotiation pursuant to Rule 408. Does not constitute an admission of liability or validity.
+      </div>
+    `;
+  }
+
+  if (templateType === 'cfpb_complaint') {
+    return `
+      <p style="margin-bottom: 12px; font-weight: 600;">To the Consumer Financial Protection Bureau (CFPB) Enforcement Division:</p>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        <strong>STATEMENT OF COMPLAINT:</strong> The undersigned consumer files this formal regulatory complaint against debt collector <strong>${escapeHtml(activeCase.collectionAgency)}</strong> regarding unlawful collection acts and deceptive communications regarding alleged account #${escapeHtml(activeCase.collectionAccountNumber)}.
+      </p>
+      <p style="margin-bottom: 12px; text-align: justify;">
+        The entity has engaged in systematic non-compliance with the Fair Debt Collection Practices Act (15 U.S.C. § 1692) and CFPB Regulation F (12 CFR Part 1006). Despite receiving written dispute requests, the collector has continued dunning actions and failed to furnish statutory verification of the disputed balance.
+      </p>
+      <p style="margin-bottom: 12px; font-weight: 600;">PRAYER FOR RELIEF:</p>
+      <ol style="margin-left: 20px; margin-bottom: 14px; line-height: 1.65;">
+        <li>Order ${escapeHtml(activeCase.collectionAgency)} to cease all unlawful collection outreach immediately.</li>
+        <li>Direct the complete deletion of disputed credit tradelines.</li>
+        <li>Assess statutory administrative penalties for willful deceptive collection practices.</li>
+      </ol>
+      <p style="margin-top: 24px;">
+        Submitted Under Penalty of Unsworn Falsification:<br><br>
+        <strong>${escapeHtml(senderName)}</strong><br>
+        ${senderStreet ? `<span>${escapeHtml(senderStreet)}</span><br>` : ''}
+        ${senderCityStateZip ? `<span>${escapeHtml(senderCityStateZip)}</span><br>` : ''}
+      </p>
+      <div class="legal-document-disclaimer">
+        <strong>Regulatory Notice:</strong> Formal consumer complaint memorandum prepared for submission to CFPB Portal.
+      </div>
+    `;
+  }
+
   const statuteSuffix = isCreditCard
     ? ', CFPB Regulation F, 12 C.F.R. § 1006.34, and the Truth in Lending Act (TILA)'
     : isAuto
     ? ', and Uniform Commercial Code (UCC) Article 9'
-    : ', and the federal No Surprises Act (P.L. 116-260)';
+    : templateType === 'medical_dvl'
+    ? ', and the federal No Surprises Act (P.L. 116-260)'
+    : '';
 
   return `
     <p style="margin-bottom: 12px; font-weight: 600;">To the Legal & Compliance Department:</p>
@@ -352,7 +475,9 @@ function renderDocBody(isCreditCard, isAuto, senderName, senderStreet, senderCit
   `;
 }
 
-function renderLetterPaper(activeCase, userProfile, isCreditCard, isAuto) {
+export function renderLetterPaperContent(activeCase, userProfile, templateType = 'credit_card_dvl') {
+  const isCreditCard = templateType === 'credit_card_dvl' || (activeCase.debtType === 'credit_card' || activeCase.iconType === 'credit_card');
+  const isAuto = templateType === 'auto_dvl' || (activeCase.debtType === 'auto_deficiency' || activeCase.iconType === 'auto');
   const today = new Date();
   const todayStr = today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   const senderName = userProfile?.name || activeCase.debtorName || "Protected Consumer";
@@ -362,26 +487,34 @@ function renderLetterPaper(activeCase, userProfile, isCreditCard, isAuto) {
     : (userProfile?.state ? `${userProfile.state} ${userProfile.zip || ''}`.trim() : '');
 
   return `
+    ${renderDocHeader(activeCase, todayStr, senderName, senderCityStateZip, templateType)}
+    ${renderDocBody(templateType, isCreditCard, isAuto, senderName, senderStreet, senderCityStateZip, activeCase)}
+  `;
+}
+
+function renderLetterPaper(activeCase, userProfile, isCreditCard, isAuto) {
+  const defaultTemplate = isCreditCard ? 'credit_card_dvl' : (isAuto ? 'auto_dvl' : 'medical_dvl');
+  return `
     <div class="studio-preview-pane">
       <div class="studio-pane-header">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span class="label-caps">STANDARDIZED LEGAL BRIEF PREVIEW</span>
           <span class="status-pill status-pill-mint" style="font-size: 11px; padding: 2px 8px;">
             <span class="status-dot status-dot-mint"></span>
-            Statutory DVL
+            Statutory Brief
           </span>
         </div>
         <span class="docket-id-tag" id="previewBatesStamp">${activeCase.docketNumber}-DOC01</span>
       </div>
       <div class="studio-scroll" style="background-color: var(--color-surface-container-low);">
         <div class="legal-document-paper" id="legalDocumentPaper">
-          ${renderDocHeader(activeCase, todayStr, senderName, senderCityStateZip)}
-          ${renderDocBody(isCreditCard, isAuto, senderName, senderStreet, senderCityStateZip)}
+          ${renderLetterPaperContent(activeCase, userProfile, defaultTemplate)}
         </div>
       </div>
     </div>
   `;
 }
+
 
 export function renderLetterStudio(activeCase, userProfile = null) {
   if (!activeCase) {

@@ -212,6 +212,15 @@ export const ipc = {
   // Native OS Notifications & System Events
   // -------------------------------------------------------------------------
   async sendNotification(title, body) {
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+      try {
+        window.dispatchEvent(new CustomEvent('counterfin:toast', {
+          detail: { title, message: body, type: 'info' }
+        }));
+      } catch (_e) {
+        // Safe fallback in test environments
+      }
+    }
     if (window.__TAURI__?.notification?.sendNotification) {
       try {
         return await window.__TAURI__.notification.sendNotification({ title, body });
