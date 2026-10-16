@@ -13,6 +13,6 @@ test('renderDashboard: renders all active dispute cards and overview metrics', (
 
 test('renderDashboard: renders empty dashboard when no cases exist', () => {
   const html = renderDashboard(null, []);
-  assert.ok(html.includes('Welcome to SettleMint'));
+  assert.ok(html.includes('Welcome to CounterFin'));
   assert.ok(html.includes('Log Your First Notice'));
 });

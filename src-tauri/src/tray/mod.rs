@@ -21,7 +21,7 @@ pub fn setup_system_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Erro
         true,
         None::<&str>,
     )?;
-    let quit_i = MenuItem::with_id(app, "quit", "Exit SettleMint", true, None::<&str>)?;
+    let quit_i = MenuItem::with_id(app, "quit", "Exit CounterFin", true, None::<&str>)?;
 
     let menu = Menu::with_items(app, &[&show_i, &quick_log_i, &silence_i, &quit_i])?;
 

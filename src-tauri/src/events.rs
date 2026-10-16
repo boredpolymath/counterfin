@@ -2,7 +2,7 @@ use crate::error::{AppError, AppResult};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, Runtime};
 
-/// Strongly typed event schemas for SettleMint Event Emission Bus (Section 2.1.2)
+/// Strongly typed event schemas for CounterFin Event Emission Bus (Section 2.1.2)
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "event_type", content = "data")]
 pub enum SystemEvent {
@@ -46,7 +46,7 @@ pub enum SystemEvent {
 pub struct EventBus;
 
 impl EventBus {
-    pub const CHANNEL: &'static str = "settlemint://event";
+    pub const CHANNEL: &'static str = "counterfin://event";
 
     /// Emit typed system event across the Tauri v2 Emitter bus
     pub fn emit<R: Runtime>(app: &AppHandle<R>, event: SystemEvent) -> AppResult<()> {

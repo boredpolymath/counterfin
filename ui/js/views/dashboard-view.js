@@ -24,7 +24,7 @@ function renderFirstRunWelcomeHero(userName) {
         <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); padding: 4px 12px; border-radius: 9999px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 14px;">
           <span>LOCAL SANCTUARY ACTIVE</span><span>•</span><span>FDCPA CONSUMER SHIELD</span>
         </div>
-        <h1 style="font-size: 26px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; color: #ffffff;">Welcome to SettleMint, ${escapeHtml(userName)}</h1>
+        <h1 style="font-size: 26px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; color: #ffffff;">Welcome to CounterFin, ${escapeHtml(userName)}</h1>
         <p style="font-size: 14.5px; opacity: 0.92; line-height: 1.55; max-width: 650px; margin-bottom: 22px;">
           Your private, zero-knowledge console for asserting federal consumer protections against unlawful debt collectors. No accounts, no cloud tracking, and 100% encrypted locally on your machine.
         </p>
@@ -95,7 +95,7 @@ function renderFirstRunDashboard(userProfile) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </div>
         <div style="font-size: 12.5px; color: #475569; line-height: 1.45;">
-          <strong>Local Zero-Knowledge Architecture:</strong> SettleMint runs 100% on your device using encrypted SQLite. No servers, no tracking, and no external requests.
+          <strong>Local Zero-Knowledge Architecture:</strong> CounterFin runs 100% on your device using encrypted SQLite. No servers, no tracking, and no external requests.
         </div>
       </div>
     </div>

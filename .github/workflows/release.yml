@@ -67,7 +67,7 @@ jobs:
         with:
           projectPath: './src-tauri'
           tagName: ${{ github.ref_name }}
-          releaseName: 'SettleMint ${{ github.ref_name }}'
+          releaseName: 'CounterFin ${{ github.ref_name }}'
           releaseBody: 'See changelog and release notes for statutory engine enhancements and security updates.'
           releaseDraft: false
           prerelease: false

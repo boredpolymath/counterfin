@@ -1,7 +1,7 @@
 use chrono::{NaiveDate, Utc};
-use settlemint_lib::engine::monitor::BackgroundMonitor;
-use settlemint_lib::engine::vault::EvidenceVault;
-use settlemint_lib::models::deadline::{Deadline, DeadlineType};
+use counterfin_lib::engine::monitor::BackgroundMonitor;
+use counterfin_lib::engine::vault::EvidenceVault;
+use counterfin_lib::models::deadline::{Deadline, DeadlineType};
 use uuid::Uuid;
 
 // =========================================================================
@@ -23,19 +23,27 @@ fn test_multi_os_sandbox_path_resolution_and_security() {
             sandbox_dir
                 .to_str()
                 .unwrap()
-                .contains("Library/Application Support/SettleMint")
+                .contains("Library/Application Support/CounterFin")
+                || sandbox_dir
+                    .to_str()
+                    .unwrap()
+                    .contains("Library/Application Support/SettleMint")
         );
     }
 
     #[cfg(target_os = "windows")]
     {
-        assert!(sandbox_dir.to_str().unwrap().contains("SettleMint"));
+        assert!(
+            sandbox_dir.to_str().unwrap().contains("CounterFin")
+                || sandbox_dir.to_str().unwrap().contains("SettleMint")
+        );
     }
 
     #[cfg(target_os = "linux")]
     {
         assert!(
-            sandbox_dir.to_str().unwrap().contains(".config/SettleMint")
+            sandbox_dir.to_str().unwrap().contains(".config/CounterFin")
+                || sandbox_dir.to_str().unwrap().contains("CounterFin")
                 || sandbox_dir.to_str().unwrap().contains("SettleMint")
         );
     }
@@ -255,7 +263,7 @@ fn test_zero_telemetry_and_network_silence_audit() {
     assert_eq!(tracking_result.tracking_number, "70200640000123456789");
     assert!(matches!(
         tracking_result.status,
-        settlemint_lib::engine::monitor::UspsDeliveryStatus::InTransit
+        counterfin_lib::engine::monitor::UspsDeliveryStatus::InTransit
     ));
     println!("  -> In-memory USPS Certified Mail parser verified zero-network execution ✓");
 }

@@ -302,43 +302,53 @@ pub struct EvidenceVault;
 impl EvidenceVault {
     /// Resolve default application data directory conforming to OS standards:
     /// - macOS: ~/Library/Application Support/SettleMint
-    /// - Windows: %APPDATA%/SettleMint
-    /// - Linux: ~/.config/SettleMint (or $XDG_CONFIG_HOME/SettleMint)
+    /// - macOS: ~/Library/Application Support/CounterFin
+    /// - Windows: %APPDATA%/CounterFin
+    /// - Linux: ~/.config/CounterFin (or $XDG_CONFIG_HOME/CounterFin)
     pub fn resolve_os_sandbox_dir() -> PathBuf {
         #[cfg(target_os = "macos")]
         {
             if let Ok(home) = std::env::var("HOME") {
-                PathBuf::from(home)
-                    .join("Library")
-                    .join("Application Support")
-                    .join("SettleMint")
+                let base = PathBuf::from(home).join("Library").join("Application Support");
+                if base.join("CounterFin").exists() || !base.join("SettleMint").exists() {
+                    base.join("CounterFin")
+                } else {
+                    base.join("SettleMint")
+                }
             } else {
-                PathBuf::from("./settlemint_sandbox")
+                PathBuf::from("./counterfin_sandbox")
             }
         }
 
         #[cfg(target_os = "windows")]
         {
-            if let Ok(app_data) = std::env::var("APPDATA") {
-                PathBuf::from(app_data).join("SettleMint")
+            let base = if let Ok(app_data) = std::env::var("APPDATA") {
+                PathBuf::from(app_data)
             } else if let Ok(user_profile) = std::env::var("USERPROFILE") {
-                PathBuf::from(user_profile)
-                    .join("AppData")
-                    .join("Roaming")
-                    .join("SettleMint")
+                PathBuf::from(user_profile).join("AppData").join("Roaming")
             } else {
-                PathBuf::from("./settlemint_sandbox")
+                PathBuf::from(".")
+            };
+            if base.join("CounterFin").exists() || !base.join("SettleMint").exists() {
+                base.join("CounterFin")
+            } else {
+                base.join("SettleMint")
             }
         }
 
         #[cfg(not(any(target_os = "macos", target_os = "windows")))]
         {
-            if let Ok(xdg_config) = std::env::var("XDG_CONFIG_HOME") {
-                PathBuf::from(xdg_config).join("SettleMint")
+            let base = if let Ok(xdg_config) = std::env::var("XDG_CONFIG_HOME") {
+                PathBuf::from(xdg_config)
             } else if let Ok(home) = std::env::var("HOME") {
-                PathBuf::from(home).join(".config").join("SettleMint")
+                PathBuf::from(home).join(".config")
             } else {
-                PathBuf::from("./settlemint_sandbox")
+                PathBuf::from(".")
+            };
+            if base.join("CounterFin").exists() || !base.join("SettleMint").exists() {
+                base.join("CounterFin")
+            } else {
+                base.join("SettleMint")
             }
         }
     }
@@ -801,7 +811,7 @@ mod tests {
     #[test]
     fn test_os_sandbox_path_resolution() {
         let path = EvidenceVault::resolve_os_sandbox_dir();
-        assert!(path.to_string_lossy().contains("SettleMint"));
+        assert!(path.to_string_lossy().contains("CounterFin") || path.to_string_lossy().contains("SettleMint"));
     }
 
     #[test]

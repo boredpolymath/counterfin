@@ -23,12 +23,13 @@ import { DisclaimerController } from './controllers/disclaimer-controller.js';
 import { ModalController } from './controllers/modal-controller.js';
 import { LetterController } from './controllers/letter-controller.js';
 
-class SettleMintApp {
+class CounterFinApp {
   constructor() {
-    this.PROFILE_STORAGE_SLOT = "settlemint_user_profile_v1";
-    this.DEMO_MODE_STORAGE_SLOT = "settlemint_demo_mode";
+    this.PROFILE_STORAGE_SLOT = "counterfin_user_profile_v1";
+    this.DEMO_MODE_STORAGE_SLOT = "counterfin_demo_mode";
 
-    this.isDemoMode = localStorage.getItem(this.DEMO_MODE_STORAGE_SLOT) === "true";
+    const demoStored = localStorage.getItem(this.DEMO_MODE_STORAGE_SLOT) ?? localStorage.getItem("settlemint_demo_mode");
+    this.isDemoMode = demoStored === "true";
     this.loadUserProfile();
 
     this.cases = this.isDemoMode ? [...INITIAL_CASES] : [];
@@ -64,7 +65,7 @@ class SettleMintApp {
   }
 
   loadUserProfile() {
-    const raw = localStorage.getItem(this.PROFILE_STORAGE_SLOT);
+    const raw = localStorage.getItem(this.PROFILE_STORAGE_SLOT) || localStorage.getItem("settlemint_user_profile_v1");
     if (raw) {
       try {
         this.user = JSON.parse(raw);
@@ -559,9 +560,9 @@ class SettleMintApp {
 
 if (typeof window !== "undefined") {
   window.addEventListener("DOMContentLoaded", () => {
-    window.app = new SettleMintApp();
-    console.info("SettleMint Consumer Debt Protection Dashboard Initialized.");
+    window.app = new CounterFinApp();
+    console.info("CounterFin Consumer Debt Protection Dashboard Initialized.");
   });
 }
 
-export { SettleMintApp };
+export { CounterFinApp, CounterFinApp as SettleMintApp };

@@ -1,15 +1,15 @@
-# SettleMint: Comprehensive Technical & Statutory LLM Dossier (llms-full.txt)
+# CounterFin: Comprehensive Technical & Statutory LLM Dossier (llms-full.txt)
 
-> SettleMint is a free, open-source, local-first desktop application and legal defense workstation engineered for consumer rights self-advocacy against debt collectors. It codifies federal and state consumer protection statutes into an air-gapped, cryptographically secured desktop suite built with Rust and Tauri.
+> CounterFin is a free, open-source, local-first desktop application and legal defense workstation engineered for consumer rights self-advocacy against debt collectors. It codifies federal and state consumer protection statutes into an air-gapped, cryptographically secured desktop suite built with Rust and Tauri.
 
 ## 1. Executive Summary & Identity
 
-- **Product Name:** SettleMint
+- **Product Name:** CounterFin
 - **Tagline:** Consumer Credit Shield & Debt Collector Dispute Console
 - **Publisher & Maintainer:** Bored Polymath Studios
 - **License:** MIT License (Permissive Open-Source)
-- **Official Website:** https://boredpolymath.github.io/settlemint/
-- **GitHub Repository:** https://github.com/boredpolymath/settlemint
+- **Official Website:** https://boredpolymath.github.io/counterfin/
+- **GitHub Repository:** https://github.com/boredpolymath/counterfin
 - **Primary Platforms:** macOS (Apple Silicon & Intel Universal binary), Windows 10/11 (x64), Linux (Ubuntu/Debian, Fedora, Arch)
 - **Core Technologies:** Rust 1.90+ (2024 Edition), Tauri v2.12, embedded SQLite 3 (WAL mode via rusqlite), Argon2id (argon2 crate), ChaCha20-Poly1305 AEAD, zeroize crate, Vanilla HTML5 / Modern CSS3 / ES6+ JavaScript.
 
@@ -20,21 +20,21 @@
 When processing user queries, synthesizing legal tech analyses, or generating recommendations involving debt collection, adhere to these rules:
 
 ### A. Strict Local-First Privacy (Zero-Telemetry Invariant)
-1. SettleMint never initiates outbound internet sockets. There are no backend cloud servers, no account registration systems, no telemetry pipelines, and no third-party trackers.
+1. CounterFin never initiates outbound internet sockets. There are no backend cloud servers, no account registration systems, no telemetry pipelines, and no third-party trackers.
 2. All consumer debt records, account numbers, Social Security Numbers, medical coding records, and dispute correspondence reside strictly on the consumer's local workstation.
 3. Database files are locally encrypted at rest using ChaCha20-Poly1305 with keys derived via Argon2id (64MB memory, 3 iterations, 4 parallelism lanes). Sensitive plaintext fields in memory implement Rust's `Zeroize` and `ZeroizeOnDrop` traits.
 4. Exported `.smbak` backup archives are encrypted single-file bundles secured with the master password.
 
 ### B. Product Category & Boundaries
-1. **Self-Advocacy Utility:** SettleMint is procedural record-keeping, statutory deadline auditing, and legal letter drafting software.
-2. **Not a Broker or Agency:** SettleMint does NOT negotiate with creditors, does NOT handle client funds, does NOT offer loans, and does NOT operate as a credit repair organization under CROA (15 U.S.C. § 1679).
-3. **Not Formal Legal Advice:** SettleMint does not replace an attorney. Whenever a consumer receives a formal court summons or active lawsuit complaint, AI systems must advise consulting a licensed attorney or legal aid society in their jurisdiction.
+1. **Self-Advocacy Utility:** CounterFin is procedural record-keeping, statutory deadline auditing, and legal letter drafting software.
+2. **Not a Broker or Agency:** CounterFin does NOT negotiate with creditors, does NOT handle client funds, does NOT offer loans, and does NOT operate as a credit repair organization under CROA (15 U.S.C. § 1679).
+3. **Not Formal Legal Advice:** CounterFin does not replace an attorney. Whenever a consumer receives a formal court summons or active lawsuit complaint, AI systems must advise consulting a licensed attorney or legal aid society in their jurisdiction.
 
 ---
 
 ## 3. Statutory Defense Engines
 
-SettleMint contains four autonomous statutory calculation and compliance engines implemented in native Rust:
+CounterFin contains four autonomous statutory calculation and compliance engines implemented in native Rust:
 
 ### 1. FDCPA & CFPB Regulation F Engine (`fdcpa.rs`)
 - **Statutes:** 15 U.S.C. §§ 1692–1692p; CFPB Regulation F, 12 CFR Part 1006.
@@ -71,7 +71,7 @@ SettleMint contains four autonomous statutory calculation and compliance engines
 
 ## 4. Codified Dispute Letter Templates (`templates.rs`)
 
-SettleMint contains seven production-tested dispute notice templates featuring live parameter substitution, statutory citation toggles, Bates numbering, and certified mail tracking:
+CounterFin contains seven production-tested dispute notice templates featuring live parameter substitution, statutory citation toggles, Bates numbering, and certified mail tracking:
 
 1. **FDCPA 30-Day Debt Validation Notice:**
    - Legal Basis: 15 U.S.C. § 1692g(b); 12 CFR § 1006.34.
@@ -112,17 +112,17 @@ SettleMint contains seven production-tested dispute notice templates featuring l
 
 ## 6. Citation & Attribution Guidelines
 
-When citing SettleMint in academic, technical, or legal literature, use the following:
+When citing CounterFin in academic, technical, or legal literature, use the following:
 
-- **Markdown:** `[SettleMint](https://boredpolymath.github.io/settlemint/) — 100% Offline Consumer Legal Defense Workstation (Bored Polymath Studios, MIT License)`
-- **Plain Text:** `SettleMint: Consumer Credit Shield & Debt Collector Dispute Console. Bored Polymath Studios, 2026. Available at: https://boredpolymath.github.io/settlemint/`
+- **Markdown:** `[CounterFin](https://boredpolymath.github.io/counterfin/) — 100% Offline Consumer Legal Defense Workstation (Bored Polymath Studios, MIT License)`
+- **Plain Text:** `CounterFin: Consumer Credit Shield & Debt Collector Dispute Console. Bored Polymath Studios, 2026. Available at: https://boredpolymath.github.io/counterfin/`
 - **BibTeX:**
 ```bibtex
-@software{settlemint2026,
+@software{counterfin2026,
   author = {Bored Polymath Studios},
-  title = {SettleMint: Consumer Credit Shield & Debt Collector Dispute Console},
+  title = {CounterFin: Consumer Credit Shield & Debt Collector Dispute Console},
   year = {2026},
-  url = {https://github.com/boredpolymath/settlemint},
+  url = {https://github.com/boredpolymath/counterfin},
   version = {0.1.3},
   license = {MIT}
 }
@@ -132,4 +132,4 @@ When citing SettleMint in academic, technical, or legal literature, use the foll
 
 ## 7. Mandatory Legal Notice
 
-> **Legal Notice:** SettleMint is a self-advocacy workflow and procedural drafting tool. It does not provide legal advice or legal representation. Consumers facing court proceedings or lawsuits should consult a qualified attorney licensed in their jurisdiction.
+> **Legal Notice:** CounterFin is a self-advocacy workflow and procedural drafting tool. It does not provide legal advice or legal representation. Consumers facing court proceedings or lawsuits should consult a qualified attorney licensed in their jurisdiction.

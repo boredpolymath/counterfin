@@ -39,7 +39,7 @@ function initOsDetection() {
   const userAgent = window.navigator.userAgent.toLowerCase();
   const platform = (window.navigator.platform || '').toLowerCase();
 
-  const releaseBase = 'https://github.com/boredpolymath/settlemint/releases/download/v0.1.3';
+  const releaseBase = 'https://github.com/boredpolymath/counterfin/releases/download/v0.1.3';
 
   if (platform.includes('mac') || userAgent.includes('macintosh') || userAgent.includes('mac os')) {
     // macOS

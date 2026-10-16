@@ -1,8 +1,8 @@
 use chrono::Utc;
 use rusqlite::Connection;
-use settlemint_lib::db::schema::CREATE_TABLES_SQL;
-use settlemint_lib::engine::templates::TemplateEngine;
-use settlemint_lib::engine::vault::EvidenceVault;
+use counterfin_lib::db::schema::CREATE_TABLES_SQL;
+use counterfin_lib::engine::templates::TemplateEngine;
+use counterfin_lib::engine::vault::EvidenceVault;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::Write;

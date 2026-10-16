@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="assets/settlemint-banner.png" alt="SettleMint — Credit Shield & Dispute Console" width="100%" style="max-width: 850px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);" />
+  <img src="assets/counterfin-banner.png" alt="CounterFin — Credit Shield & Dispute Console" width="100%" style="max-width: 850px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);" />
 </p>
 
-<h1 align="center">SettleMint: Consumer Credit Shield & Dispute Console</h1>
+<h1 align="center">CounterFin: Consumer Credit Shield & Dispute Console</h1>
 
 <p align="center">
-  <a href="https://boredpolymath.github.io/settlemint/"><img src="https://img.shields.io/badge/Website-boredpolymath.github.io%2Fsettlemint-10B981?style=flat&logo=github&logoColor=white" alt="Live Website" /></a>
-  <a href="https://github.com/boredpolymath/settlemint/actions/workflows/ci.yml"><img src="https://github.com/boredpolymath/settlemint/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration" /></a>
+  <a href="https://boredpolymath.github.io/counterfin/"><img src="https://img.shields.io/badge/Website-boredpolymath.github.io%2Fcounterfin-10B981?style=flat&logo=github&logoColor=white" alt="Live Website" /></a>
+  <a href="https://github.com/boredpolymath/counterfin/actions/workflows/ci.yml"><img src="https://github.com/boredpolymath/counterfin/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-1.90%2B-blue.svg?logo=rust" alt="Rust: 1.90+" /></a>
   <a href="https://tauri.app/"><img src="https://img.shields.io/badge/Tauri-v2.12-24C8D8.svg?logo=tauri" alt="Tauri: v2" /></a>
@@ -18,16 +18,16 @@
   <a href="https://vibedoctor.io"><img src="https://vibedoctor.io/api/badges/a33595b8-5f22-42e9-9b0e-4a0f05b49ad8" alt="Checked by VibeDoctor" /></a>
 </p>
 
-> **SettleMint** is a free, open-source, local-first desktop app that empowers consumers to defend against debt collectors. Whether dealing with credit card debt, hospital bills, auto loan deficiencies, or personal loans, SettleMint helps you organize notices, track statutory deadlines, catch illegal collection practices, and generate formal dispute letters—all without your data ever leaving your computer.
+> **CounterFin** is a free, open-source, local-first desktop app that empowers consumers to defend against debt collectors. Whether dealing with credit card debt, hospital bills, auto loan deficiencies, or personal loans, CounterFin helps you organize notices, track statutory deadlines, catch illegal collection practices, and generate formal dispute letters—all without your data ever leaving your computer.
 >
-> 🌐 **Visit the official website:** [https://boredpolymath.github.io/settlemint/](https://boredpolymath.github.io/settlemint/)
+> 🌐 **Visit the official website:** [https://boredpolymath.github.io/counterfin/](https://boredpolymath.github.io/counterfin/)
 
 ---
 
 ## ⚖️ Legal Disclaimer
 
 > **IMPORTANT NOTICE: SELF-ADVOCACY TOOL ONLY**  
-> SettleMint is an informational, record-keeping, and procedural drafting utility designed for consumer self-advocacy under federal and state law (including the Fair Debt Collection Practices Act, 15 U.S.C. § 1692). **SettleMint is not a law firm, does not provide legal representation, and does not provide formal legal advice.**  
+> CounterFin is an informational, record-keeping, and procedural drafting utility designed for consumer self-advocacy under federal and state law (including the Fair Debt Collection Practices Act, 15 U.S.C. § 1692). **CounterFin is not a law firm, does not provide legal representation, and does not provide formal legal advice.**  
 >
 > Using this application does not create an attorney-client relationship. If you are facing an active lawsuit, a court summons, or require formal legal representation, please consult a licensed consumer rights attorney or legal aid organization in your jurisdiction.
 
@@ -35,7 +35,7 @@
 
 ## 📌 Table of Contents
 
-- [What is SettleMint? (In Plain English)](#-what-is-settlemint-in-plain-english)
+- [What is CounterFin? (In Plain English)](#-what-is-counterfin-in-plain-english)
 - [How It Works: 3 Simple Steps](#-how-it-works-3-simple-steps)
 - [Key Features](#-key-features)
 - [Debts Covered Under Federal Law (FDCPA)](#-debts-covered-under-federal-law-fdcpa)
@@ -52,11 +52,11 @@
 
 ---
 
-## 💡 What is SettleMint? (In Plain English)
+## 💡 What is CounterFin? (In Plain English)
 
 Dealing with debt collection agencies can feel intimidating, confusing, and overwhelming. Collection agencies often rely on pressure tactics, incomplete documentation, and expired statutes of limitations.
 
-**SettleMint levels the playing field.** It acts as your personal digital case manager:
+**CounterFin levels the playing field.** It acts as your personal digital case manager:
 
 1. **Keeps Everything in One Place:** Organize collection notices, creditor names, original account numbers, and alleged balances securely on your computer.
 2. **Watches Your Deadlines:** Never miss the crucial **30-Day Debt Validation Window** under federal law.
@@ -77,7 +77,7 @@ Dealing with debt collection agencies can feel intimidating, confusing, and over
 ```
 
 1. **Log Your Notice:** Enter details from the collector's letter or phone call (e.g., credit card balance, hospital bill, or car loan deficiency).
-2. **Review Statutory Analysis:** SettleMint instantly calculates your 30-day response window, checks your state's statute of limitations, and audits whether the collector provided required chain-of-title proof.
+2. **Review Statutory Analysis:** CounterFin instantly calculates your 30-day response window, checks your state's statute of limitations, and audits whether the collector provided required chain-of-title proof.
 3. **Generate & Send Dispute Letters:** Choose a tailored dispute template (Debt Validation, Time-Barred Cease & Desist, or Medical Coding Audit), customize it live in the preview editor, and print it out.
 
 ---
@@ -122,7 +122,7 @@ Organize disputes by debt type with custom color-coded indicators:
 
 Under the Fair Debt Collection Practices Act (15 U.S.C. § 1692a(5)), federal consumer protections cover debts incurred primarily for personal, family, or household purposes:
 
-| Debt Classification | Typical Creditors & Collectors | What SettleMint Audits & Demands |
+| Debt Classification | Typical Creditors & Collectors | What CounterFin Audits & Demands |
 |---|---|---|
 | **💳 Credit Card Debt** | Banks, Junk Debt Buyers *(Midland, PRA, LVNV)* | Unbroken chain of title, charge-off billing history, Reg F itemization (12 CFR § 1006.34). |
 | **🏥 Medical Debt** | Hospitals, Clinics, Medical Collection Agencies | Itemized CPT/ICD-10 codes, insurance adjustments, No Surprises Act compliance. |
@@ -134,7 +134,7 @@ Under the Fair Debt Collection Practices Act (15 U.S.C. § 1692a(5)), federal co
 
 ## 🔒 Privacy & Security by Design
 
-Financial and medical records are deeply personal. SettleMint is engineered with a strict **local-first, zero-telemetry** architecture:
+Financial and medical records are deeply personal. CounterFin is engineered with a strict **local-first, zero-telemetry** architecture:
 
 * **100% Local Storage:** All records, dispute notes, and evidentiary files are stored strictly on your local machine in an encrypted SQLite database.
 * **Argon2id Key Derivation:** Master passphrases derive 256-bit keys using memory-hardened Argon2id (64MB memory cost, 3 iterations, 4 parallelism lanes).
@@ -169,8 +169,8 @@ Financial and medical records are deeply personal. SettleMint is engineered with
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/boredpolymath/settlemint.git
-cd settlemint
+git clone https://github.com/boredpolymath/counterfin.git
+cd counterfin
 
 # 2. Verify backend compilation
 cd src-tauri
@@ -183,9 +183,9 @@ cargo tauri dev
 ### Project Directory Structure
 
 ```text
-settlemint/
+counterfin/
 ├── assets/                     # Branding, screenshots, and visual assets
-│   └── settlemint-banner.png   # Official SettleMint Credit Shield banner
+│   └── counterfin-banner.png   # Official CounterFin Credit Shield banner
 │
 ├── src-tauri/                  # Native Rust Core & Desktop Engine
 │   ├── Cargo.toml              # Rust crate dependencies
@@ -261,7 +261,7 @@ Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE
 
 ## 💬 Community & Support
 
-* **Issues & Discussions:** [GitHub Issues](https://github.com/boredpolymath/settlemint/issues)
+* **Issues & Discussions:** [GitHub Issues](https://github.com/boredpolymath/counterfin/issues)
 * **Security Reports:** Please review [SECURITY.md](SECURITY.md) for responsible disclosure guidelines.
 * **Maintainer:** Bored Polymath Studios
 

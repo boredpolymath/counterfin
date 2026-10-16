@@ -27,7 +27,11 @@ pub fn run() {
                 .app_data_dir()
                 .unwrap_or_else(|_| std::path::PathBuf::from("."));
             let _ = std::fs::create_dir_all(&app_data_dir);
-            let db_path = app_data_dir.join("settlemint.db");
+            let db_path = if app_data_dir.join("settlemint.db").exists() && !app_data_dir.join("counterfin.db").exists() {
+                app_data_dir.join("settlemint.db")
+            } else {
+                app_data_dir.join("counterfin.db")
+            };
             let db_manager = db::DatabaseManager::init(&db_path).unwrap_or_else(|_| {
                 log::warn!("Falling back to in-memory SQLite database");
                 db::DatabaseManager::init_in_memory()
@@ -104,5 +108,5 @@ pub fn run() {
             commands::get_official_statutory_authority_key,
         ])
         .run(tauri::generate_context!())
-        .expect("error while building SettleMint application");
+        .expect("error while building CounterFin application");
 }

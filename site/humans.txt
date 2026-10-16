@@ -1,6 +1,6 @@
 /* TEAM */
 Publisher: Bored Polymath Studios
-Repository: https://github.com/boredpolymath/settlemint
+Repository: https://github.com/boredpolymath/counterfin
 Location: Air-gapped / Local-First
 
 /* SITE */

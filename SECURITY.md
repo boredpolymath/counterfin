@@ -1,6 +1,6 @@
-# Security Policy: SettleMint
+# Security Policy: CounterFin
 
-Bored Polymath Studios takes the security and privacy of SettleMint users with the utmost seriousness. Because the application processes sensitive Protected Health Information (PHI), financial account numbers, and debt collection disputes, our security posture is engineered for maximum defense-in-depth.
+Bored Polymath Studios takes the security and privacy of CounterFin users with the utmost seriousness. Because the application processes sensitive Protected Health Information (PHI), financial account numbers, and debt collection disputes, our security posture is engineered for maximum defense-in-depth.
 
 ---
 
@@ -17,10 +17,10 @@ Security patches and regulatory updates are actively provided for the following 
 
 ## 2. Core Security Guarantees & Threat Model
 
-SettleMint is built on the following foundational security architectural principles:
+CounterFin is built on the following foundational security architectural principles:
 
-1. **Zero-Telemetry Default:** Complete network silence. SettleMint contains zero analytics beacons, telemetry hooks, or crash-reporting webhooks.
-2. **Local-First At-Rest Cryptography:** All database files (`SettleMint.db`) are encrypted at rest using AES-256 in CBC mode (via SQLCipher) or equivalent modern authenticated cryptography. Keys are derived using Argon2id with memory-hard parameters.
+1. **Zero-Telemetry Default:** Complete network silence. CounterFin contains zero analytics beacons, telemetry hooks, or crash-reporting webhooks.
+2. **Local-First At-Rest Cryptography:** All database files (`CounterFin.db`) are encrypted at rest using AES-256 in CBC mode (via SQLCipher) or equivalent modern authenticated cryptography. Keys are derived using Argon2id with memory-hard parameters.
 3. **RAM Protection & Zeroization:** Sensitive strings (master passphrases, Social Security Numbers, banking account numbers) are actively zeroized in memory upon drop using the Rust `zeroize` crate.
 4. **Strict Web Runtime Isolation:** The Tauri webview operates under an uncompromising Content Security Policy (CSP):
    ```
@@ -33,12 +33,12 @@ SettleMint is built on the following foundational security architectural princip
 
 ## 3. Reporting a Vulnerability
 
-If you discover a security vulnerability, cryptographic weakness, or unauthorized network egress in SettleMint, **do not open a public GitHub issue or discussion**.
+If you discover a security vulnerability, cryptographic weakness, or unauthorized network egress in CounterFin, **do not open a public GitHub issue or discussion**.
 
 Please report all vulnerabilities privately through GitHub's **Private Vulnerability Reporting**:
 
-1. Navigate to the **[Security Advisories](https://github.com/boredpolymath/settlemint/security/advisories)** tab of this repository.
-2. Click **"Report a vulnerability"** (or use the direct link: [New Security Advisory](https://github.com/boredpolymath/settlemint/security/advisories/new)).
+1. Navigate to the **[Security Advisories](https://github.com/boredpolymath/counterfin/security/advisories)** tab of this repository.
+2. Click **"Report a vulnerability"** (or use the direct link: [New Security Advisory](https://github.com/boredpolymath/counterfin/security/advisories/new)).
 3. Fill out the advisory form with the vulnerability details outlined below.
 
 - **Response Timeline:** We acknowledge receipt within **48 hours** via the advisory thread and provide an initial severity assessment within **5 business days**.
