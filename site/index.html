@@ -27,6 +27,64 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Structured Data (JSON-LD / Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://boredpolymath.github.io/settlemint/#software",
+        "name": "SettleMint",
+        "alternateName": "SettleMint Credit Shield & Dispute Console",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "macOS 11+, Windows 10/11, Linux (Ubuntu 22.04+)",
+        "softwareVersion": "0.1.2",
+        "datePublished": "2026-10-15",
+        "description": "SettleMint is a 100% offline, local-first consumer legal defense and debt settlement defense workstation built on Rust and Tauri. Codifying the FDCPA, 50-State Statutes of Limitations, Medical Debt No Surprises Act, and UCC Article 9 into an air-gapped encrypted desktop suite.",
+        "url": "https://boredpolymath.github.io/settlemint/",
+        "image": "https://boredpolymath.github.io/settlemint/assets/images/og-cover.jpg",
+        "screenshot": "https://boredpolymath.github.io/settlemint/assets/images/dashboard.png",
+        "downloadUrl": "https://github.com/boredpolymath/settlemint/releases/tag/v0.1.2",
+        "author": {
+          "@type": "Organization",
+          "@id": "https://boredpolymath.github.io/settlemint/#organization",
+          "name": "Bored Polymath Studios",
+          "url": "https://github.com/boredpolymath",
+          "logo": "https://boredpolymath.github.io/settlemint/assets/images/bored-polymath-logo.png"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        "featureList": [
+          "100% Offline Air-Gapped Operation",
+          "CFPB Regulation F 7-in-7 Call Frequency Auditing",
+          "54-Jurisdiction Statute of Limitations Engine",
+          "Medical Debt No Surprises Act Dispute Generator",
+          "UCC Article 9 Automobile Repossession Deficiency Auditor",
+          "Argon2id and ChaCha20-Poly1305 Local Encryption",
+          "NIST SHA-256 Tamper-Evident Evidence Vault",
+          "Offline Ed25519 Cryptographically Signed Statutory Rule Patches"
+        ],
+        "license": "https://opensource.org/licenses/MIT"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://boredpolymath.github.io/settlemint/#website",
+        "url": "https://boredpolymath.github.io/settlemint/",
+        "name": "SettleMint",
+        "description": "100% Offline Consumer Legal Defense Workstation",
+        "publisher": {
+          "@id": "https://boredpolymath.github.io/settlemint/#organization"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
