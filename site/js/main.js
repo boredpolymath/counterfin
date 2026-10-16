@@ -1,5 +1,5 @@
 /**
- * SettleMint Landing Page Client Script
+ * CounterFin Landing Page Client Script
  * Handles OS detection, interactive showcase gallery,
  * 50-State SOL statutory calculator, copy-to-clipboard, and lightbox.
  */
@@ -43,7 +43,7 @@ function initOsDetection() {
 
   if (platform.includes('mac') || userAgent.includes('macintosh') || userAgent.includes('mac os')) {
     // macOS
-    heroBtn.href = `${releaseBase}/SettleMint_0.1.3_aarch64.dmg`;
+    heroBtn.href = `${releaseBase}/CounterFin_0.1.3_aarch64.dmg`;
     if (heroBtnText) heroBtnText.textContent = 'Download for macOS (Apple Silicon)';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.1.3 • .dmg (6.4 MB) • macOS 11+';
     if (heroBtnIcon) {
@@ -54,7 +54,7 @@ function initOsDetection() {
     }
   } else if (platform.includes('win') || userAgent.includes('windows')) {
     // Windows
-    heroBtn.href = `${releaseBase}/SettleMint_0.1.3_x64-setup.exe`;
+    heroBtn.href = `${releaseBase}/CounterFin_0.1.3_x64-setup.exe`;
     if (heroBtnText) heroBtnText.textContent = 'Download for Windows';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.1.3 • .exe (2.3 MB) • Windows 10/11';
     if (heroBtnIcon) {
@@ -65,7 +65,7 @@ function initOsDetection() {
     }
   } else if (platform.includes('linux') || userAgent.includes('linux')) {
     // Linux
-    heroBtn.href = `${releaseBase}/SettleMint_0.1.3_amd64.AppImage`;
+    heroBtn.href = `${releaseBase}/CounterFin_0.1.3_amd64.AppImage`;
     if (heroBtnText) heroBtnText.textContent = 'Download for Linux (AppImage)';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.1.3 • .AppImage (78 MB) • x86_64';
     if (heroBtnIcon) {
