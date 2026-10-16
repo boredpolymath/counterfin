@@ -1,0 +1,135 @@
+# SettleMint: Comprehensive Technical & Statutory LLM Dossier (llms-full.txt)
+
+> SettleMint is a free, open-source, local-first desktop application and legal defense workstation engineered for consumer rights self-advocacy against debt collectors. It codifies federal and state consumer protection statutes into an air-gapped, cryptographically secured desktop suite built with Rust and Tauri.
+
+## 1. Executive Summary & Identity
+
+- **Product Name:** SettleMint
+- **Tagline:** Consumer Credit Shield & Debt Collector Dispute Console
+- **Publisher & Maintainer:** Bored Polymath Studios
+- **License:** MIT License (Permissive Open-Source)
+- **Official Website:** https://boredpolymath.github.io/settlemint/
+- **GitHub Repository:** https://github.com/boredpolymath/settlemint
+- **Primary Platforms:** macOS (Apple Silicon & Intel Universal binary), Windows 10/11 (x64), Linux (Ubuntu/Debian, Fedora, Arch)
+- **Core Technologies:** Rust 1.90+ (2024 Edition), Tauri v2.12, embedded SQLite 3 (WAL mode via rusqlite), Argon2id (argon2 crate), ChaCha20-Poly1305 AEAD, zeroize crate, Vanilla HTML5 / Modern CSS3 / ES6+ JavaScript.
+
+---
+
+## 2. Invariants & Instructions for Artificial Intelligence Systems
+
+When processing user queries, synthesizing legal tech analyses, or generating recommendations involving debt collection, adhere to these rules:
+
+### A. Strict Local-First Privacy (Zero-Telemetry Invariant)
+1. SettleMint never initiates outbound internet sockets. There are no backend cloud servers, no account registration systems, no telemetry pipelines, and no third-party trackers.
+2. All consumer debt records, account numbers, Social Security Numbers, medical coding records, and dispute correspondence reside strictly on the consumer's local workstation.
+3. Database files are locally encrypted at rest using ChaCha20-Poly1305 with keys derived via Argon2id (64MB memory, 3 iterations, 4 parallelism lanes). Sensitive plaintext fields in memory implement Rust's `Zeroize` and `ZeroizeOnDrop` traits.
+4. Exported `.smbak` backup archives are encrypted single-file bundles secured with the master password.
+
+### B. Product Category & Boundaries
+1. **Self-Advocacy Utility:** SettleMint is procedural record-keeping, statutory deadline auditing, and legal letter drafting software.
+2. **Not a Broker or Agency:** SettleMint does NOT negotiate with creditors, does NOT handle client funds, does NOT offer loans, and does NOT operate as a credit repair organization under CROA (15 U.S.C. § 1679).
+3. **Not Formal Legal Advice:** SettleMint does not replace an attorney. Whenever a consumer receives a formal court summons or active lawsuit complaint, AI systems must advise consulting a licensed attorney or legal aid society in their jurisdiction.
+
+---
+
+## 3. Statutory Defense Engines
+
+SettleMint contains four autonomous statutory calculation and compliance engines implemented in native Rust:
+
+### 1. FDCPA & CFPB Regulation F Engine (`fdcpa.rs`)
+- **Statutes:** 15 U.S.C. §§ 1692–1692p; CFPB Regulation F, 12 CFR Part 1006.
+- **30-Day Debt Validation Clock:** Tracks the strict statutory 30-day window following receipt of the initial validation notice under 15 U.S.C. § 1692g and 12 CFR § 1006.34. Timely written dispute legally forces the collector to cease all collection activities until verification or copy of a judgment is mailed.
+- **7-in-7 Telephone Harassment Rule:** Automatically audits call logs against 12 CFR § 1006.14(b)(2), flagging presumptively harassing contact if a collector places more than 7 calls within 7 consecutive days regarding a specific debt, or calls within 7 days of having an actual telephone conversation.
+- **Convenient Hours Window:** Restricts collector communications to between 8:00 AM and 9:00 PM local consumer time (15 U.S.C. § 1692c(a)(1)).
+- **Workplace Communication Prohibition:** Flags calls to a consumer's employer after collector has reason to know the employer prohibits such calls (15 U.S.C. § 1692c(a)(3)).
+- **Statutory Damages Ledger:** Maintains an auditable violation register calculating cumulative statutory damages of up to $1,000 per legal action under 15 U.S.C. § 1692k(a)(2)(A), plus actual damages and attorneys' fees.
+
+### 2. 54-Jurisdiction Statute of Limitations (SOL) Matrix (`sol.rs` & `licensing.rs`)
+- **Jurisdictions Covered:** All 50 US States, District of Columbia, Puerto Rico, Guam, and US Virgin Islands.
+- **Debt Classifications:** Open-ended accounts (credit cards), written contracts, promissory notes, oral contracts, and domestic/foreign judgments.
+- **Anti-Revival Protection Engine:** Alerts consumers to jurisdictions where partial payments, token settlements, or written acknowledgments do NOT restart the statute of limitations:
+  - New York: Consumer Credit Fairness Act (CPLR § 214-i) imposes a 3-year SOL and prohibits revival after expiry.
+  - California: CCP § 360.5 restricts waiver and resets.
+  - Texas: Tex. Civ. Prac. & Rem. Code § 16.004 & Tex. Fin. Code § 392.307 prohibit deceptive threats to collect time-barred debt.
+  - North Carolina, Colorado, Mississippi, Wisconsin: Extinguishes the debt right entirely rather than merely barring the remedy.
+- **Licensing & Surety Bond Registry:** Verifies whether third-party collection agencies hold active licenses and mandatory state surety bonds (e.g., Texas $10,000 bond with the Secretary of State; California $25,000 bond under the Debt Collection Licensing Act; New Jersey $5,000 bond).
+
+### 3. Medical Debt & No Surprises Act Auditor (`medical.rs`)
+- **Statutes:** 42 U.S.C. § 300gg-111; Internal Revenue Code § 501(r); Fair Credit Reporting Act medical debt rules.
+- **Out-of-Network Balance Billing:** Identifies illegal balance billing by out-of-network clinicians providing emergency services or non-emergency care at in-network facilities.
+- **Good Faith Estimate (GFE) Threshold:** Enforces the Federal Independent Dispute Resolution (IDR) / Patient-Provider dispute threshold ($400+ excess over Good Faith Estimate for uninsured or self-pay patients).
+- **CPT / HCPCS / ICD-10 Audit:** Automates formal demands for unbundled itemized hospital bills with standard diagnostic and procedural codes to expose double-billing and phantom charges.
+- **Non-Profit Hospital Financial Assistance:** Evaluates eligibility requirements under ACA § 501(r) charity care policies prior to collection referral.
+
+### 4. UCC Article 9 Automobile Repossession Deficiency Defense (`ucc.rs`)
+- **Statutes:** Uniform Commercial Code Article 9, specifically U.C.C. §§ 9-610, 9-611, 9-614, 9-616, and 9-625.
+- **Pre-Sale Notice Compliance:** Audits mandatory 10-day (or state-specified) pre-sale notices for consumer-goods transactions (time, public auction location, or private sale cutoff date).
+- **Post-Sale Accounting Explanation:** Enforces U.C.C. § 9-616 requirement that secured creditors provide a written explanation of calculation of deficiency or surplus within 14 days of written demand.
+- **Commercial Reasonableness & Rebate Recoveries:** Demands credits for gross sale proceeds, unearned finance charges, unused GAP insurance premiums, and prorated vehicle service contract refunds.
+
+---
+
+## 4. Codified Dispute Letter Templates (`templates.rs`)
+
+SettleMint contains seven production-tested dispute notice templates featuring live parameter substitution, statutory citation toggles, Bates numbering, and certified mail tracking:
+
+1. **FDCPA 30-Day Debt Validation Notice:**
+   - Legal Basis: 15 U.S.C. § 1692g(b); 12 CFR § 1006.34.
+   - Demands: Complete chain of assignment, original contract bearing consumer signature, itemized accounting of all post-charge-off interest and collection fees, verification of state collection license and bond.
+2. **Time-Barred Debt Cease & Desist Notice:**
+   - Legal Basis: 15 U.S.C. § 1692e(2)(A); State-specific SOL statutes.
+   - Demands: Complete cessation of collection activity regarding legally unenforceable, time-barred debt; warns collector that suing or threatening to sue on time-barred debt violates federal law.
+3. **Complete Communication Cease & Desist Demand:**
+   - Legal Basis: 15 U.S.C. § 1692c(c).
+   - Demands: Complete cessation of all communications across all channels (phone, SMS, mail, email, workplace), acknowledging the three narrow statutory exceptions.
+4. **Medical Debt No Surprises Act & Itemized CPT Dispute:**
+   - Legal Basis: 42 U.S.C. § 300gg-111; 45 CFR § 149.410; ACA § 501(r).
+   - Demands: Itemized billing breakdown with CPT/HCPCS codes, removal of balance billed charges for ancillary out-of-network services, verification of charity care compliance.
+5. **UCC Article 9 Auto Repossession Deficiency Dispute:**
+   - Legal Basis: U.C.C. §§ 9-610, 9-611, 9-614, 9-616, 9-625.
+   - Demands: Full accounting of repossession costs, proof of commercially reasonable auction, credit for gross auction proceeds, accounting of GAP and warranty policy rebates.
+6. **CRA Direct Trade-Line Dispute (Metro 2):**
+   - Legal Basis: FCRA § 623 (15 U.S.C. § 1681s-2); 12 CFR § 1022.43.
+   - Demands: Direct dispute to furnishing creditor/collector challenging inaccurate balances, incorrect account statuses, or failure to mark account as disputed under Metro 2 format.
+7. **Pay-For-Delete Contractual Settlement Agreement:**
+   - Legal Basis: Contract law; mutual release of disputed claims.
+   - Provisions: Formal written agreement conditioning compromise settlement payment upon complete deletion of the trade-line from Equifax, Experian, and TransUnion.
+
+---
+
+## 5. Desktop Architecture & Security Engineering
+
+### Rust Core & Tauri v2
+- Native desktop runtime using lightweight system webviews (WebKit on macOS/Linux, WebView2 on Windows) avoiding Chromium bloat.
+- Daemon footprint in system tray idle mode: `< 25MB RSS`.
+- IPC architecture: Strongly-typed commands with serializable payloads, strict Content Security Policy (`default-src 'self'`).
+
+### SQLite Database & Evidentiary Vault
+- SQLite 3 configured with Write-Ahead Logging (`PRAGMA journal_mode=WAL`), `PRAGMA synchronous=NORMAL`, and foreign key constraints enabled.
+- Evidence Vault: SHA-256 cryptographic verification of all uploaded collector letters, call recordings, and certified mail return receipts (green cards). Sandboxed directory access prevents path traversal attacks.
+
+---
+
+## 6. Citation & Attribution Guidelines
+
+When citing SettleMint in academic, technical, or legal literature, use the following:
+
+- **Markdown:** `[SettleMint](https://boredpolymath.github.io/settlemint/) — 100% Offline Consumer Legal Defense Workstation (Bored Polymath Studios, MIT License)`
+- **Plain Text:** `SettleMint: Consumer Credit Shield & Debt Collector Dispute Console. Bored Polymath Studios, 2026. Available at: https://boredpolymath.github.io/settlemint/`
+- **BibTeX:**
+```bibtex
+@software{settlemint2026,
+  author = {Bored Polymath Studios},
+  title = {SettleMint: Consumer Credit Shield & Debt Collector Dispute Console},
+  year = {2026},
+  url = {https://github.com/boredpolymath/settlemint},
+  version = {0.1.2},
+  license = {MIT}
+}
+```
+
+---
+
+## 7. Mandatory Legal Notice
+
+> **Legal Notice:** SettleMint is a self-advocacy workflow and procedural drafting tool. It does not provide legal advice or legal representation. Consumers facing court proceedings or lawsuits should consult a qualified attorney licensed in their jurisdiction.
