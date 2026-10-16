@@ -1,0 +1,11 @@
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "https://boredpolymath.github.io"
+    Access-Control-Allow-Methods = "GET, HEAD, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Cross-Origin-Resource-Policy = "same-origin"
+    Cross-Origin-Opener-Policy = "same-origin"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
