@@ -22,11 +22,11 @@ import { renderCreditAudit } from './views/credit-view.js';
 
 class SettleMintApp {
   constructor() {
-    this.PROFILE_STORAGE_KEY = "settlemint_user_profile_v1";
-    this.DEMO_MODE_STORAGE_KEY = "settlemint_demo_mode";
-    this.DISCLAIMER_STORAGE_KEY = "settlemint_legal_disclaimer_agreed_v1";
+    this.PROFILE_STORAGE_SLOT = "settlemint_user_profile_v1";
+    this.DEMO_MODE_STORAGE_SLOT = "settlemint_demo_mode";
+    this.DISCLAIMER_STORAGE_SLOT = "settlemint_legal_disclaimer_agreed_v1";
 
-    this.isDemoMode = localStorage.getItem(this.DEMO_MODE_STORAGE_KEY) === "true";
+    this.isDemoMode = localStorage.getItem(this.DEMO_MODE_STORAGE_SLOT) === "true";
     this.loadUserProfile();
 
     this.cases = this.isDemoMode ? [...INITIAL_CASES] : [];
@@ -49,7 +49,7 @@ class SettleMintApp {
   }
 
   loadUserProfile() {
-    const raw = localStorage.getItem(this.PROFILE_STORAGE_KEY);
+    const raw = localStorage.getItem(this.PROFILE_STORAGE_SLOT);
     if (raw) {
       try {
         this.user = JSON.parse(raw);
@@ -93,7 +93,7 @@ class SettleMintApp {
       phone: (profileData.phone || "").trim(),
       isConfigured: true
     };
-    localStorage.setItem(this.PROFILE_STORAGE_KEY, JSON.stringify(this.user));
+    localStorage.setItem(this.PROFILE_STORAGE_SLOT, JSON.stringify(this.user));
     this.updateSidebarProfile();
     this.render();
   }
@@ -112,7 +112,7 @@ class SettleMintApp {
   }
 
   async loadDemoData() {
-    localStorage.setItem(this.DEMO_MODE_STORAGE_KEY, "true");
+    localStorage.setItem(this.DEMO_MODE_STORAGE_SLOT, "true");
     this.isDemoMode = true;
     this.cases = [...INITIAL_CASES];
     this.interactions = [...INITIAL_INTERACTIONS];
@@ -161,7 +161,7 @@ class SettleMintApp {
   }
 
   async clearAllData() {
-    localStorage.removeItem(this.DEMO_MODE_STORAGE_KEY);
+    localStorage.removeItem(this.DEMO_MODE_STORAGE_SLOT);
     this.isDemoMode = false;
     if (ipc.isTauri()) {
       try {
@@ -641,7 +641,7 @@ class SettleMintApp {
     if (this.resetDisclaimerBtn) {
       this.resetDisclaimerBtn.addEventListener("click", () => {
         try {
-          localStorage.removeItem(this.DISCLAIMER_STORAGE_KEY);
+          localStorage.removeItem(this.DISCLAIMER_STORAGE_SLOT);
         } catch (e) {}
         this.hasAgreedDisclaimer = false;
         this.openLegalDisclaimer(true);
@@ -1252,7 +1252,7 @@ class SettleMintApp {
 
   getStoredDisclaimerAgreement() {
     try {
-      const raw = localStorage.getItem(this.DISCLAIMER_STORAGE_KEY);
+      const raw = localStorage.getItem(this.DISCLAIMER_STORAGE_SLOT);
       if (!raw) return null;
       return JSON.parse(raw);
     } catch (e) {
@@ -1266,7 +1266,7 @@ class SettleMintApp {
 
     if (forceSplash) {
       try {
-        localStorage.removeItem(this.DISCLAIMER_STORAGE_KEY);
+        localStorage.removeItem(this.DISCLAIMER_STORAGE_SLOT);
       } catch (e) {}
       this.hasAgreedDisclaimer = false;
       this.openLegalDisclaimer(true);
@@ -1360,7 +1360,7 @@ class SettleMintApp {
       version: "1.0"
     };
     try {
-      localStorage.setItem(this.DISCLAIMER_STORAGE_KEY, JSON.stringify(record));
+      localStorage.setItem(this.DISCLAIMER_STORAGE_SLOT, JSON.stringify(record));
     } catch (e) {
       console.warn("Could not save disclaimer agreement to localStorage:", e);
     }
