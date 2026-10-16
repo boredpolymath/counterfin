@@ -38,6 +38,17 @@
 - **Keyboard Navigation & Trapping:** Full keyboard navigation support with active modal focus traps and Escape key dismissal.
 - **Cumulative Layout Shift (CLS) Elimination:** Optimized layout tokens and responsive imagery for instantaneous loading.
 
+### 📦 Verified Release Packages & Checksums
+
+| Artifact Name | Target Platform / Architecture | Format | Size | SHA-256 Checksum |
+|---|---|---|---|---|
+| `SettleMint_0.1.3_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed & Notarized DMG | 6.46 MiB | `7738903ad6f0323e3d1eace791f22c861ccae886cc66ac49a8ad69daf871807b` |
+| `SettleMint_0.1.3_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.69 MiB | `66b0ce0b7e201e196ea70114854eb67eef176c0d2af24af5e2ad706e5b7e8220` |
+| `SettleMint_0.1.3_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.69 MiB | `304d99e4a7cd8ec5e47394be584d29282b688496f6ee261fc2ebe3dabbea49f5` |
+| `SettleMint_0.1.3_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.76 MiB | `2940f02332312384b830f9c64ca4462d7c29486ced5d352a2692d4e62e4b8fa3` |
+| `SettleMint_0.1.3_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 3.76 MiB | `4a02e326df618b33d8a39e3e7851fb8ba89a2494a0c7f596a4244673a4564dca` |
+| `SettleMint_aarch64.app.tar.gz` | macOS Apple Silicon | Signed App Bundle | 4.80 MiB | `00c24adeb416cfc89b99fa5f610617b616ad561a95693936f3cd28628b4b71ad` |
+
 ---
 
 ## SettleMint v0.1.2 — Production Release with Cryptographic Code Signing & Apple Notarization
