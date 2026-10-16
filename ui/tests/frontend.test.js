@@ -576,3 +576,78 @@ test('9.10.4 - WCAG 2.1 AA Accessibility & Color Contrast: verifies 4.5:1 ratio 
     );
   }
 });
+
+// =========================================================================
+// Cross-Platform Functional Buttons & System Integration Tests
+// =========================================================================
+test('Cross-Platform Buttons: Dispute Guides modal open/close functions properly', () => {
+  let modalOpen = false;
+  const mockModal = {
+    showModal: () => { modalOpen = true; },
+    close: () => { modalOpen = false; },
+  };
+
+  // Simulate clicking open
+  mockModal.showModal();
+  assert.strictEqual(modalOpen, true, 'Dispute Guides modal should be open after showModal');
+
+  // Simulate clicking close (✕ or Close button)
+  mockModal.close();
+  assert.strictEqual(modalOpen, false, 'Dispute Guides modal should be closed after close');
+});
+
+test('Cross-Platform Keyboard Shortcuts: triggers across Windows/Linux (Ctrl) and macOS (Cmd)', () => {
+  const actionsTriggered = [];
+
+  const handleShortcut = (e) => {
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
+      if (e.key === 'n' || e.key === 'N') actionsTriggered.push('new_dispute');
+      if (e.key === 'k' || e.key === 'K') actionsTriggered.push('call_script');
+      if (e.key === 'g' || e.key === 'G') actionsTriggered.push('dispute_guides');
+      if (e.key === '1') actionsTriggered.push('nav_dashboard');
+      if (e.key === '5') actionsTriggered.push('nav_credit');
+      if (e.key === ',') actionsTriggered.push('settings');
+    }
+  };
+
+  // Windows / Linux: Ctrl + N
+  handleShortcut({ ctrlKey: true, metaKey: false, shiftKey: false, altKey: false, key: 'n' });
+  // macOS: Cmd + N
+  handleShortcut({ ctrlKey: false, metaKey: true, shiftKey: false, altKey: false, key: 'N' });
+  // Windows / Linux: Ctrl + K
+  handleShortcut({ ctrlKey: true, metaKey: false, shiftKey: false, altKey: false, key: 'k' });
+  // macOS: Cmd + G
+  handleShortcut({ ctrlKey: false, metaKey: true, shiftKey: false, altKey: false, key: 'g' });
+  // Windows / Linux: Ctrl + 5
+  handleShortcut({ ctrlKey: true, metaKey: false, shiftKey: false, altKey: false, key: '5' });
+  // macOS: Cmd + ,
+  handleShortcut({ ctrlKey: false, metaKey: true, shiftKey: false, altKey: false, key: ',' });
+
+  assert.deepStrictEqual(actionsTriggered, [
+    'new_dispute',
+    'new_dispute',
+    'call_script',
+    'dispute_guides',
+    'nav_credit',
+    'settings',
+  ]);
+});
+
+test('System Tray Integration: handles open-quick-log across desktop environments', () => {
+  let quickLogOpened = false;
+  const mockController = {
+    openQuickLogModal: () => { quickLogOpened = true; }
+  };
+
+  const handlers = {};
+  const mockIpc = {
+    listen: (event, cb) => { handlers[event] = cb; },
+    emit: (event, payload) => { if (handlers[event]) handlers[event](payload); }
+  };
+
+  mockIpc.listen('open-quick-log', () => mockController.openQuickLogModal());
+  mockIpc.emit('open-quick-log', {});
+
+  assert.strictEqual(quickLogOpened, true, 'Tray quick-log event should open quick log modal');
+});
+

@@ -97,23 +97,44 @@ export class LetterController {
 
   bindTemplateChange(activeCase) {
     document.getElementById("templateSelect")?.addEventListener("change", async (e) => {
-      if (!ipc.isTauri() || !activeCase) return;
-      const docType = e.target.value === 'credit_card_dvl' ? 'credit_card_dvl' :
-                      e.target.value === 'medical_dvl' ? 'medical_dvl' :
-                      e.target.value === 'auto_dvl' ? 'auto_deficiency_dvl' : 'general_dvl';
-      try {
-        await ipc.generateDisputeDocument(docType, {
-          CERTIFIED_MAIL_TRACKING: document.getElementById("templateCertifiedMail")?.value || activeCase.certifiedMailTracking || '',
-          CURRENT_DATE: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-          COLLECTION_AGENCY: document.getElementById("templateRecipient")?.value || activeCase.collectionAgency,
-          COLLECTION_ACCOUNT_NO: activeCase.collectionAccountNumber,
-          ORIGINAL_PROVIDER: activeCase.originalProvider,
-          DISPUTED_AMOUNT: `$${(activeCase.disputedBalance || 0).toFixed(2)}`,
-          BATES_DOCKET: activeCase.docketNumber,
-          DEBTOR_NAME: activeCase.debtorName
-        });
-      } catch (_err) {
-        // Backend template generation note handled gracefully
+      if (!activeCase) return;
+      const templateVal = e.target.value;
+      const docType = templateVal === 'credit_card_dvl' ? 'credit_card_dvl' :
+                      templateVal === 'medical_dvl' ? 'medical_dvl' :
+                      templateVal === 'auto_dvl' ? 'auto_deficiency_dvl' :
+                      templateVal === 'cease_desist' ? 'cease_desist' :
+                      templateVal === 'cra_dispute' ? 'cra_dispute' :
+                      templateVal === 'cfpb_complaint' ? 'cfpb_complaint' :
+                      templateVal === 'pay_for_delete' ? 'pay_for_delete' : 'general_dvl';
+
+      const debtorName = (this.app.user?.name && this.app.user?.isConfigured)
+        ? this.app.user.name
+        : (activeCase.debtorName || "Protected Consumer");
+
+      const tokens = {
+        CERTIFIED_MAIL_TRACKING: document.getElementById("templateCertifiedMail")?.value || activeCase.certifiedMailTracking || '',
+        CURRENT_DATE: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+        COLLECTION_AGENCY: document.getElementById("templateRecipient")?.value || activeCase.collectionAgency,
+        COLLECTION_ACCOUNT_NO: activeCase.collectionAccountNumber,
+        ORIGINAL_PROVIDER: activeCase.originalProvider,
+        DISPUTED_AMOUNT: `$${(activeCase.disputedBalance || 0).toFixed(2)}`,
+        BATES_DOCKET: activeCase.docketNumber,
+        DEBTOR_NAME: debtorName,
+        SETTLEMENT_OFFER_AMOUNT: `$${((activeCase.disputedBalance || 0) * 0.4).toFixed(2)}`,
+        CREDIT_BUREAU: "Experian, Equifax & TransUnion"
+      };
+
+      if (ipc.isTauri()) {
+        try {
+          const generated = await ipc.generateDisputeDocument(docType, tokens);
+          const paper = document.getElementById("legalDocumentPaper");
+          if (paper && generated) {
+            paper.style.whiteSpace = "pre-wrap";
+            paper.textContent = generated;
+          }
+        } catch (_err) {
+          // Backend template generation note handled gracefully
+        }
       }
     });
   }

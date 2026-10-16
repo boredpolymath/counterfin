@@ -20,6 +20,7 @@ export class ModalController {
     this.dismissCallScriptBtn = document.getElementById("dismissCallScriptBtn");
 
     this.disputeGuidesModal = document.getElementById("disputeGuidesModal");
+    this.disputeGuidesBtn = document.getElementById("disputeGuidesBtn");
     this.closeDisputeGuidesModal = document.getElementById("closeDisputeGuidesModal");
     this.dismissDisputeGuidesBtn = document.getElementById("dismissDisputeGuidesBtn");
 
@@ -92,8 +93,11 @@ export class ModalController {
   }
 
   bindDisputeGuidesEvents() {
+    if (this.disputeGuidesBtn) {
+      this.disputeGuidesBtn.addEventListener("click", () => this.disputeGuidesModal?.showModal());
+    }
     if (this.closeDisputeGuidesModal) {
-      this.closeDisputeGuidesModal.addEventListener("click", () => this.disputeGuidesModal?.showModal());
+      this.closeDisputeGuidesModal.addEventListener("click", () => this.disputeGuidesModal?.close());
     }
     if (this.dismissDisputeGuidesBtn) {
       this.dismissDisputeGuidesBtn.addEventListener("click", () => this.disputeGuidesModal?.close());

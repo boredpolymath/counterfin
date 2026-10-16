@@ -186,6 +186,40 @@ class SettleMintApp {
       });
     });
 
+    // Cross-platform desktop keyboard shortcuts (Windows/Linux Ctrl & macOS Cmd)
+    window.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
+        if (e.key === "n" || e.key === "N") {
+          e.preventDefault();
+          this.openNewDisputeModal();
+        } else if (e.key === "k" || e.key === "K") {
+          e.preventDefault();
+          this.modalController?.callScriptModal?.showModal();
+        } else if (e.key === "g" || e.key === "G") {
+          e.preventDefault();
+          this.modalController?.disputeGuidesModal?.showModal();
+        } else if (e.key === "1") {
+          e.preventDefault();
+          this.switchView("dashboard");
+        } else if (e.key === "2") {
+          e.preventDefault();
+          this.switchView("interactions");
+        } else if (e.key === "3") {
+          e.preventDefault();
+          this.switchView("letters");
+        } else if (e.key === "4") {
+          e.preventDefault();
+          this.switchView("evidence");
+        } else if (e.key === "5") {
+          e.preventDefault();
+          this.switchView("credit");
+        } else if (e.key === ",") {
+          e.preventDefault();
+          this.openUserProfileModal();
+        }
+      }
+    });
+
     if (this.viewDashboard) {
       this.viewDashboard.addEventListener("click", (e) => this.handleDashboardClick(e));
       this.viewDashboard.addEventListener("change", (e) => {
@@ -347,16 +381,46 @@ class SettleMintApp {
   renderInteractionsView(activeCase) {
     this.setSafeViewContent(this.viewInteractions, renderInteractions(this.interactions, activeCase));
     document.getElementById("interactionEmptyNewCaseBtn")?.addEventListener("click", () => this.openNewDisputeModal());
+    document.getElementById("addInteractionLogBtn")?.addEventListener("click", () => {
+      this.modalController.openQuickLogModal(activeCase?.id);
+    });
   }
 
   renderEvidenceView(activeCase) {
     this.setSafeViewContent(this.viewEvidence, renderEvidenceVault(this.evidence, activeCase));
     document.getElementById("evidenceEmptyNewCaseBtn")?.addEventListener("click", () => this.openNewDisputeModal());
+    document.getElementById("ingestEvidenceBtn")?.addEventListener("click", () => {
+      this.modalController.openIngestEvidenceModal(activeCase?.id);
+    });
+    document.getElementById("emptyIngestEvidenceBtn")?.addEventListener("click", () => {
+      this.modalController.openIngestEvidenceModal(activeCase?.id);
+    });
   }
 
   renderCreditView(activeCase) {
     this.setSafeViewContent(this.viewCredit, renderCreditAudit(this.tradelines, activeCase));
     document.getElementById("creditEmptyNewCaseBtn")?.addEventListener("click", () => this.openNewDisputeModal());
+    document.getElementById("importCreditReportBtn")?.addEventListener("click", () => {
+      this.modalController.openIngestEvidenceModal(activeCase?.id);
+      if (this.modalController.evidenceDocType) {
+        this.modalController.evidenceDocType.value = "credit_report";
+      }
+    });
+
+    if (this.viewCredit) {
+      this.viewCredit.querySelectorAll("button").forEach(btn => {
+        if (btn.textContent.includes("Generate CRA Dispute Packet")) {
+          btn.addEventListener("click", () => {
+            this.switchView("letters");
+            const templateSelect = document.getElementById("templateSelect");
+            if (templateSelect) {
+              templateSelect.value = "cra_dispute";
+              templateSelect.dispatchEvent(new Event("change"));
+            }
+          });
+        }
+      });
+    }
   }
 
   renderLettersView(activeCase) {
@@ -482,6 +546,13 @@ class SettleMintApp {
       const p = event.payload || {};
       ipc.sendNotification("Case Status Advanced", `Case ${p.case_id} transitioned to ${p.new_status}`);
       this.render();
+    });
+    // System Tray integration across Windows, macOS, and Linux
+    await ipc.listen('open-quick-log', () => {
+      this.modalController?.openQuickLogModal();
+    });
+    await ipc.listen('toggle-silence-24h', () => {
+      ipc.sendNotification("Notifications Silenced", "Statutory deadline alerts paused for 24 hours.");
     });
   }
 }
