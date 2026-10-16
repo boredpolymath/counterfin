@@ -3,6 +3,16 @@
  * Cross-references trade lines against active dispute cases, flags inaccuracies, and bundles dispute packets
  */
 
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 export function renderCreditAudit(tradelines, activeCase) {
   if (!activeCase) {
     return `
@@ -24,14 +34,14 @@ export function renderCreditAudit(tradelines, activeCase) {
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           <div style="width:32px; height:32px; border-radius:8px; background:var(--color-primary-mint-wash); color:var(--color-primary); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;">
-            ${item.bureau ? item.bureau.charAt(0) : 'B'}
+            ${escapeHtml(item.bureau ? item.bureau.charAt(0) : 'B')}
           </div>
           <div>
             <div style="font-size:14px; font-weight:700; color:#0f172a; text-transform:uppercase; letter-spacing:0.02em;">
-              ${item.bureau}
+              ${escapeHtml(item.bureau)}
             </div>
             <div style="font-family:var(--font-family-mono); font-size:11px; color:#64748b;">
-              Account #${item.accountNumber}
+              Account #${escapeHtml(item.accountNumber)}
             </div>
           </div>
         </div>
@@ -47,19 +57,19 @@ export function renderCreditAudit(tradelines, activeCase) {
         <div>
           <span style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748b;">Reported Balance</span>
           <div style="font-family:var(--font-family-mono); font-size:16px; font-weight:700; color:#0f172a; margin-top:2px;">
-            $${item.reportedBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            $${(Number(item.reportedBalance) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
         </div>
         <div>
           <span style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748b;">Tradeline Remark</span>
           <div style="font-size:12.5px; font-weight:600; color:${item.compliant ? '#006948' : '#e11d48'}; margin-top:2px;">
-            ${item.disputeRemarkStatus}
+            ${escapeHtml(item.disputeRemarkStatus)}
           </div>
         </div>
         <div>
           <span style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#64748b;">Last Reported</span>
           <div style="font-family:var(--font-family-mono); font-size:12.5px; color:#334155; margin-top:2px;">
-            ${item.lastReportedDate}
+            ${escapeHtml(item.lastReportedDate)}
           </div>
         </div>
       </div>
@@ -72,7 +82,7 @@ export function renderCreditAudit(tradelines, activeCase) {
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
           <div>
-            <strong>FCRA § 623(a)(3) Infraction:</strong> Collector was notified in writing that this balance is disputed, but furnished inaccurate data or failed to communicate dispute status to ${item.bureau}.
+            <strong>FCRA § 623(a)(3) Infraction:</strong> Collector was notified in writing that this balance is disputed, but furnished inaccurate data or failed to communicate dispute status to ${escapeHtml(item.bureau)}.
           </div>
         </div>
       ` : ''}

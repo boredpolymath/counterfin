@@ -3,6 +3,16 @@
  * Renders communication ledger, FDCPA violation flags, and call transcription notes
  */
 
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 export function renderInteractions(interactions, activeCase) {
   if (!activeCase) {
     return `
@@ -37,11 +47,11 @@ export function renderInteractions(interactions, activeCase) {
           </div>
           <div class="view-header-subtitle">
             <span>Active Dossier:</span>
-            <strong style="color: #334155;">${activeCase.originalProvider}</strong>
+            <strong style="color: #334155;">${escapeHtml(activeCase.originalProvider)}</strong>
             <span>•</span>
-            <span class="label-code" style="font-size: 11px;">${activeCase.docketNumber}</span>
+            <span class="label-code" style="font-size: 11px;">${escapeHtml(activeCase.docketNumber)}</span>
             <span>•</span>
-            <span>Collector: ${activeCase.collectionAgency}</span>
+            <span>Collector: ${escapeHtml(activeCase.collectionAgency)}</span>
           </div>
         </div>
       </div>
@@ -83,10 +93,10 @@ export function renderInteractions(interactions, activeCase) {
                 <span class="status-dot status-dot-rose"></span>
                 Statutory Infraction
               </span>
-              <strong style="font-size: 12px; color: #881337; font-family: var(--font-family-mono);">${v.citation}</strong>
-              <span style="font-size: 12px; color: #4c0519;">${v.title}</span>
+              <strong style="font-size: 12px; color: #881337; font-family: var(--font-family-mono);">${escapeHtml(v.citation)}</strong>
+              <span style="font-size: 12px; color: #4c0519;">${escapeHtml(v.title)}</span>
             </div>
-            <span class="violation-damages-tag">+$${v.damages.toFixed(2)} Statutory Recovery</span>
+            <span class="violation-damages-tag">+$${(Number(v.damages) || 0).toFixed(2)} Statutory Recovery</span>
           </div>
         `).join("")}
       </div>
@@ -98,11 +108,11 @@ export function renderInteractions(interactions, activeCase) {
           <div class="interaction-meta">
             <span class="status-pill ${isIncoming ? 'status-pill-amber' : 'status-pill-mint'}">
               <span class="status-dot ${isIncoming ? 'status-dot-amber' : 'status-dot-mint'}"></span>
-              ${item.direction.toUpperCase()} (${item.channel.toUpperCase()})
+              ${escapeHtml(item.direction ? item.direction.toUpperCase() : '')} (${escapeHtml(item.channel ? item.channel.toUpperCase() : '')})
             </span>
-            <span class="label-code" style="font-weight: 700; color: #334155; font-size: 12px;">${item.timestamp}</span>
+            <span class="label-code" style="font-weight: 700; color: #334155; font-size: 12px;">${escapeHtml(item.timestamp)}</span>
             <span style="font-size: 12px; color: #64748b;">•</span>
-            <span style="font-size: 12px; color: #475569; font-weight: 500;">Contact: <strong style="color: #0f172a;">${item.contactName}</strong></span>
+            <span style="font-size: 12px; color: #475569; font-weight: 500;">Contact: <strong style="color: #0f172a;">${escapeHtml(item.contactName)}</strong></span>
           </div>
           <div>
             ${item.durationSec > 0 ? `
@@ -114,7 +124,7 @@ export function renderInteractions(interactions, activeCase) {
         </div>
 
         <div class="interaction-notes">
-          ${item.summary}
+          ${escapeHtml(item.summary)}
         </div>
 
         ${violationHtml}

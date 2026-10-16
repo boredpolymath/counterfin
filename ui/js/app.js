@@ -16,7 +16,7 @@ import {
 
 import { renderDashboard } from './views/dashboard-view.js';
 import { renderInteractions } from './views/interaction-view.js';
-import { renderLetterStudio } from './views/letter-view.js';
+import { renderLetterStudio, escapeHtml } from './views/letter-view.js';
 import { renderEvidenceVault } from './views/evidence-view.js';
 import { renderCreditAudit } from './views/credit-view.js';
 
@@ -339,15 +339,15 @@ class SettleMintApp {
           <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
             <div>
               <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                <span class="status-pill status-pill-success" style="font-size: 10px;">Patch v${p.version}</span>
-                <strong style="font-size: 13px; color: #0f172a;">${p.patch_id}</strong>
+                <span class="status-pill status-pill-success" style="font-size: 10px;">Patch v${escapeHtml(p.version)}</span>
+                <strong style="font-size: 13px; color: #0f172a;">${escapeHtml(p.patch_id)}</strong>
               </div>
-              <div style="font-size: 12px; color: #475569; margin-bottom: 4px;">${p.description}</div>
+              <div style="font-size: 12px; color: #475569; margin-bottom: 4px;">${escapeHtml(p.description)}</div>
               <div style="font-size: 10px; color: #94a3b8;">
-                Applied: ${new Date(p.applied_at).toLocaleString()} • ${p.sol_rules_count} SOL overrides • ${p.licensing_rules_count} Licensing overrides
+                Applied: ${new Date(p.applied_at).toLocaleString()} • ${Number(p.sol_rules_count) || 0} SOL overrides • ${Number(p.licensing_rules_count) || 0} Licensing overrides
               </div>
             </div>
-            <button type="button" class="btn btn-sm btn-pill-outline btn-rollback-patch" data-patch-id="${p.patch_id}" style="color: #e11d48; border-color: #fecdd3; font-size: 11px;">
+            <button type="button" class="btn btn-sm btn-pill-outline btn-rollback-patch" data-patch-id="${escapeHtml(p.patch_id)}" style="color: #e11d48; border-color: #fecdd3; font-size: 11px;">
               Rollback
             </button>
           </div>
@@ -431,7 +431,7 @@ class SettleMintApp {
             <span>✓ Envelope Well-Formed (Ed25519 Signature Present)</span>
           </div>
           <div style="font-size: 11px; color: #475569; margin-top: 4px;">
-            Target: <strong>${parsed.payload.patch_id}</strong> (v${parsed.payload.version}) • ${parsed.payload.description}
+            Target: <strong>${escapeHtml(parsed.payload.patch_id)}</strong> (v${escapeHtml(parsed.payload.version)}) • ${escapeHtml(parsed.payload.description)}
           </div>
         `;
       }
@@ -642,7 +642,9 @@ class SettleMintApp {
       this.resetDisclaimerBtn.addEventListener("click", () => {
         try {
           localStorage.removeItem(this.DISCLAIMER_STORAGE_SLOT);
-        } catch (e) {}
+        } catch (e) {
+          console.debug("Failed resetting disclaimer slot:", e);
+        }
         this.hasAgreedDisclaimer = false;
         this.openLegalDisclaimer(true);
       });
@@ -1256,6 +1258,7 @@ class SettleMintApp {
       if (!raw) return null;
       return JSON.parse(raw);
     } catch (e) {
+      console.debug("Failed reading stored disclaimer slot:", e);
       return null;
     }
   }
@@ -1267,7 +1270,9 @@ class SettleMintApp {
     if (forceSplash) {
       try {
         localStorage.removeItem(this.DISCLAIMER_STORAGE_SLOT);
-      } catch (e) {}
+      } catch (e) {
+        console.debug("Failed removing disclaimer slot on force splash:", e);
+      }
       this.hasAgreedDisclaimer = false;
       this.openLegalDisclaimer(true);
       return;
@@ -1394,7 +1399,7 @@ class SettleMintApp {
     const targetCaseId = caseId || this.activeCaseId;
     if (this.logCaseSelect) {
       this.logCaseSelect.innerHTML = this.cases.map(c =>
-        `<option value="${c.id}" ${c.id === targetCaseId ? 'selected' : ''}>${c.originalProvider} (${c.docketNumber})</option>`
+        `<option value="${escapeHtml(c.id)}" ${c.id === targetCaseId ? 'selected' : ''}>${escapeHtml(c.originalProvider)} (${escapeHtml(c.docketNumber)})</option>`
       ).join('');
     }
     if (this.logTimestamp) {
@@ -1418,7 +1423,7 @@ class SettleMintApp {
     const targetCaseId = caseId || this.activeCaseId;
     if (this.evidenceCaseSelect) {
       this.evidenceCaseSelect.innerHTML = this.cases.map(c =>
-        `<option value="${c.id}" ${c.id === targetCaseId ? 'selected' : ''}>${c.originalProvider} (${c.docketNumber})</option>`
+        `<option value="${escapeHtml(c.id)}" ${c.id === targetCaseId ? 'selected' : ''}>${escapeHtml(c.originalProvider)} (${escapeHtml(c.docketNumber)})</option>`
       ).join('');
     }
     if (this.evidencePreviewStrip) {
@@ -1749,5 +1754,5 @@ class SettleMintApp {
 // Bootstrap application on DOM load
 window.addEventListener("DOMContentLoaded", () => {
   window.app = new SettleMintApp();
-  console.log("SettleMint Consumer Debt Protection Dashboard Initialized.");
+  console.info("SettleMint Consumer Debt Protection Dashboard Initialized.");
 });

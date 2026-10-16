@@ -3,6 +3,16 @@
  * Manages local sandboxed evidence attachments, SHA-256 hashes, and Bates numbering
  */
 
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 export function renderEvidenceVault(evidenceList, activeCase) {
   if (!activeCase) {
     return `
@@ -29,20 +39,20 @@ export function renderEvidenceVault(evidenceList, activeCase) {
           <line x1="16" y1="17" x2="8" y2="17"></line>
           <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
-        <span>${item.docType ? item.docType.toUpperCase() : 'DOCUMENT'}</span>
+        <span>${escapeHtml(item.docType ? item.docType.toUpperCase() : 'DOCUMENT')}</span>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span class="status-pill status-pill-mint" style="font-weight:700; font-family:var(--font-family-mono); font-size:11px;">${item.batesStamp}</span>
-        <span style="font-family:var(--font-family-mono); font-size:11.5px; color:#64748b;">${item.fileSize}</span>
+        <span class="status-pill status-pill-mint" style="font-weight:700; font-family:var(--font-family-mono); font-size:11px;">${escapeHtml(item.batesStamp)}</span>
+        <span style="font-family:var(--font-family-mono); font-size:11.5px; color:#64748b;">${escapeHtml(item.fileSize)}</span>
       </div>
       <div>
-        <div style="font-size:13.5px; font-weight:700; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${item.title}">
-          ${item.title}
+        <div style="font-size:13.5px; font-weight:700; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(item.title)}">
+          ${escapeHtml(item.title)}
         </div>
-        <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Uploaded: ${item.uploadedDate}</div>
+        <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Uploaded: ${escapeHtml(item.uploadedDate)}</div>
       </div>
-      <div class="vault-hash-box" title="SHA-256 Cryptographic Hash: ${item.sha256Hash}">
-        <span style="font-weight:600; color:#006948;">SHA-256:</span> ${item.sha256Hash}
+      <div class="vault-hash-box" title="SHA-256 Cryptographic Hash: ${escapeHtml(item.sha256Hash)}">
+        <span style="font-weight:600; color:#006948;">SHA-256:</span> ${escapeHtml(item.sha256Hash)}
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
         <span class="status-pill status-pill-neutral" style="font-size:10px;">AES-256 Encrypted</span>

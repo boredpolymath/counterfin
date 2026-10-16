@@ -9,7 +9,6 @@ Usage:
 
 import sys
 import json
-import os
 
 try:
     from nacl.signing import SigningKey

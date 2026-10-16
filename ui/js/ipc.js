@@ -216,7 +216,7 @@ export const ipc = {
     if (window.__TAURI__ && window.__TAURI__.notification) {
       return await window.__TAURI__.notification.sendNotification({ title, body });
     } else {
-      console.log(`[Notification Mock] ${title}: ${body}`);
+      console.debug(`[Notification Mock] ${title}: ${body}`);
     }
   },
 
