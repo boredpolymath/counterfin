@@ -1,4 +1,46 @@
-# SettleMint Release Notes
+# CounterFin Release Notes
+
+## CounterFin v0.1.4 — Production Rebranding, Responsive Workbench Actions, Direct-to-Downloads Export & UI Security Hardening
+
+**Release Date:** October 16, 2026  
+**Publisher:** Bored Polymath Studios  
+**Classification:** Consumer Advocacy & Credit Shield Desktop Console  
+**License:** MIT License  
+**Platforms Supported:** macOS (Apple Silicon / Intel Universal), Windows 10/11 (x86_64 / ARM64), Linux (Ubuntu 22.04+ / WebKitGTK 4.1)
+
+---
+
+### 🚀 What's New in v0.1.4
+
+#### 1. Official CounterFin Brand & Visual Identity
+- **Complete Application Rebrand:** Full rebranding across the entire codebase, documentation, metadata, website, and build manifests from SettleMint to **CounterFin**.
+- **Refined Emblem & App Icons:** Adopted Option B brand identity with high-resolution app icons cropped cleanly to the emblem boundary, eliminating distracting margins and enhancing dock/taskbar presence.
+- **Brand Visual Assets:** Deployed custom banners for repository documentation, OpenGraph social sharing previews, interactive app tour screenshots, and lossless WebP imagery across all display formats.
+
+#### 2. Comprehensive UI Button, Interaction & Navigation Audit
+- **Interactive Button Activation:** Audited and resolved all unresponsive buttons, missing callbacks, and mismatched DOM state identifiers across all functional views.
+- **Legal Rights Guide & Navigation Pills:** Added direct sidebar access for the Legal Rights Guide and introduced the Credit Delta Audit navigation pill for fast statutory inspection.
+- **Evidence Vault & Call Assistant Ingestion:** Wired up the `Record Correspondence` action in Call Assistant and direct `Ingest Evidence File` handlers in Evidence Vault.
+- **Credit Reporting & CRA Dispute Packet:** Hooked up `Ingest Credit Report` and `Generate CRA Dispute Packet` workflows in Credit view.
+- **Letter Studio Live Previews:** Real-time responsive template preview updates for all 8 statutory dispute generators with token replacement.
+- **Cross-Platform Keyboard Shortcuts:** Unified desktop accelerators (`Ctrl+` on Windows/Linux, `Cmd+` on macOS) for quick logging, navigation, and modal dismissal.
+- **System Tray Integration:** Active desktop event listeners for `open-quick-log` and `toggle-silence-24h` tray actions.
+
+#### 3. Workbench Actions & Enhanced Export Pipeline
+- **Clear Cases Action:** Added a fully-wired Clear Cases action with an active confirmation modal, resilient state clearing, and immediate UI refresh.
+- **Direct-to-Downloads File Export:** Enhanced the statutory dispute export pipeline (Markdown, HTML, JSON) with automatic file delivery to the user's local `Downloads` directory in both browser mock and native Tauri desktop runtimes.
+- **Non-Intrusive Toast Notifications:** Replaced disruptive modal alert popups with modern, floating toast notifications for export and workflow events.
+
+#### 4. Code Quality, Security Hardening & Continuous Validation
+- **CodeQL DOM XSS Remediation:** Resolved CodeQL DOM text reinterpreted as HTML vulnerability warnings by converting toast notifications to use safe, structured DOM text nodes.
+- **Biome Quality Audit:** 100% clean across Biome linter checks, enforcing safe optional chaining, modern template literals, and standardized object key formats.
+- **Rust Formatting & Engine Integrity:** Applied `rustfmt` formatting across all crates in `src-tauri`. All 74 comprehensive Rust unit, integration, stress/chaos, and benchmark tests execute with 100% green status.
+
+#### 5. Discoverability, SEO & Crawler Governance
+- **Launch Crawlability Package:** Codified launch-essential metadata including `favicon.ico`, `site.webmanifest`, and `manifest.json`.
+- **Security Policy & Standards:** Deployed RFC 9116 `.well-known/security.txt` security contact policy, `humans.txt` team attribution, and updated `robots.txt` / `sitemap.xml` directives.
+
+---
 
 ## SettleMint v0.1.3 — Architecture Hardening, UI Modularization, IPC Resilience & Automated Test Suite
 
