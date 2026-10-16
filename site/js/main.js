@@ -7,10 +7,22 @@
 document.addEventListener('DOMContentLoaded', () => {
   initOsDetection();
   initShowcaseTabs();
-  initSolSimulator();
-  initCopyButtons();
-  initLightbox();
   initMobileMenu();
+
+  // Defer non-critical initializations to eliminate main-thread blocking on first paint
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => {
+      initSolSimulator();
+      initCopyButtons();
+      initLightbox();
+    }, { timeout: 1000 });
+  } else {
+    setTimeout(() => {
+      initSolSimulator();
+      initCopyButtons();
+      initLightbox();
+    }, 50);
+  }
 });
 
 /* ==========================================================================
@@ -71,40 +83,60 @@ function initOsDetection() {
 function initShowcaseTabs() {
   const tabs = document.querySelectorAll('.showcase-tab');
   const screenImg = document.getElementById('showcaseImage');
+  const pictureSource = screenImg?.parentElement?.querySelector('source');
   const captionEl = document.getElementById('showcaseCaptionText');
 
   const tabData = {
     dashboard: {
-      src: 'assets/images/dashboard.png',
+      src: 'assets/images/dashboard.webp',
+      fallback: 'assets/images/dashboard.png',
       title: 'Live Statutory Dashboard:',
       desc: 'Real-time tracking of 30-day FDCPA dispute windows, 7-in-7 call violations, and accrued statutory damages.'
     },
     letters: {
-      src: 'assets/images/letters.png',
+      src: 'assets/images/letters.webp',
+      fallback: 'assets/images/letters.png',
       title: '7 Automated Legal Dispute Generators:',
       desc: 'Context-aware statutory demand letter generation with live PDF & Markdown export.'
     },
     interactions: {
-      src: 'assets/images/interactions.png',
+      src: 'assets/images/interactions.webp',
+      fallback: 'assets/images/interactions.png',
       title: 'Interaction & Violation Log:',
       desc: 'Precise tracking of phone calls, voicemails, and written notices under 12 CFR § 1006 Regulation F.'
     },
     evidence: {
-      src: 'assets/images/evidence.png',
+      src: 'assets/images/evidence.webp',
+      fallback: 'assets/images/evidence.png',
       title: 'NIST SHA-256 Evidence Vault:',
       desc: 'Cryptographic file integrity hashing with automated tamper detection and chain of custody.'
     },
     credit: {
-      src: 'assets/images/credit.png',
+      src: 'assets/images/credit.webp',
+      fallback: 'assets/images/credit.png',
       title: 'Credit Bureau Audit (FCRA § 623):',
       desc: 'Direct CRA trade-line dispute engine for Experian, Equifax, and TransUnion records.'
     },
     callScript: {
-      src: 'assets/images/callScriptModal.png',
+      src: 'assets/images/callScriptModal.webp',
+      fallback: 'assets/images/callScriptModal.png',
       title: 'Real-Time Defense Scripts:',
       desc: 'Step-by-step interactive script cards during incoming phone calls to record violations and stop harassment.'
     }
   };
+
+  // Preload tab images in background idle time
+  const preloadTabImages = () => {
+    Object.values(tabData).forEach(item => {
+      const img = new Image();
+      img.src = item.src;
+    });
+  };
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(preloadTabImages, { timeout: 2000 });
+  } else {
+    setTimeout(preloadTabImages, 1000);
+  }
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -117,6 +149,9 @@ function initShowcaseTabs() {
       if (tabData[key] && screenImg) {
         screenImg.style.opacity = '0.3';
         setTimeout(() => {
+          if (pictureSource) {
+            pictureSource.srcset = tabData[key].src;
+          }
           screenImg.src = tabData[key].src;
           if (captionEl) {
             captionEl.textContent = '';
@@ -378,6 +413,10 @@ function initLightbox() {
   showcaseScreen.addEventListener('click', () => {
     const currentImg = document.getElementById('showcaseImage');
     if (currentImg) {
+      const lightboxSource = lightboxImg.parentElement?.querySelector('source');
+      if (lightboxSource) {
+        lightboxSource.srcset = currentImg.src;
+      }
       lightboxImg.src = currentImg.src;
       lightbox.classList.add('active');
     }

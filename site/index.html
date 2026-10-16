@@ -13,8 +13,19 @@
   <meta http-equiv="Cross-Origin-Resource-Policy" content="same-origin">
   <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://boredpolymath.github.io; connect-src 'self';">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=()">
+  <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://boredpolymath.github.io; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+
+  <!-- Anti-Clickjacking Frame Defense -->
+  <script>
+    if (window.top !== window.self) {
+      window.top.location = window.self.location;
+    }
+  </script>
 
   <!-- Crawler & LLM Directives -->
   <meta name="robots" content="index, follow">
@@ -39,12 +50,19 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
-  <link rel="apple-touch-icon" href="assets/images/app-icon.png">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
 
-  <!-- Typography: Outfit, Plus Jakarta Sans, JetBrains Mono (Non-blocking preconnect) -->
+  <!-- Preload Largest Contentful Paint (LCP) Asset -->
+  <link rel="preload" as="image" href="assets/images/dashboard.webp" type="image/webp" fetchpriority="high">
+
+  <!-- Typography: Outfit, Plus Jakarta Sans, JetBrains Mono (Non-render-blocking font loading) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+  </noscript>
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
@@ -121,7 +139,10 @@
   <header class="navbar" id="siteNavbar">
     <div class="container nav-wrapper">
       <a href="#hero" class="brand-link" id="brandHomeLink" aria-label="SettleMint">
-        <img src="assets/images/app-icon.png" alt="SettleMint App Icon" class="brand-logo-img" width="32" height="32">
+        <picture>
+          <source srcset="assets/images/app-icon.webp" type="image/webp">
+          <img src="assets/images/app-icon.png" alt="SettleMint App Icon" class="brand-logo-img" width="36" height="36" decoding="async">
+        </picture>
         <span>SettleMint</span>
         <span class="brand-badge">v0.1.2</span>
       </a>
@@ -278,7 +299,10 @@
 
             <!-- Active Screen Viewer -->
             <div class="showcase-screen" id="showcaseScreen">
-              <img src="assets/images/dashboard.png" alt="SettleMint Active Dashboard Screenshot" id="showcaseImage" width="1920" height="1080" fetchpriority="high">
+              <picture id="showcasePicture">
+                <source srcset="assets/images/dashboard.webp" type="image/webp">
+                <img src="assets/images/dashboard.png" alt="SettleMint Active Dashboard Screenshot" id="showcaseImage" width="1920" height="1080" fetchpriority="high" decoding="async">
+              </picture>
               <div class="screen-zoom-hint">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><title>Icon</title><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
                 <span>Click to Expand Fullscreen</span>
@@ -804,7 +828,10 @@
         <div class="footer-top">
           <div class="footer-brand">
             <a href="#hero" class="brand-link" style="font-size: 1.25rem;">
-              <img src="assets/images/app-icon.png" alt="SettleMint Logo" class="brand-logo-img" style="width: 32px; height: 32px;">
+              <picture>
+                <source srcset="assets/images/app-icon.webp" type="image/webp">
+                <img src="assets/images/app-icon.png" alt="SettleMint Logo" class="brand-logo-img" width="32" height="32" loading="lazy" decoding="async">
+              </picture>
               <span>SettleMint</span>
             </a>
             <p class="footer-desc">
@@ -812,7 +839,10 @@
             </p>
             <div class="studio-badge">
               <span>An Open-Source Creation by</span>
-              <img src="assets/images/bored-polymath-logo.png" alt="Bored Polymath Studios" class="studio-logo" width="160" height="124">
+              <picture>
+                <source srcset="assets/images/bored-polymath-logo.webp" type="image/webp">
+                <img src="assets/images/bored-polymath-logo.png" alt="Bored Polymath Studios" class="studio-logo" width="160" height="124" loading="lazy" decoding="async">
+              </picture>
             </div>
           </div>
 
@@ -860,11 +890,14 @@
     <div class="lightbox-modal" id="lightboxModal" aria-hidden="true" role="dialog">
       <div class="lightbox-content">
         <button class="lightbox-close" id="lightboxClose" aria-label="Close fullscreen screenshot" type="button">&times;</button>
-        <img src="assets/images/dashboard.png" alt="Fullscreen App Preview" id="lightboxImage">
+        <picture>
+          <source srcset="assets/images/dashboard.webp" type="image/webp">
+          <img src="assets/images/dashboard.png" alt="Fullscreen App Preview" id="lightboxImage" loading="lazy" decoding="async">
+        </picture>
       </div>
     </div>
 
     <!-- Client Script -->
-    <script src="js/main.js"></script>
+    <script src="js/main.js" defer></script>
 </body>
 </html>

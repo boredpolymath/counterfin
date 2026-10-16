@@ -9,9 +9,11 @@ Usage:
 
 import sys
 import json
+import importlib
 
 try:
-    from nacl.signing import SigningKey  # type: ignore
+    nacl_signing = importlib.import_module("nacl.signing")
+    SigningKey = getattr(nacl_signing, "SigningKey", None)
 except ImportError:
     # If pynacl is not installed, provide clean instructions
     print("Warning: PyNaCl not installed. To sign with Python, run: pip install pynacl")
