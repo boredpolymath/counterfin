@@ -22,9 +22,23 @@ User-agent: cohere-ai
 User-agent: Meta-ExternalAgent
 User-agent: FacebookBot
 Allow: /
+Allow: /settlemint/
 Allow: /llms.txt
+Allow: /settlemint/llms.txt
 Allow: /llms-full.txt
+Allow: /settlemint/llms-full.txt
 Allow: /sitemap.xml
+Allow: /settlemint/sitemap.xml
+Allow: /site.webmanifest
+Allow: /settlemint/site.webmanifest
+Allow: /manifest.json
+Allow: /settlemint/manifest.json
+Allow: /.well-known/security.txt
+Allow: /settlemint/.well-known/security.txt
+Allow: /humans.txt
+Allow: /settlemint/humans.txt
+Allow: /favicon.ico
+Allow: /settlemint/favicon.ico
 
 # ==============================================================================
 # Search Engine Web Crawlers
@@ -36,6 +50,7 @@ User-agent: DuckDuckBot
 User-agent: YandexBot
 User-agent: Baiduspider
 Allow: /
+Allow: /settlemint/
 
 # ==============================================================================
 # Social Media Link Preview Crawlers
@@ -47,12 +62,14 @@ User-agent: Slackbot
 User-agent: TelegramBot
 User-agent: Discordbot
 Allow: /
+Allow: /settlemint/
 
 # ==============================================================================
 # Default Rule for All Other Crawlers
 # ==============================================================================
 User-agent: *
 Allow: /
+Allow: /settlemint/
 Crawl-delay: 1
 
 # ==============================================================================

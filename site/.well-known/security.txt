@@ -1,0 +1,6 @@
+# SettleMint Security Policy (RFC 9116)
+Contact: https://github.com/boredpolymath/settlemint/security/advisories
+Expires: 2027-10-16T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://boredpolymath.github.io/settlemint/.well-known/security.txt
+Policy: https://github.com/boredpolymath/settlemint/blob/main/SECURITY.md

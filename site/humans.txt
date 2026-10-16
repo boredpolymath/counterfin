@@ -1,0 +1,12 @@
+/* TEAM */
+Publisher: Bored Polymath Studios
+Repository: https://github.com/boredpolymath/settlemint
+Location: Air-gapped / Local-First
+
+/* SITE */
+Last update: 2026/10/16
+Language: English
+Doctype: HTML5
+Standards: HTML5, CSS3, ES6, Schema.org, WCAG 2.1 AA
+Software: Rust, Tauri, SQLite
+Components: 54-Jurisdiction SOL Engine, CFPB Reg F Tracker, UCC Art 9 Defenses, No Surprises Act Auditor
