@@ -90,8 +90,8 @@ function renderTradelineCard(item) {
       ${infractionHtml}
 
       <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:4px;">
-        <button class="btn-pill-outline btn-sm" style="font-size:11px;">Diff Historical Snapshot</button>
-        <button class="btn-pill-primary btn-sm" style="font-size:11px;">Generate CRA Dispute Packet</button>
+        <button type="button" class="btn-pill-outline btn-sm diff-tradeline-btn" style="font-size:11px;">Diff Historical Snapshot</button>
+        <button type="button" class="btn-pill-primary btn-sm cra-dispute-btn" style="font-size:11px;">Generate CRA Dispute Packet</button>
       </div>
     </div>
   `;
@@ -108,7 +108,7 @@ function renderEmptyTradelinesList() {
       </div>
       <div style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:4px;">No Tradeline Audits On File</div>
       <div style="font-size:12.5px; color:#64748b; max-width:440px; margin:0 auto 16px auto;">Ingest credit report disclosures from Experian, TransUnion, or Equifax to run automated delta audits.</div>
-      <button class="btn-pill-primary btn-sm" onclick="document.getElementById('importCreditReportBtn')?.click()">+ Ingest Credit Report</button>
+      <button type="button" class="btn-pill-primary btn-sm btn-import-credit-trigger" id="emptyImportCreditReportBtn">+ Ingest Credit Report</button>
     </div>
   `;
 }

@@ -98,11 +98,23 @@ function renderInteractionItem(item) {
     </div>
   ` : "";
 
-  const durationHtml = item.durationSec > 0 ? `
-    <span class="status-pill status-pill-neutral" style="font-family: var(--font-family-mono); font-size: 11px;">
-      Duration: ${Math.floor(item.durationSec / 60)}m ${item.durationSec % 60}s
-    </span>
-  ` : '';
+  let durationHtml = '';
+  if (item.durationSec > 0) {
+    durationHtml = `
+      <span class="status-pill status-pill-neutral" style="font-family: var(--font-family-mono); font-size: 11px;">
+        Duration: ${Math.floor(item.durationSec / 60)}m ${item.durationSec % 60}s
+      </span>
+    `;
+  } else if (item.duration) {
+    durationHtml = `
+      <span class="status-pill status-pill-neutral" style="font-family: var(--font-family-mono); font-size: 11px;">
+        Duration: ${escapeHtml(item.duration)}
+      </span>
+    `;
+  }
+
+  const contactDisplay = item.contactName || item.agentName || "Debt Collector";
+  const notesDisplay = item.summary || item.notes || "Communication recorded.";
 
   return `
     <div class="interaction-item ${hasViolation ? "has-violation" : ""}">
@@ -114,7 +126,7 @@ function renderInteractionItem(item) {
           </span>
           <span class="label-code" style="font-weight: 700; color: #334155; font-size: 12px;">${escapeHtml(item.timestamp)}</span>
           <span style="font-size: 12px; color: #64748b;">•</span>
-          <span style="font-size: 12px; color: #475569; font-weight: 500;">Contact: <strong style="color: #0f172a;">${escapeHtml(item.contactName)}</strong></span>
+          <span style="font-size: 12px; color: #475569; font-weight: 500;">Contact: <strong style="color: #0f172a;">${escapeHtml(contactDisplay)}</strong></span>
         </div>
         <div>
           ${durationHtml}
@@ -122,7 +134,7 @@ function renderInteractionItem(item) {
       </div>
 
       <div class="interaction-notes">
-        ${escapeHtml(item.summary)}
+        ${escapeHtml(notesDisplay)}
       </div>
 
       ${violationHtml}

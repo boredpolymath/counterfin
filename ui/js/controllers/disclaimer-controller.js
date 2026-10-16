@@ -86,12 +86,57 @@ export class DisclaimerController {
           e.preventDefault();
         }
       });
+      this.legalDisclaimerModal.addEventListener("click", (e) => {
+        if (!this.hasAgreedDisclaimer) return;
+        const rect = this.legalDisclaimerModal.getBoundingClientRect();
+        const isInDialog = (
+          rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+          rect.left <= e.clientX && e.clientX <= rect.left + rect.width
+        );
+        if (!isInDialog) {
+          this.closeDialog(this.legalDisclaimerModal);
+        }
+      });
+    }
+    if (this.disclaimerDeclinedModal) {
+      this.disclaimerDeclinedModal.addEventListener("click", (e) => {
+        const rect = this.disclaimerDeclinedModal.getBoundingClientRect();
+        const isInDialog = (
+          rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+          rect.left <= e.clientX && e.clientX <= rect.left + rect.width
+        );
+        if (!isInDialog) {
+          this.closeDialog(this.disclaimerDeclinedModal);
+        }
+      });
     }
     if (this.footerDisclaimerBtn) {
       this.footerDisclaimerBtn.addEventListener("click", (e) => {
         e.preventDefault();
         this.openLegalDisclaimer(false);
       });
+    }
+  }
+
+  showDialog(dialog) {
+    if (!dialog) return;
+    if (!dialog.open) {
+      try {
+        dialog.showModal();
+      } catch (err) {
+        console.warn("showModal failed for dialog:", dialog.id, err);
+      }
+    }
+  }
+
+  closeDialog(dialog) {
+    if (!dialog) return;
+    if (dialog.open) {
+      try {
+        dialog.close();
+      } catch (err) {
+        console.warn("close failed for dialog:", dialog.id, err);
+      }
     }
   }
 
@@ -106,7 +151,8 @@ export class DisclaimerController {
   }
 
   initLegalDisclaimer() {
-    const urlParams = new URLSearchParams(window.location.search);
+    const searchStr = (typeof window !== "undefined" && window.location?.search) || "";
+    const urlParams = new URLSearchParams(searchStr);
     const forceSplash = urlParams.get("splash") === "1" || urlParams.get("reset_terms") === "1";
 
     if (forceSplash) {
@@ -183,9 +229,7 @@ export class DisclaimerController {
     } else {
       this.setupReviewMode();
     }
-    if (!this.legalDisclaimerModal.open) {
-      this.legalDisclaimerModal.showModal();
-    }
+    this.showDialog(this.legalDisclaimerModal);
   }
 
   handleDisclaimerConsentToggle() {
@@ -224,9 +268,7 @@ export class DisclaimerController {
     }
 
     setTimeout(() => {
-      if (this.legalDisclaimerModal) {
-        this.legalDisclaimerModal.close();
-      }
+      this.closeDialog(this.legalDisclaimerModal);
       ipc.sendNotification(
         "CounterFin Console Ready",
         "Statutory compliance agreement acknowledged. All self-advocacy modules unlocked."

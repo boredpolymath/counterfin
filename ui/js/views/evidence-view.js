@@ -70,7 +70,7 @@ function renderEmptyEvidenceGallery() {
       </div>
       <div style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:4px;">No Evidence Artifacts Vaulted Yet</div>
       <div style="font-size:12.5px; color:#64748b; max-width:440px; margin:0 auto 16px auto;">Ingest dunning notices, collection letters, envelope postmarks, and audio files to secure cryptographic proof.</div>
-      <button class="btn-pill-primary btn-sm" id="emptyIngestEvidenceBtn" onclick="document.getElementById('ingestEvidenceBtn')?.click()">+ Ingest First Evidence File</button>
+      <button type="button" class="btn-pill-primary btn-sm btn-ingest-evidence-trigger" id="emptyIngestEvidenceBtn">+ Ingest First Evidence File</button>
     </div>
   `;
 }

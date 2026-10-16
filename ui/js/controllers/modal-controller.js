@@ -71,6 +71,42 @@ export class ModalController {
     this.profilePhone = document.getElementById("profilePhone");
   }
 
+  showDialog(dialog) {
+    if (!dialog) return;
+    if (!dialog.open) {
+      try {
+        dialog.showModal();
+      } catch (err) {
+        console.warn("showModal failed for dialog:", dialog.id, err);
+      }
+    }
+  }
+
+  closeDialog(dialog) {
+    if (!dialog) return;
+    if (dialog.open) {
+      try {
+        dialog.close();
+      } catch (err) {
+        console.warn("close failed for dialog:", dialog.id, err);
+      }
+    }
+  }
+
+  enableBackdropDismiss(dialog) {
+    if (!dialog) return;
+    dialog.addEventListener("click", (e) => {
+      const rect = dialog.getBoundingClientRect();
+      const isInDialog = (
+        rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+        rect.left <= e.clientX && e.clientX <= rect.left + rect.width
+      );
+      if (!isInDialog) {
+        this.closeDialog(dialog);
+      }
+    });
+  }
+
   bindEvents() {
     this.bindCallScriptEvents();
     this.bindDisputeGuidesEvents();
@@ -78,29 +114,38 @@ export class ModalController {
     this.bindNewDisputeEvents();
     this.bindQuickLogEvents();
     this.bindEvidenceEvents();
+
+    [
+      this.callScriptModal,
+      this.disputeGuidesModal,
+      this.newDisputeModal,
+      this.quickLogModal,
+      this.ingestEvidenceModal,
+      this.userProfileModal
+    ].forEach(m => this.enableBackdropDismiss(m));
   }
 
   bindCallScriptEvents() {
     if (this.callScriptBtn) {
-      this.callScriptBtn.addEventListener("click", () => this.callScriptModal?.showModal());
+      this.callScriptBtn.addEventListener("click", () => this.showDialog(this.callScriptModal));
     }
     if (this.closeCallScriptModal) {
-      this.closeCallScriptModal.addEventListener("click", () => this.callScriptModal?.close());
+      this.closeCallScriptModal.addEventListener("click", () => this.closeDialog(this.callScriptModal));
     }
     if (this.dismissCallScriptBtn) {
-      this.dismissCallScriptBtn.addEventListener("click", () => this.callScriptModal?.close());
+      this.dismissCallScriptBtn.addEventListener("click", () => this.closeDialog(this.callScriptModal));
     }
   }
 
   bindDisputeGuidesEvents() {
     if (this.disputeGuidesBtn) {
-      this.disputeGuidesBtn.addEventListener("click", () => this.disputeGuidesModal?.showModal());
+      this.disputeGuidesBtn.addEventListener("click", () => this.showDialog(this.disputeGuidesModal));
     }
     if (this.closeDisputeGuidesModal) {
-      this.closeDisputeGuidesModal.addEventListener("click", () => this.disputeGuidesModal?.close());
+      this.closeDisputeGuidesModal.addEventListener("click", () => this.closeDialog(this.disputeGuidesModal));
     }
     if (this.dismissDisputeGuidesBtn) {
-      this.dismissDisputeGuidesBtn.addEventListener("click", () => this.disputeGuidesModal?.close());
+      this.dismissDisputeGuidesBtn.addEventListener("click", () => this.closeDialog(this.disputeGuidesModal));
     }
   }
 
@@ -109,10 +154,10 @@ export class ModalController {
       this.sidebarUserProfileBtn.addEventListener("click", () => this.openUserProfileModal());
     }
     if (this.closeUserProfileModal) {
-      this.closeUserProfileModal.addEventListener("click", () => this.userProfileModal?.close());
+      this.closeUserProfileModal.addEventListener("click", () => this.closeDialog(this.userProfileModal));
     }
     if (this.cancelUserProfileBtn) {
-      this.cancelUserProfileBtn.addEventListener("click", () => this.userProfileModal?.close());
+      this.cancelUserProfileBtn.addEventListener("click", () => this.closeDialog(this.userProfileModal));
     }
     if (this.userProfileForm) {
       this.userProfileForm.addEventListener("submit", (e) => {
@@ -125,12 +170,12 @@ export class ModalController {
           zip: this.profileZip?.value,
           phone: this.profilePhone?.value
         });
-        if (this.userProfileModal) this.userProfileModal.close();
+        this.closeDialog(this.userProfileModal);
       });
     }
     if (this.loadDemoDataModalBtn) {
       this.loadDemoDataModalBtn.addEventListener("click", async () => {
-        if (this.userProfileModal) this.userProfileModal.close();
+        this.closeDialog(this.userProfileModal);
         await this.app.loadDemoData();
       });
     }
@@ -143,7 +188,7 @@ export class ModalController {
           this.wipeAllDataModalBtn.style.background = "";
           this.wipeAllDataModalBtn.style.color = "#e11d48";
           if (wipeConfirmTimeout) clearTimeout(wipeConfirmTimeout);
-          if (this.userProfileModal) this.userProfileModal.close();
+          this.closeDialog(this.userProfileModal);
           await this.app.clearAllData();
         } else {
           this.wipeAllDataModalBtn.dataset.confirming = "true";
@@ -168,10 +213,10 @@ export class ModalController {
       this.newCaseBtn.addEventListener("click", () => this.openNewDisputeModal());
     }
     if (this.closeNewDisputeModal) {
-      this.closeNewDisputeModal.addEventListener("click", () => this.newDisputeModal?.close());
+      this.closeNewDisputeModal.addEventListener("click", () => this.closeDialog(this.newDisputeModal));
     }
     if (this.cancelNewDisputeBtn) {
-      this.cancelNewDisputeBtn.addEventListener("click", () => this.newDisputeModal?.close());
+      this.cancelNewDisputeBtn.addEventListener("click", () => this.closeDialog(this.newDisputeModal));
     }
     if (this.newDisputeForm) {
       this.newDisputeForm.addEventListener("submit", (e) => this.handleNewDisputeSubmit(e));
@@ -180,10 +225,10 @@ export class ModalController {
 
   bindQuickLogEvents() {
     if (this.closeQuickLogModal) {
-      this.closeQuickLogModal.addEventListener("click", () => this.quickLogModal?.close());
+      this.closeQuickLogModal.addEventListener("click", () => this.closeDialog(this.quickLogModal));
     }
     if (this.cancelQuickLogBtn) {
-      this.cancelQuickLogBtn.addEventListener("click", () => this.quickLogModal?.close());
+      this.cancelQuickLogBtn.addEventListener("click", () => this.closeDialog(this.quickLogModal));
     }
     if (this.quickLogForm) {
       this.quickLogForm.addEventListener("submit", (e) => this.handleQuickLogSubmit(e));
@@ -192,10 +237,10 @@ export class ModalController {
 
   bindEvidenceEvents() {
     if (this.closeIngestEvidenceModal) {
-      this.closeIngestEvidenceModal.addEventListener("click", () => this.ingestEvidenceModal?.close());
+      this.closeIngestEvidenceModal.addEventListener("click", () => this.closeDialog(this.ingestEvidenceModal));
     }
     if (this.cancelIngestEvidenceBtn) {
-      this.cancelIngestEvidenceBtn.addEventListener("click", () => this.ingestEvidenceModal?.close());
+      this.cancelIngestEvidenceBtn.addEventListener("click", () => this.closeDialog(this.ingestEvidenceModal));
     }
     if (this.evidenceFileInput) {
       this.evidenceFileInput.addEventListener("change", (e) => this.handleEvidenceFileChange(e));
@@ -213,7 +258,7 @@ export class ModalController {
     if (this.profileState) this.profileState.value = this.app.user.state || "NY";
     if (this.profileZip) this.profileZip.value = this.app.user.zip || "";
     if (this.profilePhone) this.profilePhone.value = this.app.user.phone || "";
-    this.userProfileModal.showModal();
+    this.showDialog(this.userProfileModal);
   }
 
   openNewDisputeModal() {
@@ -230,7 +275,7 @@ export class ModalController {
     if (serviceEl && !serviceEl.value) {
       serviceEl.value = new Date().toISOString().slice(0, 10);
     }
-    this.newDisputeModal.showModal();
+    this.showDialog(this.newDisputeModal);
   }
 
   openQuickLogModal(caseId = null) {
@@ -252,7 +297,7 @@ export class ModalController {
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       this.logTimestamp.value = now.toISOString().slice(0, 16);
     }
-    this.quickLogModal.showModal();
+    this.showDialog(this.quickLogModal);
   }
 
   openIngestEvidenceModal(caseId = null) {
@@ -272,7 +317,7 @@ export class ModalController {
     if (this.evidencePreviewStrip) this.evidencePreviewStrip.style.display = "none";
     if (this.evidenceFileInput) this.evidenceFileInput.value = "";
     this._pendingEvidence = null;
-    this.ingestEvidenceModal.showModal();
+    this.showDialog(this.ingestEvidenceModal);
   }
 
   getDebtMeta(debtType) {
@@ -349,11 +394,11 @@ export class ModalController {
   handleNewDisputeSubmit(e) {
     e.preventDefault();
     const debtType = document.getElementById("newDebtType")?.value || "credit_card";
-    const provider = document.getElementById("newProviderName").value;
-    const agency = document.getElementById("newAgencyName").value;
-    const balance = parseFloat(document.getElementById("newBalance").value) || 0;
-    const category = document.getElementById("newCategory").value;
-    const accountNum = document.getElementById("newAccountNumber").value || `ACC-${Date.now().toString().slice(-4)}`;
+    const provider = document.getElementById("newProviderName")?.value || "Creditor";
+    const agency = document.getElementById("newAgencyName")?.value || "Collection Agency";
+    const balance = parseFloat(document.getElementById("newBalance")?.value) || 0;
+    const category = document.getElementById("newCategory")?.value || "General Consumer Debt";
+    const accountNum = document.getElementById("newAccountNumber")?.value || `ACC-${Date.now().toString().slice(-4)}`;
     const stateEl = document.getElementById("newState");
     const statuteState = stateEl?.value || this.app.user.state || "NY";
     const noticeDateEl = document.getElementById("newNoticeDate");
@@ -368,8 +413,8 @@ export class ModalController {
     this.app.activeCaseId = newCase.id;
     this.app.expandedCaseIds = new Set([newCase.id]);
     if (this.app.sidebarBadgeCount) this.app.sidebarBadgeCount.textContent = this.app.cases.length;
-    this.newDisputeModal.close();
-    this.newDisputeForm.reset();
+    this.closeDialog(this.newDisputeModal);
+    if (this.newDisputeForm) this.newDisputeForm.reset();
     ipc.sendNotification("New FDCPA Dispute Protected", `Dispute initiated for ${provider} ($${balance.toFixed(2)}).`);
     this.app.render();
   }
@@ -429,12 +474,19 @@ export class ModalController {
       id: interactionId, caseId,
       date: new Date(timestampVal).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       timestamp: new Date(timestampVal).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
-      channel, direction, agentName: contactName, contactNumber: phone || "Unknown",
-      duration: `${Math.round(duration / 60)} mins`, notes, recorded: false,
+      channel, direction,
+      agentName: contactName,
+      contactName,
+      contactNumber: phone || "Unknown",
+      durationSec: duration,
+      duration: `${Math.round(duration / 60)} mins`,
+      notes,
+      summary: notes,
+      recorded: false,
       violations: manualViolations.map(v => ({ type: v.violation_type, citation: v.citation, title: v.title, damages: v.damages }))
     });
 
-    if (this.quickLogModal) this.quickLogModal.close();
+    this.closeDialog(this.quickLogModal);
     if (this.quickLogForm) this.quickLogForm.reset();
     ipc.sendNotification("Collector Interaction Logged", `Recorded ${direction.toLowerCase()} ${channel.toLowerCase()} from ${contactName}. ${manualViolations.length} statutory infractions captured.`);
     this.app.render();
@@ -487,7 +539,7 @@ export class ModalController {
     }
 
     this.app.evidence.unshift(newEvidence);
-    if (this.ingestEvidenceModal) this.ingestEvidenceModal.close();
+    this.closeDialog(this.ingestEvidenceModal);
     if (this.ingestEvidenceForm) this.ingestEvidenceForm.reset();
     this._pendingEvidence = null;
 

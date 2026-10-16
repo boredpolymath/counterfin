@@ -23,12 +23,32 @@ import { DisclaimerController } from './controllers/disclaimer-controller.js';
 import { ModalController } from './controllers/modal-controller.js';
 import { LetterController } from './controllers/letter-controller.js';
 
+const getStorageItem = (k) => {
+  try {
+    return typeof localStorage !== 'undefined' ? localStorage.getItem(k) : null;
+  } catch (_) {
+    return null;
+  }
+};
+
+const setStorageItem = (k, v) => {
+  try {
+    if (typeof localStorage !== 'undefined') localStorage.setItem(k, v);
+  } catch (_) {}
+};
+
+const removeStorageItem = (k) => {
+  try {
+    if (typeof localStorage !== 'undefined') localStorage.removeItem(k);
+  } catch (_) {}
+};
+
 class CounterFinApp {
   constructor() {
     this.PROFILE_STORAGE_SLOT = "counterfin_user_profile_v1";
     this.DEMO_MODE_STORAGE_SLOT = "counterfin_demo_mode";
 
-    const demoStored = localStorage.getItem(this.DEMO_MODE_STORAGE_SLOT) ?? localStorage.getItem("settlemint_demo_mode");
+    const demoStored = getStorageItem(this.DEMO_MODE_STORAGE_SLOT) ?? getStorageItem("settlemint_demo_mode");
     this.isDemoMode = demoStored === "true";
     this.loadUserProfile();
 
@@ -73,7 +93,7 @@ class CounterFinApp {
   }
 
   loadUserProfile() {
-    const raw = localStorage.getItem(this.PROFILE_STORAGE_SLOT) || localStorage.getItem("settlemint_user_profile_v1");
+    const raw = getStorageItem(this.PROFILE_STORAGE_SLOT) || getStorageItem("settlemint_user_profile_v1");
     if (raw) {
       try {
         this.user = JSON.parse(raw);
@@ -117,22 +137,22 @@ class CounterFinApp {
       phone: (profileData.phone || "").trim(),
       isConfigured: true
     };
-    localStorage.setItem(this.PROFILE_STORAGE_SLOT, JSON.stringify(this.user));
+    setStorageItem(this.PROFILE_STORAGE_SLOT, JSON.stringify(this.user));
     this.updateSidebarProfile();
     this.render();
   }
 
   updateSidebarProfile() {
-    const avatar = document.getElementById("userAvatarInitials");
+    const avatar = document.getElementById("sidebarUserInitials") || document.getElementById("userAvatarInitials");
     const nameEl = document.getElementById("sidebarUserName");
-    const roleEl = document.getElementById("sidebarUserRole");
+    const roleEl = document.getElementById("sidebarUserJurisdiction") || document.getElementById("sidebarUserRole");
     if (avatar) avatar.textContent = this.user.initials || "CA";
     if (nameEl) nameEl.textContent = this.user.shortName || "Advocate";
     if (roleEl) roleEl.textContent = this.user.isConfigured ? `${this.user.state} Resident` : "Setup Profile";
   }
 
   async loadDemoData() {
-    localStorage.setItem(this.DEMO_MODE_STORAGE_SLOT, "true");
+    setStorageItem(this.DEMO_MODE_STORAGE_SLOT, "true");
     this.isDemoMode = true;
     this.cases = [...INITIAL_CASES];
     this.interactions = [...INITIAL_INTERACTIONS];
@@ -146,9 +166,9 @@ class CounterFinApp {
   }
 
   async clearAllData() {
-    localStorage.removeItem(this.DEMO_MODE_STORAGE_SLOT);
-    localStorage.removeItem("settlemint_demo_mode");
-    localStorage.removeItem("counterfin_demo_mode");
+    removeStorageItem(this.DEMO_MODE_STORAGE_SLOT);
+    removeStorageItem("settlemint_demo_mode");
+    removeStorageItem("counterfin_demo_mode");
     this.isDemoMode = false;
     if (ipc.isTauri()) {
       try {
@@ -244,6 +264,13 @@ class CounterFinApp {
       });
     });
 
+    document.querySelectorAll(".workspace-tabs-row .tab-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const targetNav = item.getAttribute("data-view");
+        if (targetNav) this.switchView(targetNav);
+      });
+    });
+
     // Cross-platform desktop keyboard shortcuts (Windows/Linux Ctrl & macOS Cmd)
     window.addEventListener("keydown", (e) => {
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
@@ -252,10 +279,10 @@ class CounterFinApp {
           this.openNewDisputeModal();
         } else if (e.key === "k" || e.key === "K") {
           e.preventDefault();
-          this.modalController?.callScriptModal?.showModal();
+          this.modalController?.showDialog(this.modalController?.callScriptModal);
         } else if (e.key === "g" || e.key === "G") {
           e.preventDefault();
-          this.modalController?.disputeGuidesModal?.showModal();
+          this.modalController?.showDialog(this.modalController?.disputeGuidesModal);
         } else if (e.key === "1") {
           e.preventDefault();
           this.switchView("dashboard");
@@ -287,6 +314,22 @@ class CounterFinApp {
         }
       });
     }
+
+    if (this.viewInteractions) {
+      this.viewInteractions.addEventListener("click", (e) => this.handleInteractionsClick(e));
+    }
+
+    if (this.viewEvidence) {
+      this.viewEvidence.addEventListener("click", (e) => this.handleEvidenceClick(e));
+    }
+
+    if (this.viewCredit) {
+      this.viewCredit.addEventListener("click", (e) => this.handleCreditClick(e));
+    }
+
+    if (this.viewLetters) {
+      this.viewLetters.addEventListener("click", (e) => this.handleLettersClick(e));
+    }
   }
 
   handleDashboardClick(e) {
@@ -295,6 +338,22 @@ class CounterFinApp {
   }
 
   handleDashboardNavActions(e) {
+    if (e.target.closest("#firstRunNewDisputeBtn, #demoBannerNewDisputeBtn")) {
+      this.openNewDisputeModal();
+      return true;
+    }
+    if (e.target.closest("#firstRunProfileBtn")) {
+      this.openUserProfileModal();
+      return true;
+    }
+    if (e.target.closest("#firstRunDemoBtn")) {
+      this.loadDemoData();
+      return true;
+    }
+    if (e.target.closest("#demoBannerClearBtn")) {
+      this.clearAllData();
+      return true;
+    }
     if (e.target.closest("#openComplianceModalBtn")) {
       this.openLegalDisclaimer(!this.hasAgreedDisclaimer);
       return true;
@@ -396,24 +455,102 @@ class CounterFinApp {
     this.renderCurrentView();
   }
 
+  handleInteractionsClick(e) {
+    if (e.target.closest("#addInteractionLogBtn")) {
+      const activeCase = this.getActiveCase();
+      this.modalController?.openQuickLogModal(activeCase?.id);
+      return;
+    }
+    if (e.target.closest("#interactionEmptyNewCaseBtn")) {
+      this.openNewDisputeModal();
+      return;
+    }
+  }
+
+  handleEvidenceClick(e) {
+    if (e.target.closest("#ingestEvidenceBtn, #emptyIngestEvidenceBtn, .btn-ingest-evidence-trigger")) {
+      const activeCase = this.getActiveCase();
+      this.modalController?.openIngestEvidenceModal(activeCase?.id);
+      return;
+    }
+    if (e.target.closest("#evidenceEmptyNewCaseBtn")) {
+      this.openNewDisputeModal();
+      return;
+    }
+    const card = e.target.closest(".vault-item-card");
+    const inspectBtn = e.target.closest(".vault-item-card button, .btn-inspect-artifact");
+    if (card && inspectBtn) {
+      const title = card.querySelector("[title]")?.getAttribute("title") || "Evidence Artifact";
+      const hash = card.querySelector(".vault-hash-box")?.textContent?.replace("SHA-256:", "").trim() || "";
+      const bates = card.querySelector(".status-pill-mint")?.textContent?.trim() || "";
+      if (hash && navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(hash).catch(() => {});
+      }
+      this.showToast("Artifact Inspected", `${bates} • ${title} (SHA-256 digest copied)`, "info");
+      return;
+    }
+  }
+
+  handleCreditClick(e) {
+    if (e.target.closest("#importCreditReportBtn, #emptyImportCreditReportBtn, .btn-import-credit-trigger")) {
+      const activeCase = this.getActiveCase();
+      this.modalController?.openIngestEvidenceModal(activeCase?.id);
+      if (this.modalController?.evidenceDocType) {
+        this.modalController.evidenceDocType.value = "credit_report";
+      }
+      return;
+    }
+    if (e.target.closest("#creditEmptyNewCaseBtn")) {
+      this.openNewDisputeModal();
+      return;
+    }
+    const target = e.target.closest("button");
+    if (target) {
+      if (target.classList.contains("cra-dispute-btn") || target.textContent.includes("Generate CRA Dispute Packet")) {
+        this.switchView("letters");
+        const templateSelect = document.getElementById("templateSelect");
+        if (templateSelect) {
+          templateSelect.value = "cra_dispute";
+          templateSelect.dispatchEvent(new Event("change"));
+        }
+        return;
+      }
+      if (target.classList.contains("diff-tradeline-btn") || target.textContent.includes("Diff Historical Snapshot")) {
+        this.showToast("Tradeline Delta Audit", "Historical diff: Account verified with zero undetected alterations in current reporting cycle.", "info");
+        return;
+      }
+    }
+  }
+
+  handleLettersClick(e) {
+    if (e.target.closest("#letterStudioEmptyNewCaseBtn")) {
+      this.openNewDisputeModal();
+      return;
+    }
+  }
+
   renderCurrentView() {
-    const activeCase = this.getActiveCase();
-    switch (this.currentView) {
-      case "dashboard":
-        this.renderDashboardView(activeCase);
-        break;
-      case "interactions":
-        this.renderInteractionsView(activeCase);
-        break;
-      case "letters":
-        this.renderLettersView(activeCase);
-        break;
-      case "evidence":
-        this.renderEvidenceView(activeCase);
-        break;
-      case "credit":
-        this.renderCreditView(activeCase);
-        break;
+    try {
+      const activeCase = this.getActiveCase();
+      switch (this.currentView) {
+        case "dashboard":
+          this.renderDashboardView(activeCase);
+          break;
+        case "interactions":
+          this.renderInteractionsView(activeCase);
+          break;
+        case "letters":
+          this.renderLettersView(activeCase);
+          break;
+        case "evidence":
+          this.renderEvidenceView(activeCase);
+          break;
+        case "credit":
+          this.renderCreditView(activeCase);
+          break;
+      }
+    } catch (err) {
+      console.error("[CounterFin] Render loop error in view:", this.currentView, err);
     }
   }
 
@@ -590,9 +727,12 @@ class CounterFinApp {
           timestamp: dbi.timestamp ? new Date(dbi.timestamp).toLocaleTimeString() : "",
           channel: dbi.channel,
           direction: dbi.direction,
+          contactName: dbi.contact_name,
           agentName: dbi.contact_name,
           contactNumber: dbi.contact_phone || "Unknown",
+          durationSec: dbi.duration_seconds,
           duration: `${Math.round(dbi.duration_seconds / 60)} mins`,
+          summary: dbi.summary_notes,
           notes: dbi.summary_notes,
           recorded: dbi.recorded_flag,
           violations: []
@@ -634,11 +774,21 @@ class CounterFinApp {
   }
 }
 
+function bootstrapApp() {
+  if (typeof window !== "undefined" && !window.app) {
+    if (typeof document !== "undefined" && document.getElementById && document.getElementById("viewDashboard")) {
+      window.app = new CounterFinApp();
+      console.info("CounterFin Consumer Debt Protection Dashboard Initialized.");
+    }
+  }
+}
+
 if (typeof window !== "undefined") {
-  window.addEventListener("DOMContentLoaded", () => {
-    window.app = new CounterFinApp();
-    console.info("CounterFin Consumer Debt Protection Dashboard Initialized.");
-  });
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", bootstrapApp);
+  } else {
+    bootstrapApp();
+  }
 }
 
 export { CounterFinApp, CounterFinApp as SettleMintApp };

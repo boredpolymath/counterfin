@@ -29,15 +29,49 @@ export class PatchController {
     this.applyVerifiedPatchBtn = document.getElementById("applyVerifiedPatchBtn");
   }
 
+  showDialog(dialog) {
+    if (!dialog) return;
+    if (!dialog.open) {
+      try {
+        dialog.showModal();
+      } catch (err) {
+        console.warn("showModal failed for dialog:", dialog.id, err);
+      }
+    }
+  }
+
+  closeDialog(dialog) {
+    if (!dialog) return;
+    if (dialog.open) {
+      try {
+        dialog.close();
+      } catch (err) {
+        console.warn("close failed for dialog:", dialog.id, err);
+      }
+    }
+  }
+
   bindEvents() {
     if (this.openStatutoryPatchesModalBtn) {
       this.openStatutoryPatchesModalBtn.addEventListener("click", () => this.openStatutoryPatchesModal());
     }
     if (this.closeStatutoryPatchModal) {
-      this.closeStatutoryPatchModal.addEventListener("click", () => this.statutoryPatchModal?.close());
+      this.closeStatutoryPatchModal.addEventListener("click", () => this.closeDialog(this.statutoryPatchModal));
     }
     if (this.dismissStatutoryPatchModalBtn) {
-      this.dismissStatutoryPatchModalBtn.addEventListener("click", () => this.statutoryPatchModal?.close());
+      this.dismissStatutoryPatchModalBtn.addEventListener("click", () => this.closeDialog(this.statutoryPatchModal));
+    }
+    if (this.statutoryPatchModal) {
+      this.statutoryPatchModal.addEventListener("click", (e) => {
+        const rect = this.statutoryPatchModal.getBoundingClientRect();
+        const isInDialog = (
+          rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+          rect.left <= e.clientX && e.clientX <= rect.left + rect.width
+        );
+        if (!isInDialog) {
+          this.closeDialog(this.statutoryPatchModal);
+        }
+      });
     }
     if (this.statutoryPatchFileInput) {
       this.statutoryPatchFileInput.addEventListener("change", (e) => {
@@ -59,7 +93,7 @@ export class PatchController {
 
   async openStatutoryPatchesModal() {
     if (!this.statutoryPatchModal) return;
-    this.statutoryPatchModal.showModal();
+    this.showDialog(this.statutoryPatchModal);
     if (this.patchVerificationBox) this.patchVerificationBox.style.display = "none";
     this.pendingPatchJson = null;
     await this.refreshActivePatchesList();

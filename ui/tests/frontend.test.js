@@ -7,7 +7,10 @@ if (typeof globalThis.window === 'undefined') {
   globalThis.window = {
     addEventListener: () => {},
     removeEventListener: () => {},
+    location: { search: '', reload: () => {} },
   };
+} else if (!globalThis.window.location) {
+  globalThis.window.location = { search: '', reload: () => {} };
 }
 if (typeof globalThis.document === 'undefined') {
   globalThis.document = {
@@ -15,6 +18,15 @@ if (typeof globalThis.document === 'undefined') {
     querySelector: () => null,
     querySelectorAll: () => [],
     addEventListener: () => {},
+  };
+}
+if (typeof globalThis.localStorage === 'undefined') {
+  const store = {};
+  globalThis.localStorage = {
+    getItem: (k) => store[k] || null,
+    setItem: (k, v) => { store[k] = String(v); },
+    removeItem: (k) => { delete store[k]; },
+    clear: () => { Object.keys(store).forEach(k => { delete store[k]; }); }
   };
 }
 
@@ -672,6 +684,141 @@ test('CounterFin Letter Studio: renderLetterPaperContent renders all dispute tem
     assert.ok(html.includes(activeCase.collectionAgency), `Template ${t} must include collector agency`);
     assert.ok(html.includes('TRACKING NO:'), `Template ${t} must render certified mail tracking row`);
   }
+});
+
+test('UI Rendering Loop & Event Delegation: container delegation handles view actions without silent failure', async () => {
+  const { CounterFinApp } = await import('../js/app.js');
+  const app = new CounterFinApp();
+
+  let newDisputeOpened = false;
+  let userProfileOpened = false;
+  let quickLogOpened = false;
+  let ingestOpened = false;
+
+  app.openNewDisputeModal = () => { newDisputeOpened = true; };
+  app.openUserProfileModal = () => { userProfileOpened = true; };
+  app.modalController = {
+    openQuickLogModal: () => { quickLogOpened = true; },
+    openIngestEvidenceModal: () => { ingestOpened = true; }
+  };
+
+  // Test dashboard navigation actions via delegation
+  const fakeEventNewDispute = {
+    target: {
+      closest: (sel) => sel.includes('#firstRunNewDisputeBtn') ? {} : null
+    }
+  };
+  const handledDispute = app.handleDashboardNavActions(fakeEventNewDispute);
+  assert.strictEqual(handledDispute, true, 'handleDashboardNavActions should handle new dispute');
+  assert.strictEqual(newDisputeOpened, true, 'New dispute modal should be opened');
+
+  const fakeEventProfile = {
+    target: {
+      closest: (sel) => sel.includes('#firstRunProfileBtn') ? {} : null
+    }
+  };
+  const handledProfile = app.handleDashboardNavActions(fakeEventProfile);
+  assert.strictEqual(handledProfile, true, 'handleDashboardNavActions should handle profile setup');
+  assert.strictEqual(userProfileOpened, true, 'User profile modal should be opened');
+
+  // Test interactions view delegation
+  const fakeEventAddLog = {
+    target: {
+      closest: (sel) => sel === '#addInteractionLogBtn' ? {} : null
+    }
+  };
+  app.handleInteractionsClick(fakeEventAddLog);
+  assert.strictEqual(quickLogOpened, true, 'Interactions click delegation should trigger quick log');
+
+  // Test evidence view delegation
+  const fakeEventIngest = {
+    target: {
+      closest: (sel) => sel.includes('#emptyIngestEvidenceBtn') ? {} : null
+    }
+  };
+  app.handleEvidenceClick(fakeEventIngest);
+  assert.strictEqual(ingestOpened, true, 'Evidence click delegation should trigger evidence ingestion');
+});
+
+test('State Synchronization: interaction state supports both schemas without missing values', async () => {
+  const { renderInteractions } = await import('../js/views/interaction-view.js');
+  const activeCase = INITIAL_CASES[0];
+
+  const interactionsWithLegacyAndNewKeys = [
+    {
+      id: "int-test-1",
+      caseId: activeCase.id,
+      timestamp: "10:00 AM",
+      direction: "Incoming",
+      channel: "Phone",
+      agentName: "Agent Smith #100", // legacy key
+      duration: "3 mins",            // legacy key
+      notes: "Collector called regarding credit card debt.", // legacy key
+      violations: []
+    },
+    {
+      id: "int-test-2",
+      caseId: activeCase.id,
+      timestamp: "11:00 AM",
+      direction: "Outgoing",
+      channel: "Mail",
+      contactName: "Compliance Office", // standard key
+      durationSec: 180,                 // standard key
+      summary: "Sent formal verification request.", // standard key
+      violations: []
+    }
+  ];
+
+  const html = renderInteractions(interactionsWithLegacyAndNewKeys, activeCase);
+  assert.ok(html.includes("Agent Smith #100"), "Rendered HTML must contain legacy agentName");
+  assert.ok(html.includes("Compliance Office"), "Rendered HTML must contain standard contactName");
+  assert.ok(html.includes("Collector called regarding credit card debt."), "Rendered HTML must contain legacy notes");
+  assert.ok(html.includes("Sent formal verification request."), "Rendered HTML must contain standard summary");
+});
+
+test('Safe Dialog Handling: showDialog and closeDialog do not throw when modal state is inverted', async () => {
+  const { ModalController } = await import('../js/controllers/modal-controller.js');
+  const mockApp = { cases: [], user: { state: 'NY' } };
+  const controller = new ModalController(mockApp);
+
+  let openCount = 0;
+  let closeCount = 0;
+  const mockDialog = {
+    id: "testModal",
+    open: false,
+    showModal() {
+      if (this.open) throw new Error("Already open");
+      this.open = true;
+      openCount++;
+    },
+    close() {
+      if (!this.open) throw new Error("Already closed");
+      this.open = false;
+      closeCount++;
+    }
+  };
+
+  // Safe show
+  controller.showDialog(mockDialog);
+  assert.strictEqual(mockDialog.open, true);
+  assert.strictEqual(openCount, 1);
+
+  // Calling showDialog when already open must not throw
+  assert.doesNotThrow(() => {
+    controller.showDialog(mockDialog);
+  });
+  assert.strictEqual(openCount, 1);
+
+  // Safe close
+  controller.closeDialog(mockDialog);
+  assert.strictEqual(mockDialog.open, false);
+  assert.strictEqual(closeCount, 1);
+
+  // Calling closeDialog when already closed must not throw
+  assert.doesNotThrow(() => {
+    controller.closeDialog(mockDialog);
+  });
+  assert.strictEqual(closeCount, 1);
 });
 
 

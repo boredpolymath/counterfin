@@ -130,20 +130,21 @@ function getCaseIconAndBadge(c) {
 function getStatusPillAndTimeline(c) {
   let statusPillClass = "status-pill-neutral";
   let statusDotClass = "status-dot-amber";
-  if (c.statusBadge.includes("Waiting")) {
+  const badge = c?.statusBadge || "";
+  if (badge.includes("Waiting")) {
     statusPillClass = "status-pill-amber";
     statusDotClass = "status-dot-amber";
-  } else if (c.statusBadge.includes("Stop-Contact")) {
+  } else if (badge.includes("Stop-Contact")) {
     statusPillClass = "status-pill-mint";
     statusDotClass = "status-dot-mint";
   }
 
-  let timelinePhrase = c.collectionStatus;
+  let timelinePhrase = c?.collectionStatus || "Active";
   let timelineColor = "#64748b";
-  if (c.statutoryDaysRemaining > 0) {
+  if ((c?.statutoryDaysRemaining ?? 0) > 0) {
     timelinePhrase = `${c.statutoryDaysRemaining} days to validate`;
     timelineColor = "var(--color-amber)";
-  } else if (c.collectionStatus.includes("Paused")) {
+  } else if ((c?.collectionStatus || "").includes("Paused")) {
     timelineColor = "var(--color-primary)";
   }
 
