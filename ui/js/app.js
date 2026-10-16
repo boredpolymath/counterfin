@@ -204,16 +204,34 @@ class CounterFinApp {
       ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>'
       : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
 
-    toast.innerHTML = `
-      <div class="counterfin-toast-icon">${iconSvg}</div>
-      <div class="counterfin-toast-content">
-        <div class="counterfin-toast-title">${title || 'Notice'}</div>
-        <div class="counterfin-toast-msg">${message || ''}</div>
-      </div>
-      <button type="button" class="counterfin-toast-close" aria-label="Close notification">✕</button>
-    `;
+    const iconDiv = document.createElement("div");
+    iconDiv.className = "counterfin-toast-icon";
+    iconDiv.innerHTML = iconSvg;
 
-    const closeBtn = toast.querySelector(".counterfin-toast-close");
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "counterfin-toast-content";
+
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "counterfin-toast-title";
+    titleDiv.textContent = title || "Notice";
+
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "counterfin-toast-msg";
+    msgDiv.textContent = message || "";
+
+    contentDiv.appendChild(titleDiv);
+    contentDiv.appendChild(msgDiv);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "counterfin-toast-close";
+    closeBtn.setAttribute("aria-label", "Close notification");
+    closeBtn.textContent = "✕";
+
+    toast.appendChild(iconDiv);
+    toast.appendChild(contentDiv);
+    toast.appendChild(closeBtn);
+
     const removeToast = () => {
       toast.classList.add("toast-hiding");
       setTimeout(() => {
@@ -221,7 +239,7 @@ class CounterFinApp {
       }, 300);
     };
 
-    closeBtn?.addEventListener("click", removeToast);
+    closeBtn.addEventListener("click", removeToast);
     container.appendChild(toast);
     setTimeout(removeToast, 4000);
   }
