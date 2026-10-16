@@ -13,9 +13,8 @@
   <meta http-equiv="Cross-Origin-Resource-Policy" content="same-origin">
   <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="DENY">
-  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://boredpolymath.github.io; connect-src 'self'; frame-ancestors 'none';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://boredpolymath.github.io; connect-src 'self';">
 
   <!-- Crawler & LLM Directives -->
   <meta name="robots" content="index, follow">
@@ -40,6 +39,11 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="apple-touch-icon" href="assets/images/app-icon.png">
+
+  <!-- Typography: Outfit, Plus Jakarta Sans, JetBrains Mono (Non-blocking preconnect) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
@@ -115,8 +119,8 @@
   <!-- Header / Navigation Bar -->
   <header class="navbar" id="siteNavbar">
     <div class="container nav-wrapper">
-      <a href="#hero" class="brand-link" id="brandHomeLink" aria-label="SettleMint Home">
-        <img src="assets/images/app-icon.png" alt="SettleMint App Icon" class="brand-logo-img">
+      <a href="#hero" class="brand-link" id="brandHomeLink" aria-label="SettleMint">
+        <img src="assets/images/app-icon.png" alt="SettleMint App Icon" class="brand-logo-img" width="32" height="32">
         <span>SettleMint</span>
         <span class="brand-badge">v0.1.2</span>
       </a>
@@ -273,7 +277,7 @@
 
             <!-- Active Screen Viewer -->
             <div class="showcase-screen" id="showcaseScreen">
-              <img src="assets/images/dashboard.png" alt="SettleMint Active Dashboard Screenshot" id="showcaseImage">
+              <img src="assets/images/dashboard.png" alt="SettleMint Active Dashboard Screenshot" id="showcaseImage" width="1920" height="1080" fetchpriority="high">
               <div class="screen-zoom-hint">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
                 <span>Click to Expand Fullscreen</span>
@@ -806,12 +810,12 @@
             </p>
             <div class="studio-badge">
               <span>An Open-Source Creation by</span>
-              <img src="assets/images/bored-polymath-logo.png" alt="Bored Polymath Studios" class="studio-logo">
+              <img src="assets/images/bored-polymath-logo.png" alt="Bored Polymath Studios" class="studio-logo" width="160" height="124">
             </div>
           </div>
 
           <div>
-            <h4 class="footer-col-title">Defense Engines</h4>
+            <h3 class="footer-col-title">Defense Engines</h3>
             <ul class="footer-links">
               <li><a href="#pillars">FDCPA Violation Engine</a></li>
               <li><a href="#simulator">50-State SOL Engine</a></li>
@@ -822,7 +826,7 @@
           </div>
 
           <div>
-            <h4 class="footer-col-title">Downloads &amp; Code</h4>
+            <h3 class="footer-col-title">Downloads &amp; Code</h3>
             <ul class="footer-links">
               <li><a href="https://github.com/boredpolymath/settlemint/releases/download/v0.1.2/SettleMint_0.1.2_aarch64.dmg">macOS Apple Silicon</a></li>
               <li><a href="https://github.com/boredpolymath/settlemint/releases/download/v0.1.2/SettleMint_0.1.2_x64-setup.exe">Windows Installer</a></li>
@@ -833,7 +837,7 @@
           </div>
 
           <div>
-            <h4 class="footer-col-title">Project &amp; Docs</h4>
+            <h3 class="footer-col-title">Project &amp; Docs</h3>
             <ul class="footer-links">
               <li><a href="https://github.com/boredpolymath/settlemint/blob/main/README.md">Documentation</a></li>
               <li><a href="https://github.com/boredpolymath/settlemint/blob/main/SECURITY.md">Security Policy</a></li>

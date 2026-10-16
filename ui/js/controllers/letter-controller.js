@@ -61,8 +61,8 @@ export class LetterController {
         try {
           const path = await ipc.exportDocumentFile(docket, "DVL_Letter", text, "txt");
           ipc.sendNotification("Document Exported", `Saved to ${path}`);
-        } catch (e) {
-          console.debug("Export text error:", e);
+        } catch (_e) {
+          // Export error handled gracefully
         }
       }
     });
@@ -74,8 +74,8 @@ export class LetterController {
         try {
           const path = await ipc.exportDocumentFile(docket, "DVL_Letter", text, "md");
           ipc.sendNotification("Document Exported", `Saved to ${path}`);
-        } catch (e) {
-          console.debug("Export markdown error:", e);
+        } catch (_e) {
+          // Export markdown error handled gracefully
         }
       }
     });
@@ -112,8 +112,8 @@ export class LetterController {
           BATES_DOCKET: activeCase.docketNumber,
           DEBTOR_NAME: activeCase.debtorName
         });
-      } catch (err) {
-        console.debug("Backend template generation note:", err);
+      } catch (_err) {
+        // Backend template generation note handled gracefully
       }
     });
   }

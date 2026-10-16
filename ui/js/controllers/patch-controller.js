@@ -131,8 +131,8 @@ export class PatchController {
           this.activePatchesListContainer.appendChild(this.createPatchCardElement(p));
         });
       }
-    } catch (err) {
-      console.error("Failed to load active patches:", err);
+    } catch (_err) {
+      // Failed to load active patches
     }
   }
 

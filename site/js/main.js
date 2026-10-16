@@ -34,19 +34,34 @@ function initOsDetection() {
     heroBtn.href = `${releaseBase}/SettleMint_0.1.2_aarch64.dmg`;
     if (heroBtnText) heroBtnText.textContent = 'Download for macOS (Apple Silicon)';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.1.2 • .dmg (6.4 MB) • macOS 11+';
-    if (heroBtnIcon) heroBtnIcon.innerHTML = `<path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 1.01-2.87-.96.04-2.15.65-2.82 1.43-.59.68-1.11 1.76-.97 2.8 1.07.08 2.19-.61 2.78-1.36z" fill="currentColor"/>`;
+    if (heroBtnIcon) {
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.setAttribute('d', 'M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 1.01-2.87-.96.04-2.15.65-2.82 1.43-.59.68-1.11 1.76-.97 2.8 1.07.08 2.19-.61 2.78-1.36z');
+      p.setAttribute('fill', 'currentColor');
+      heroBtnIcon.replaceChildren(p);
+    }
   } else if (platform.includes('win') || userAgent.includes('windows')) {
     // Windows
     heroBtn.href = `${releaseBase}/SettleMint_0.1.2_x64-setup.exe`;
     if (heroBtnText) heroBtnText.textContent = 'Download for Windows';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.1.2 • .exe (2.3 MB) • Windows 10/11';
-    if (heroBtnIcon) heroBtnIcon.innerHTML = `<path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.951-1.799" fill="currentColor"/>`;
+    if (heroBtnIcon) {
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.setAttribute('d', 'M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.951-1.799');
+      p.setAttribute('fill', 'currentColor');
+      heroBtnIcon.replaceChildren(p);
+    }
   } else if (platform.includes('linux') || userAgent.includes('linux')) {
     // Linux
     heroBtn.href = `${releaseBase}/SettleMint_0.1.2_amd64.AppImage`;
     if (heroBtnText) heroBtnText.textContent = 'Download for Linux (AppImage)';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.1.2 • .AppImage (78 MB) • x86_64';
-    if (heroBtnIcon) heroBtnIcon.innerHTML = `<path d="M12 2a10 10 0 0 0-10 10 10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2zm1 14.5v-5l4.5 2.5-4.5 2.5zm-2-2.5L6.5 11.5 11 9v5z" fill="currentColor"/>`;
+    if (heroBtnIcon) {
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.setAttribute('d', 'M12 2a10 10 0 0 0-10 10 10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2zm1 14.5v-5l4.5 2.5-4.5 2.5zm-2-2.5L6.5 11.5 11 9v5z');
+      p.setAttribute('fill', 'currentColor');
+      heroBtnIcon.replaceChildren(p);
+    }
   }
 }
 
@@ -61,33 +76,41 @@ function initShowcaseTabs() {
   const tabData = {
     dashboard: {
       src: 'assets/images/dashboard.png',
-      caption: '<strong>Live Statutory Dashboard:</strong> Real-time tracking of 30-day FDCPA dispute windows, 7-in-7 call violations, and accrued statutory damages.'
+      title: 'Live Statutory Dashboard:',
+      desc: 'Real-time tracking of 30-day FDCPA dispute windows, 7-in-7 call violations, and accrued statutory damages.'
     },
     letters: {
       src: 'assets/images/letters.png',
-      caption: '<strong>7 Automated Legal Dispute Generators:</strong> Context-aware statutory demand letter generation with live PDF & Markdown export.'
+      title: '7 Automated Legal Dispute Generators:',
+      desc: 'Context-aware statutory demand letter generation with live PDF & Markdown export.'
     },
     interactions: {
       src: 'assets/images/interactions.png',
-      caption: '<strong>Interaction & Violation Log:</strong> Precise tracking of phone calls, voicemails, and written notices under 12 CFR § 1006 Regulation F.'
+      title: 'Interaction & Violation Log:',
+      desc: 'Precise tracking of phone calls, voicemails, and written notices under 12 CFR § 1006 Regulation F.'
     },
     evidence: {
       src: 'assets/images/evidence.png',
-      caption: '<strong>NIST SHA-256 Evidence Vault:</strong> Cryptographic file integrity hashing with automated tamper detection and chain of custody.'
+      title: 'NIST SHA-256 Evidence Vault:',
+      desc: 'Cryptographic file integrity hashing with automated tamper detection and chain of custody.'
     },
     credit: {
       src: 'assets/images/credit.png',
-      caption: '<strong>Credit Bureau Audit (FCRA § 623):</strong> Direct CRA trade-line dispute engine for Experian, Equifax, and TransUnion records.'
+      title: 'Credit Bureau Audit (FCRA § 623):',
+      desc: 'Direct CRA trade-line dispute engine for Experian, Equifax, and TransUnion records.'
     },
     callScript: {
       src: 'assets/images/callScriptModal.png',
-      caption: '<strong>Real-Time Defense Scripts:</strong> Step-by-step interactive script cards during incoming phone calls to record violations and stop harassment.'
+      title: 'Real-Time Defense Scripts:',
+      desc: 'Step-by-step interactive script cards during incoming phone calls to record violations and stop harassment.'
     }
   };
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
+      tabs.forEach(t => {
+        t.classList.remove('active');
+      });
       tab.classList.add('active');
 
       const key = tab.getAttribute('data-tab');
@@ -95,7 +118,12 @@ function initShowcaseTabs() {
         screenImg.style.opacity = '0.3';
         setTimeout(() => {
           screenImg.src = tabData[key].src;
-          if (captionEl) captionEl.innerHTML = tabData[key].caption;
+          if (captionEl) {
+            captionEl.textContent = '';
+            const strongEl = document.createElement('strong');
+            strongEl.textContent = tabData[key].title;
+            captionEl.append(strongEl, ' ' + tabData[key].desc);
+          }
           screenImg.style.opacity = '1';
         }, 120);
       }
@@ -313,13 +341,14 @@ function initCopyButtons() {
   const copyBtns = document.querySelectorAll('.btn-copy-hash');
 
   copyBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const targetId = btn.getAttribute('data-copy-target');
       const targetEl = document.getElementById(targetId);
 
       if (targetEl) {
         const text = targetEl.textContent.trim();
-        navigator.clipboard.writeText(text).then(() => {
+        try {
+          await navigator.clipboard.writeText(text);
           const originalText = btn.textContent;
           btn.textContent = 'Copied!';
           btn.style.color = '#34d399';
@@ -327,9 +356,9 @@ function initCopyButtons() {
             btn.textContent = originalText;
             btn.style.color = '';
           }, 2000);
-        }).catch((err) => {
-          console.warn('Clipboard copy failed:', err);
-        });
+        } catch (_err) {
+          // Silent fallback if clipboard permissions are restricted
+        }
       }
     });
   });

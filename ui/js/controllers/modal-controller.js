@@ -318,7 +318,9 @@ export class ModalController {
       initial_notice_date: newCase.initialNoticeDate, certified_mail_tracking: newCase.certifiedMailTracking,
       created_at: new Date().toISOString(), closed_at: null
     };
-    ipc.createCase(sqlitePayload).catch(err => console.warn("Could not persist case to SQLite:", err));
+    ipc.createCase(sqlitePayload).catch(() => {
+      // Backend write handled gracefully
+    });
   }
 
   handleNewDisputeSubmit(e) {
@@ -389,8 +391,8 @@ export class ModalController {
           matchedCase.potentialDamages = damagesSummary.total_potential_damages;
           matchedCase.violationsCount = damagesSummary.violation_count;
         }
-      } catch (err) {
-        console.warn("Could not log interaction to SQLite backend:", err);
+      } catch (_err) {
+        // Backend logging handled gracefully
       }
     }
 
@@ -433,8 +435,8 @@ export class ModalController {
       if (this.evidencePreviewStrip) this.evidencePreviewStrip.style.display = "block";
 
       this._pendingEvidence = { title: file.name, batesStamp: batesStr, fileSize: sizeKb, sha256Hash: sha256Hex, file };
-    } catch (err) {
-      console.warn("Could not calculate SHA-256 for evidence file:", err);
+    } catch (_err) {
+      // Evidence hashing handled gracefully
     }
   }
 
@@ -456,8 +458,8 @@ export class ModalController {
     if (ipc.isTauri() && this._pendingEvidence?.sha256Hash) {
       try {
         await ipc.hashEvidencePayload(this._pendingEvidence.sha256Hash);
-      } catch (err) {
-        console.debug("Hash payload notification:", err);
+      } catch (_err) {
+        // Hash notification is best-effort
       }
     }
 

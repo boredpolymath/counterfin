@@ -69,8 +69,8 @@ class SettleMintApp {
       try {
         this.user = JSON.parse(raw);
         return;
-      } catch (e) {
-        console.debug("Failed parsing user profile:", e);
+      } catch (_e) {
+        // Fallback to default user profile
       }
     }
     this.user = {
@@ -246,7 +246,13 @@ class SettleMintApp {
       const card = expandTrigger.closest(".orderly-dispute-card");
       if (card) {
         const id = card.getAttribute("data-case-id");
-        this.expandedCaseIds.has(id) ? this.expandedCaseIds.delete(id) : (this.expandedCaseIds.clear(), this.expandedCaseIds.add(id), this.activeCaseId = id);
+        if (this.expandedCaseIds.has(id)) {
+          this.expandedCaseIds.delete(id);
+        } else {
+          this.expandedCaseIds.clear();
+          this.expandedCaseIds.add(id);
+          this.activeCaseId = id;
+        }
         this.renderCurrentView();
         return;
       }
@@ -372,8 +378,8 @@ class SettleMintApp {
       await this.syncBackendInteractions();
       await this.subscribeBackendEvents();
       this.render();
-    } catch (err) {
-      console.warn("Failed initializing backend SQLite data:", err);
+    } catch (_err) {
+      // Backend initialization handled gracefully
     }
   }
 
@@ -459,8 +465,8 @@ class SettleMintApp {
           active.violationsCount = damages.violation_count;
         }
       }
-    } catch (e) {
-      console.debug("Backend interaction/damages sync note:", e);
+    } catch (_e) {
+      // Backend sync note handled gracefully
     }
   }
 

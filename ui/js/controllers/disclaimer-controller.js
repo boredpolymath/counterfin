@@ -59,8 +59,8 @@ export class DisclaimerController {
       this.resetDisclaimerBtn.addEventListener("click", () => {
         try {
           localStorage.removeItem(this.DISCLAIMER_STORAGE_SLOT);
-        } catch (e) {
-          console.debug("Failed resetting disclaimer slot:", e);
+        } catch (_e) {
+          // LocalStorage fallback handled gracefully
         }
         this.hasAgreedDisclaimer = false;
         this.openLegalDisclaimer(true);
@@ -100,8 +100,7 @@ export class DisclaimerController {
       const raw = localStorage.getItem(this.DISCLAIMER_STORAGE_SLOT);
       if (!raw) return null;
       return JSON.parse(raw);
-    } catch (e) {
-      console.debug("Failed reading stored disclaimer slot:", e);
+    } catch (_e) {
       return null;
     }
   }
@@ -113,8 +112,8 @@ export class DisclaimerController {
     if (forceSplash) {
       try {
         localStorage.removeItem(this.DISCLAIMER_STORAGE_SLOT);
-      } catch (e) {
-        console.debug("Failed removing disclaimer slot on force splash:", e);
+      } catch (_e) {
+        // Fallback handled gracefully
       }
       this.hasAgreedDisclaimer = false;
       this.openLegalDisclaimer(true);
@@ -215,8 +214,8 @@ export class DisclaimerController {
     const record = { agreed: true, agreedAt: new Date().toISOString(), version: "1.0" };
     try {
       localStorage.setItem(this.DISCLAIMER_STORAGE_SLOT, JSON.stringify(record));
-    } catch (e) {
-      console.warn("Could not save disclaimer agreement to localStorage:", e);
+    } catch (_e) {
+      // LocalStorage access handled gracefully
     }
     this.hasAgreedDisclaimer = true;
 

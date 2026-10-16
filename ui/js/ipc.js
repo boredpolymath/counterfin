@@ -17,7 +17,6 @@ export const ipc = {
         throw err;
       }
     } else {
-      console.debug(`[Mock IPC] Invoked '${cmd}' with payload:`, args);
       return null;
     }
   },
@@ -215,8 +214,6 @@ export const ipc = {
   async sendNotification(title, body) {
     if (window.__TAURI__ && window.__TAURI__.notification) {
       return await window.__TAURI__.notification.sendNotification({ title, body });
-    } else {
-      console.debug(`[Notification Mock] ${title}: ${body}`);
     }
   },
 
@@ -224,7 +221,6 @@ export const ipc = {
     if (window.__TAURI__ && window.__TAURI__.event && window.__TAURI__.event.listen) {
       return await window.__TAURI__.event.listen(event, callback);
     } else {
-      console.debug(`[Mock IPC Event] Listening on '${event}'`);
       return () => {};
     }
   },
@@ -232,8 +228,6 @@ export const ipc = {
   async emit(event, payload = {}) {
     if (window.__TAURI__ && window.__TAURI__.event && window.__TAURI__.event.emit) {
       return await window.__TAURI__.event.emit(event, payload);
-    } else {
-      console.debug(`[Mock IPC Event] Emitted '${event}' with payload:`, payload);
     }
   }
 };
