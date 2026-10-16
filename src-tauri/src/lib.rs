@@ -27,7 +27,9 @@ pub fn run() {
                 .app_data_dir()
                 .unwrap_or_else(|_| std::path::PathBuf::from("."));
             let _ = std::fs::create_dir_all(&app_data_dir);
-            let db_path = if app_data_dir.join("settlemint.db").exists() && !app_data_dir.join("counterfin.db").exists() {
+            let db_path = if app_data_dir.join("settlemint.db").exists()
+                && !app_data_dir.join("counterfin.db").exists()
+            {
                 app_data_dir.join("settlemint.db")
             } else {
                 app_data_dir.join("counterfin.db")

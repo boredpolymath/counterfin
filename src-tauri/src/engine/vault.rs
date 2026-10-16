@@ -309,7 +309,9 @@ impl EvidenceVault {
         #[cfg(target_os = "macos")]
         {
             if let Ok(home) = std::env::var("HOME") {
-                let base = PathBuf::from(home).join("Library").join("Application Support");
+                let base = PathBuf::from(home)
+                    .join("Library")
+                    .join("Application Support");
                 if base.join("CounterFin").exists() || !base.join("SettleMint").exists() {
                     base.join("CounterFin")
                 } else {
@@ -811,7 +813,10 @@ mod tests {
     #[test]
     fn test_os_sandbox_path_resolution() {
         let path = EvidenceVault::resolve_os_sandbox_dir();
-        assert!(path.to_string_lossy().contains("CounterFin") || path.to_string_lossy().contains("SettleMint"));
+        assert!(
+            path.to_string_lossy().contains("CounterFin")
+                || path.to_string_lossy().contains("SettleMint")
+        );
     }
 
     #[test]

@@ -1,10 +1,10 @@
 use chrono::{NaiveDate, Utc};
-use rusqlite::Connection;
 use counterfin_lib::db::schema::CREATE_TABLES_SQL;
 use counterfin_lib::engine::licensing::LicensingEngine;
 use counterfin_lib::engine::sol::SolEngine;
 use counterfin_lib::engine::templates::TemplateEngine;
 use counterfin_lib::models::case::DebtType;
+use rusqlite::Connection;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::time::Instant;
