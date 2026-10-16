@@ -40,6 +40,17 @@
 - **Launch Crawlability Package:** Codified launch-essential metadata including `favicon.ico`, `site.webmanifest`, and `manifest.json`.
 - **Security Policy & Standards:** Deployed RFC 9116 `.well-known/security.txt` security contact policy, `humans.txt` team attribution, and updated `robots.txt` / `sitemap.xml` directives.
 
+### 📦 Verified Release Packages & Checksums
+
+| Artifact Name | Target Platform / Architecture | Format | Size | SHA-256 Checksum |
+|---|---|---|---|---|
+| `CounterFin_0.1.4_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed & Notarized DMG | 8.26 MiB | `8e9b893e359992eb082a5a029ab53a443e96b3d6ac190a501c3b6c61c97262b0` |
+| `CounterFin_0.1.4_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.95 MiB | `cd6989dd3fe7e9397feeff4b88233cb79733cebc55bee88d9abcc98d0be86565` |
+| `CounterFin_0.1.4_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.95 MiB | `a7a3c1bbe15eb8f06ba1360bc1ea589c1f409e72826c7a9fe4ecf63c864aa19d` |
+| `CounterFin_0.1.4_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.87 MiB | `1fb8126693d1ebc28f372ecd8e29447ce78c0656514a915a9324b01af5a761df` |
+| `CounterFin_0.1.4_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 4.09 MiB | `27854a064bdd8bf3e492353809fcf062a332849ec5e014f5adcb8ff472746d5a` |
+| `CounterFin_aarch64.app.tar.gz` | macOS Apple Silicon | Signed App Bundle | 5.81 MiB | `7526deed7ca7754c208ac03e86b84d202bb49f3f3d46681f2900752d848d6d58` |
+
 ---
 
 ## SettleMint v0.1.3 — Architecture Hardening, UI Modularization, IPC Resilience & Automated Test Suite
