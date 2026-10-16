@@ -5,7 +5,7 @@
 
 export const ipc = {
   isTauri() {
-    return Boolean(window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke);
+    return Boolean(window.__TAURI__?.core?.invoke);
   },
 
   async invoke(cmd, args = {}) {
@@ -212,7 +212,7 @@ export const ipc = {
   // Native OS Notifications & System Events
   // -------------------------------------------------------------------------
   async sendNotification(title, body) {
-    if (window.__TAURI__ && window.__TAURI__.notification && window.__TAURI__.notification.sendNotification) {
+    if (window.__TAURI__?.notification?.sendNotification) {
       try {
         return await window.__TAURI__.notification.sendNotification({ title, body });
       } catch (err) {
@@ -224,7 +224,7 @@ export const ipc = {
   },
 
   async listen(event, callback) {
-    if (window.__TAURI__ && window.__TAURI__.event && window.__TAURI__.event.listen) {
+    if (window.__TAURI__?.event?.listen) {
       try {
         return await window.__TAURI__.event.listen(event, callback);
       } catch (err) {
@@ -236,7 +236,7 @@ export const ipc = {
   },
 
   async emit(event, payload = {}) {
-    if (window.__TAURI__ && window.__TAURI__.event && window.__TAURI__.event.emit) {
+    if (window.__TAURI__?.event?.emit) {
       try {
         return await window.__TAURI__.event.emit(event, payload);
       } catch (err) {

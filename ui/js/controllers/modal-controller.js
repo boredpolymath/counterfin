@@ -325,18 +325,18 @@ export class ModalController {
 
   handleNewDisputeSubmit(e) {
     e.preventDefault();
-    const debtType = document.getElementById("newDebtType") ? document.getElementById("newDebtType").value : "credit_card";
+    const debtType = document.getElementById("newDebtType")?.value || "credit_card";
     const provider = document.getElementById("newProviderName").value;
     const agency = document.getElementById("newAgencyName").value;
     const balance = parseFloat(document.getElementById("newBalance").value) || 0;
     const category = document.getElementById("newCategory").value;
     const accountNum = document.getElementById("newAccountNumber").value || `ACC-${Date.now().toString().slice(-4)}`;
     const stateEl = document.getElementById("newState");
-    const statuteState = (stateEl && stateEl.value) ? stateEl.value : (this.app.user.state || "NY");
+    const statuteState = stateEl?.value || this.app.user.state || "NY";
     const noticeDateEl = document.getElementById("newNoticeDate");
-    const noticeDate = (noticeDateEl && noticeDateEl.value) ? noticeDateEl.value : new Date().toISOString().slice(0, 10);
+    const noticeDate = noticeDateEl?.value || new Date().toISOString().slice(0, 10);
     const serviceDateEl = document.getElementById("newServiceDate");
-    const serviceDate = (serviceDateEl && serviceDateEl.value) ? serviceDateEl.value : noticeDate;
+    const serviceDate = serviceDateEl?.value || noticeDate;
 
     const newCase = this.buildNewCaseObject(debtType, provider, agency, balance, category, accountNum, statuteState, noticeDate, serviceDate);
     this.persistCaseToBackend(newCase, debtType);
@@ -427,7 +427,7 @@ export class ModalController {
       const sha256Hex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
       const active = this.app.getActiveCase();
       const batesStr = `BATES-${active?.docketNumber || 'SM-2026'}-DOC0${this.app.evidence.length + 1}`;
-      const sizeKb = (file.size / 1024).toFixed(1) + " KB";
+      const sizeKb = `${(file.size / 1024).toFixed(1)} KB`;
 
       if (this.previewBates) this.previewBates.textContent = batesStr;
       if (this.previewSize) this.previewSize.textContent = `${file.name} (${sizeKb})`;

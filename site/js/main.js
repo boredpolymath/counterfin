@@ -130,7 +130,7 @@ function switchShowcaseTab(key, screenImg, pictureSource, captionEl) {
       captionEl.textContent = '';
       const strongEl = document.createElement('strong');
       strongEl.textContent = data.title;
-      captionEl.append(strongEl, ' ' + data.desc);
+      captionEl.append(strongEl, ` ${data.desc}`);
     }
     screenImg.style.opacity = '1';
   }, 120);
@@ -334,7 +334,7 @@ function initSolSimulator() {
     const stateCode = stateSelect.value;
     const debtType = debtSelect.value;
 
-    const data = STATE_SOL_DATABASE[stateCode] || STATE_SOL_DATABASE['CA'];
+    const data = STATE_SOL_DATABASE[stateCode] || STATE_SOL_DATABASE.CA;
 
     let years = data.open;
     if (debtType === 'written') years = data.written;

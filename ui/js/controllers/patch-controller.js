@@ -41,7 +41,7 @@ export class PatchController {
     }
     if (this.statutoryPatchFileInput) {
       this.statutoryPatchFileInput.addEventListener("change", (e) => {
-        if (e.target.files && e.target.files[0]) {
+        if (e.target.files?.[0]) {
           this.handleStatutoryPatchFileSelect(e.target.files[0]);
         }
       });
@@ -141,7 +141,7 @@ export class PatchController {
       const text = await file.text();
       this.stagePatchPreview(text);
     } catch (err) {
-      alert("Failed to read patch file: " + err);
+      alert(`Failed to read patch file: ${err}`);
     }
   }
 
@@ -209,7 +209,7 @@ export class PatchController {
         this.patchPreviewContent.textContent = JSON.stringify(parsed.payload, null, 2);
       }
     } catch (err) {
-      alert("Invalid statutory patch JSON: " + err.message);
+      alert(`Invalid statutory patch JSON: ${err.message}`);
     }
   }
 
@@ -224,7 +224,7 @@ export class PatchController {
       if (this.statutoryPatchFileInput) this.statutoryPatchFileInput.value = "";
       ipc.sendNotification("Statutory Patch Applied", `Successfully verified and applied legislative update ${summary.patch_id}.`);
     } catch (err) {
-      alert("Cryptographic verification or import failed: " + err);
+      alert(`Cryptographic verification or import failed: ${err}`);
     }
   }
 
@@ -236,7 +236,7 @@ export class PatchController {
       this.app.renderCurrentView();
       ipc.sendNotification("Patch Rolled Back", `Reverted patch ${patchId} to official baseline.`);
     } catch (err) {
-      alert("Rollback failed: " + err);
+      alert(`Rollback failed: ${err}`);
     }
   }
 
@@ -248,7 +248,7 @@ export class PatchController {
       this.app.renderCurrentView();
       ipc.sendNotification("Statutory Engine Restored", "All jurisdictions restored to official built-in baseline.");
     } catch (err) {
-      alert("Rollback all failed: " + err);
+      alert(`Rollback all failed: ${err}`);
     }
   }
 }
