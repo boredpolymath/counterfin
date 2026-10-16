@@ -319,7 +319,7 @@ function renderDocHeader(activeCase, todayStr, senderName, senderCityStateZip) {
   `;
 }
 
-function renderDocBody(activeCase, isCreditCard, isAuto, senderName, senderStreet, senderCityStateZip) {
+function renderDocBody(isCreditCard, isAuto, senderName, senderStreet, senderCityStateZip) {
   const statuteSuffix = isCreditCard
     ? ', CFPB Regulation F, 12 C.F.R. § 1006.34, and the Truth in Lending Act (TILA)'
     : isAuto
@@ -376,7 +376,7 @@ function renderLetterPaper(activeCase, userProfile, isCreditCard, isAuto) {
       <div class="studio-scroll" style="background-color: var(--color-surface-container-low);">
         <div class="legal-document-paper" id="legalDocumentPaper">
           ${renderDocHeader(activeCase, todayStr, senderName, senderCityStateZip)}
-          ${renderDocBody(activeCase, isCreditCard, isAuto, senderName, senderStreet, senderCityStateZip)}
+          ${renderDocBody(isCreditCard, isAuto, senderName, senderStreet, senderCityStateZip)}
         </div>
       </div>
     </div>

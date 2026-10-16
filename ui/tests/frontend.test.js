@@ -283,7 +283,7 @@ test('9.7.4 - Evidence Ingestion Modal: client-side extension & size limit valid
   const MAX_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
 
   function validateEvidenceUpload(file) {
-    const ext = '.' + file.name.split('.').pop().toLowerCase();
+    const ext = `.${file.name.split('.').pop().toLowerCase()}`;
     if (!PERMITTED_EXTENSIONS.includes(ext)) {
       return { valid: false, error: `Invalid file extension '${ext}'. Allowed: PDF, PNG, JPG, MP3, WAV` };
     }
@@ -395,7 +395,7 @@ test('9.7.5 - IPC Native Events & Notifications: emit, listen, and sendNotificat
       },
     },
     event: {
-      listen: async (evt, handler) => {
+      listen: async (_evt, _handler) => {
         listenerRegistered = true;
         return () => { listenerRegistered = false; };
       },
@@ -543,7 +543,7 @@ test('9.10.4 - WCAG 2.1 AA Accessibility & Color Contrast: verifies 4.5:1 ratio 
 
   function sRgbToLinear(c) {
     const norm = c / 255;
-    return norm <= 0.03928 ? norm / 12.92 : Math.pow((norm + 0.055) / 1.055, 2.4);
+    return norm <= 0.03928 ? norm / 12.92 : ((norm + 0.055) / 1.055) ** 2.4;
   }
 
   function relativeLuminance(r, g, b) {

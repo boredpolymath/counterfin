@@ -395,7 +395,7 @@ class SettleMintApp {
     );
     if (isLegacy && !this.isDemoMode) {
       for (const bc of backendCases) {
-        try { await ipc.deleteCase(bc.id); } catch (e) { /* ignore */ }
+        try { await ipc.deleteCase(bc.id); } catch (_e) { /* ignore */ }
       }
       this.cases = [];
       this.activeCaseId = null;
@@ -486,7 +486,11 @@ class SettleMintApp {
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  window.app = new SettleMintApp();
-  console.info("SettleMint Consumer Debt Protection Dashboard Initialized.");
-});
+if (typeof window !== "undefined") {
+  window.addEventListener("DOMContentLoaded", () => {
+    window.app = new SettleMintApp();
+    console.info("SettleMint Consumer Debt Protection Dashboard Initialized.");
+  });
+}
+
+export { SettleMintApp };

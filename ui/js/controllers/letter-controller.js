@@ -86,7 +86,7 @@ export class LetterController {
         try {
           const path = await ipc.exportDocumentFile(docket, "DVL_Letter", text, "pdf");
           ipc.sendNotification("Certified PDF Generated", `Letter encrypted to ${path}`);
-        } catch (e) {
+        } catch (_e) {
           ipc.sendNotification("Certified PDF Dispatched", `Letter encrypted to vault.`);
         }
       } else {

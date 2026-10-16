@@ -11,7 +11,7 @@ import sys
 import json
 
 try:
-    from nacl.signing import SigningKey
+    from nacl.signing import SigningKey  # type: ignore
 except ImportError:
     # If pynacl is not installed, provide clean instructions
     print("Warning: PyNaCl not installed. To sign with Python, run: pip install pynacl")
