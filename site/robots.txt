@@ -1,7 +1,7 @@
-# CounterFin Robots.txt
-# Canonical URL: https://boredpolymath.github.io/counterfin/
-# Machine-readable AI & LLM Guidance: https://boredpolymath.github.io/counterfin/llms.txt
-# Full LLM Context: https://boredpolymath.github.io/counterfin/llms-full.txt
+# DebtShark Robots.txt
+# Canonical URL: https://boredpolymath.github.io/debtshark/
+# Machine-readable AI & LLM Guidance: https://boredpolymath.github.io/debtshark/llms.txt
+# Full LLM Context: https://boredpolymath.github.io/debtshark/llms-full.txt
 
 # ==============================================================================
 # AI Assistants & Large Language Model Crawlers
@@ -22,23 +22,23 @@ User-agent: cohere-ai
 User-agent: Meta-ExternalAgent
 User-agent: FacebookBot
 Allow: /
-Allow: /counterfin/
+Allow: /debtshark/
 Allow: /llms.txt
-Allow: /counterfin/llms.txt
+Allow: /debtshark/llms.txt
 Allow: /llms-full.txt
-Allow: /counterfin/llms-full.txt
+Allow: /debtshark/llms-full.txt
 Allow: /sitemap.xml
-Allow: /counterfin/sitemap.xml
+Allow: /debtshark/sitemap.xml
 Allow: /site.webmanifest
-Allow: /counterfin/site.webmanifest
+Allow: /debtshark/site.webmanifest
 Allow: /manifest.json
-Allow: /counterfin/manifest.json
+Allow: /debtshark/manifest.json
 Allow: /.well-known/security.txt
-Allow: /counterfin/.well-known/security.txt
+Allow: /debtshark/.well-known/security.txt
 Allow: /humans.txt
-Allow: /counterfin/humans.txt
+Allow: /debtshark/humans.txt
 Allow: /favicon.ico
-Allow: /counterfin/favicon.ico
+Allow: /debtshark/favicon.ico
 
 # ==============================================================================
 # Search Engine Web Crawlers
@@ -50,7 +50,7 @@ User-agent: DuckDuckBot
 User-agent: YandexBot
 User-agent: Baiduspider
 Allow: /
-Allow: /counterfin/
+Allow: /debtshark/
 
 # ==============================================================================
 # Social Media Link Preview Crawlers
@@ -62,17 +62,17 @@ User-agent: Slackbot
 User-agent: TelegramBot
 User-agent: Discordbot
 Allow: /
-Allow: /counterfin/
+Allow: /debtshark/
 
 # ==============================================================================
 # Default Rule for All Other Crawlers
 # ==============================================================================
 User-agent: *
 Allow: /
-Allow: /counterfin/
+Allow: /debtshark/
 Crawl-delay: 1
 
 # ==============================================================================
 # Sitemaps & Context Feeds
 # ==============================================================================
-Sitemap: https://boredpolymath.github.io/counterfin/sitemap.xml
+Sitemap: https://boredpolymath.github.io/debtshark/sitemap.xml

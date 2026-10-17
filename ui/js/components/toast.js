@@ -27,31 +27,31 @@ export function showToast(title, message, type = "info") {
   if (!container) {
     container = document.createElement("div");
     container.id = "toastContainer";
-    container.className = "counterfin-toast-container";
+    container.className = "debtshark-toast-container counterfin-toast-container";
     if (document.body) {
       document.body.appendChild(container);
     }
   }
 
   const toast = document.createElement("div");
-  toast.className = `counterfin-toast counterfin-toast-${type}`;
+  toast.className = `debtshark-toast counterfin-toast debtshark-toast-${type} counterfin-toast-${type}`;
   const iconSvg = type === 'success'
     ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><title>Success Notification</title><polyline points="20 6 9 17 4 12"></polyline></svg>'
     : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><title>Notice Notification</title><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
 
   const iconDiv = document.createElement("div");
-  iconDiv.className = "counterfin-toast-icon";
+  iconDiv.className = "debtshark-toast-icon counterfin-toast-icon";
   iconDiv.innerHTML = iconSvg;
 
   const contentDiv = document.createElement("div");
-  contentDiv.className = "counterfin-toast-content";
+  contentDiv.className = "debtshark-toast-content counterfin-toast-content";
 
   const titleDiv = document.createElement("div");
-  titleDiv.className = "counterfin-toast-title";
+  titleDiv.className = "debtshark-toast-title counterfin-toast-title";
   titleDiv.textContent = title || "Notice";
 
   const msgDiv = document.createElement("div");
-  msgDiv.className = "counterfin-toast-msg";
+  msgDiv.className = "debtshark-toast-msg counterfin-toast-msg";
   msgDiv.textContent = message || "";
 
   contentDiv.appendChild(titleDiv);
@@ -59,7 +59,7 @@ export function showToast(title, message, type = "info") {
 
   const closeBtn = document.createElement("button");
   closeBtn.type = "button";
-  closeBtn.className = "counterfin-toast-close";
+  closeBtn.className = "debtshark-toast-close counterfin-toast-close";
   closeBtn.setAttribute("aria-label", "Close notification");
   closeBtn.textContent = "✕";
 

@@ -1,15 +1,15 @@
-# Contributing to SettleMint
+# Contributing to DebtShark
 
-Thank you for your interest in contributing to **SettleMint**, an open-source, local-first consumer advocacy console engineered by **Bored Polymath Studios**.
+Thank you for your interest in contributing to **DebtShark**, an open-source, local-first consumer advocacy console engineered by **Bored Polymath Studios**.
 
-SettleMint operates in a high-consequence environment involving medical debt disputes, Protected Health Information (PHI), and federal civil statutes (FDCPA, FCRA). As such, our engineering, security, and statutory standards are rigorous.
+DebtShark operates in a high-consequence environment involving medical debt disputes, Protected Health Information (PHI), and federal civil statutes (FDCPA, FCRA). As such, our engineering, security, and statutory standards are rigorous.
 
 ---
 
 ## 1. Ground Rules & Non-Negotiables
 
 ### 1.1 Zero-Telemetry Mandate
-SettleMint enforces complete network silence during standard operation.
+DebtShark enforces complete network silence during standard operation.
 - **NEVER** introduce analytics SDKs, crash-reporting webhooks, remote pingbacks, or third-party tracking pixels.
 - Outbound network requests are restricted strictly to USPS Certified Mail tracking queries and authenticated credit bureau APIs with explicit user initiation.
 - Any pull request violating this policy will be rejected immediately.
@@ -37,8 +37,8 @@ SettleMint enforces complete network silence during standard operation.
 ### 2.2 Running Locally
 1. Clone the repository:
    ```bash
-   git clone https://github.com/boredpolymath/settlemint.git
-   cd settlemint
+   git clone https://github.com/boredpolymath/debtshark.git
+   cd debtshark
    ```
 2. Verify the Rust compilation:
    ```bash
@@ -61,8 +61,8 @@ SettleMint enforces complete network silence during standard operation.
 - Ensure sensitive strings (passwords, SSNs, account numbers) are wrapped in zeroizing structures (`zeroize::ZeroizeOnDrop`).
 
 ### 3.2 Frontend & Design System
-- SettleMint uses Vanilla HTML5, CSS, and modular ES JavaScript. Do not introduce large UI component libraries (e.g., React, Tailwind) unless agreed upon via an approved architectural RFC.
-- Adhere strictly to the **Clinical Forensic Defense** design tokens defined in [`ui/css/tokens.css`](file:///Volumes/External/boredpolymath/projects/settlemint/ui/css/tokens.css):
+- DebtShark uses Vanilla HTML5, CSS, and modular ES JavaScript. Do not introduce large UI component libraries (e.g., React, Tailwind) unless agreed upon via an approved architectural RFC.
+- Adhere strictly to the **Clinical Forensic Defense** design tokens defined in [`ui/css/tokens.css`](file:///Volumes/External/boredpolymath/projects/debtshark/ui/css/tokens.css):
   - **Zero-radius geometry:** `border-radius: 0px` across all containers, inputs, chips, and modals.
   - **Typography:** `Public Sans` for briefs, captions, and body; `JetBrains Mono` for Bates numbering, countdowns, timestamps, and hashes.
   - **Color restraint:** Saturated emergency crimson (`#DC2626`) is strictly reserved for statutory limits, acute liabilities, and FDCPA violation flags.

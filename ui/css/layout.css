@@ -580,6 +580,7 @@ body.consumer-theme {
 /* ==========================================================================
    Toast Notification System
    ========================================================================== */
+.debtshark-toast-container,
 .counterfin-toast-container {
   position: fixed;
   top: 24px;
@@ -591,6 +592,7 @@ body.consumer-theme {
   pointer-events: none;
 }
 
+.debtshark-toast,
 .counterfin-toast {
   pointer-events: auto;
   min-width: 300px;
@@ -610,11 +612,13 @@ body.consumer-theme {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+.debtshark-toast.toast-hiding,
 .counterfin-toast.toast-hiding {
   opacity: 0;
   transform: translateY(-8px);
 }
 
+.debtshark-toast-icon,
 .counterfin-toast-icon {
   width: 22px;
   height: 22px;
@@ -626,20 +630,24 @@ body.consumer-theme {
   margin-top: 1px;
 }
 
+.debtshark-toast-success .debtshark-toast-icon,
 .counterfin-toast-success .counterfin-toast-icon {
   background: rgba(0, 105, 72, 0.35);
   color: #34d399;
 }
 
+.debtshark-toast-info .debtshark-toast-icon,
 .counterfin-toast-info .counterfin-toast-icon {
   background: rgba(2, 132, 199, 0.35);
   color: #38bdf8;
 }
 
+.debtshark-toast-content,
 .counterfin-toast-content {
   flex: 1;
 }
 
+.debtshark-toast-title,
 .counterfin-toast-title {
   font-size: 13px;
   font-weight: 700;
@@ -647,6 +655,7 @@ body.consumer-theme {
   margin-bottom: 2px;
 }
 
+.debtshark-toast-msg,
 .counterfin-toast-msg {
   font-size: 12px;
   color: #94a3b8;
@@ -654,6 +663,7 @@ body.consumer-theme {
   word-break: break-word;
 }
 
+.debtshark-toast-close,
 .counterfin-toast-close {
   background: transparent;
   border: none;
@@ -666,6 +676,7 @@ body.consumer-theme {
   line-height: 1;
 }
 
+.debtshark-toast-close:hover,
 .counterfin-toast-close:hover {
   color: #cbd5e1;
 }
@@ -700,6 +711,7 @@ body.consumer-theme {
   .studio-action-row,
   .orderly-view-header,
   dialog,
+  .debtshark-toast-container,
   .counterfin-toast-container {
     display: none !important;
   }

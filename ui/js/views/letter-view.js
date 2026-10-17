@@ -470,7 +470,7 @@ export function renderDocBody(templateType, isCreditCard, isAuto, senderName, se
       <em>(Signed electronically with evidentiary timestamp & certified mail tracking log)</em>
     </p>
     <div class="legal-document-disclaimer">
-      <strong>Mandatory Compliance Notice:</strong> This document is a self-advocacy administrative verification demand pursuant to 15 U.S.C. § 1692g. CounterFin is a local recordkeeping utility and does not provide legal representation or formal legal advice.
+      <strong>Mandatory Compliance Notice:</strong> This document is a self-advocacy administrative verification demand pursuant to 15 U.S.C. § 1692g. DebtShark is a local recordkeeping utility and does not provide legal representation or formal legal advice.
     </div>
   `;
 }

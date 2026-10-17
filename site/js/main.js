@@ -1,5 +1,5 @@
 /**
- * CounterFin Landing Page Client Script
+ * DebtShark Landing Page Client Script
  * Handles OS detection, interactive showcase gallery,
  * 50-State SOL statutory calculator, copy-to-clipboard, and lightbox.
  */
@@ -39,11 +39,11 @@ function initOsDetection() {
   const userAgent = window.navigator.userAgent.toLowerCase();
   const platform = (window.navigator.platform || '').toLowerCase();
 
-  const releaseBase = 'https://github.com/boredpolymath/counterfin/releases/download/v0.2.0';
+  const releaseBase = 'https://github.com/boredpolymath/debtshark/releases/download/v0.2.0';
 
   if (platform.includes('mac') || userAgent.includes('macintosh') || userAgent.includes('mac os')) {
     // macOS
-    heroBtn.href = `${releaseBase}/CounterFin_0.2.0_aarch64.dmg`;
+    heroBtn.href = `${releaseBase}/DebtShark_0.2.0_aarch64.dmg`;
     if (heroBtnText) heroBtnText.textContent = 'Download for macOS (Apple Silicon)';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.2.0 • .dmg (6.4 MB) • macOS 11+';
     if (heroBtnIcon) {
@@ -54,7 +54,7 @@ function initOsDetection() {
     }
   } else if (platform.includes('win') || userAgent.includes('windows')) {
     // Windows
-    heroBtn.href = `${releaseBase}/CounterFin_0.2.0_x64-setup.exe`;
+    heroBtn.href = `${releaseBase}/DebtShark_0.2.0_x64-setup.exe`;
     if (heroBtnText) heroBtnText.textContent = 'Download for Windows';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.2.0 • .exe (2.3 MB) • Windows 10/11';
     if (heroBtnIcon) {
@@ -65,7 +65,7 @@ function initOsDetection() {
     }
   } else if (platform.includes('linux') || userAgent.includes('linux')) {
     // Linux
-    heroBtn.href = `${releaseBase}/CounterFin_0.2.0_amd64.AppImage`;
+    heroBtn.href = `${releaseBase}/DebtShark_0.2.0_amd64.AppImage`;
     if (heroBtnText) heroBtnText.textContent = 'Download for Linux (AppImage)';
     if (heroBtnSub) heroBtnSub.textContent = 'v0.2.0 • .AppImage (78 MB) • x86_64';
     if (heroBtnIcon) {

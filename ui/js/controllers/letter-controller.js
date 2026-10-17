@@ -1,5 +1,5 @@
 /**
- * CounterFin Letter Studio Controller
+ * DebtShark Letter Studio Controller
  * Manages document generation, live preview synchronization, and certified exports
  */
 

@@ -27,12 +27,14 @@ pub fn run() {
                 .app_data_dir()
                 .unwrap_or_else(|_| std::path::PathBuf::from("."));
             let _ = std::fs::create_dir_all(&app_data_dir);
-            let db_path = if app_data_dir.join("settlemint.db").exists()
-                && !app_data_dir.join("counterfin.db").exists()
-            {
+            let db_path = if app_data_dir.join("debtshark.db").exists() {
+                app_data_dir.join("debtshark.db")
+            } else if app_data_dir.join("counterfin.db").exists() {
+                app_data_dir.join("counterfin.db")
+            } else if app_data_dir.join("settlemint.db").exists() {
                 app_data_dir.join("settlemint.db")
             } else {
-                app_data_dir.join("counterfin.db")
+                app_data_dir.join("debtshark.db")
             };
             let db_manager = db::DatabaseManager::init(&db_path).unwrap_or_else(|_| {
                 log::warn!("Falling back to in-memory SQLite database");
@@ -110,5 +112,5 @@ pub fn run() {
             commands::get_official_statutory_authority_key,
         ])
         .run(tauri::generate_context!())
-        .expect("error while building CounterFin application");
+        .expect("error while building DebtShark application");
 }

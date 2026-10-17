@@ -42,7 +42,7 @@ import { DisclaimerController } from '../js/controllers/disclaimer-controller.js
 test('DisclaimerController: instantiates and exposes storage slot', () => {
   const mockApp = { render: () => {} };
   const controller = new DisclaimerController(mockApp);
-  assert.strictEqual(controller.DISCLAIMER_STORAGE_SLOT, 'counterfin_legal_disclaimer_agreed_v1');
+  assert.strictEqual(controller.DISCLAIMER_STORAGE_SLOT, 'debtshark_legal_disclaimer_agreed_v1');
 });
 
 test('DisclaimerController: handles disclaimer agreement check and record saving', () => {

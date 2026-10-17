@@ -1,15 +1,15 @@
 [package]
-name = "counterfin"
+name = "debtshark"
 version = "0.2.0"
-description = "CounterFin: Consumer Credit Shield & Debt Collector Dispute Console"
+description = "DebtShark: Consumer Credit Shield & Debt Collector Dispute Console"
 authors = ["Bored Polymath Studios"]
 edition = "2024"
 rust-version = "1.90"
 license = "MIT"
-repository = "https://github.com/boredpolymath/counterfin"
+repository = "https://github.com/boredpolymath/debtshark"
 
 [lib]
-name = "counterfin_lib"
+name = "debtshark_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

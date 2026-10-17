@@ -1,6 +1,6 @@
-# CounterFin Release Notes
+# DebtShark Release Notes
 
-## CounterFin v0.2.0 — Frontend Modularization, Event Delegation Stabilization, Toast Deduplication & Accessibility Hardening
+## DebtShark v0.2.0 — Frontend Modularization, Event Delegation Stabilization, Toast Deduplication & Accessibility Hardening
 
 **Release Date:** October 17, 2026  
 **Publisher:** Bored Polymath Studios  
@@ -40,16 +40,16 @@
 
 | Artifact Name | Target Platform / Architecture | Format | Size | SHA-256 Checksum |
 |---|---|---|---|---|
-| `CounterFin_0.2.0_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed DMG | 8.30 MiB | `15d16fbb07fe760d4fcdfaf95ee9b32bed1acbbcb0b6502e99fa774a76628ff6` |
-| `CounterFin_aarch64.app.tar.gz` | macOS Apple Silicon | App Bundle Archive | 5.86 MiB | `7841f1b51fcb791cf18a933aab2fc59c5c80e6dea32ef93085bb3027e0502b3c` |
-| `CounterFin_0.2.0_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.95 MiB | `cd6989dd3fe7e9397feeff4b88233cb79733cebc55bee88d9abcc98d0be86565` |
-| `CounterFin_0.2.0_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.95 MiB | `a7a3c1bbe15eb8f06ba1360bc1ea589c1f409e72826c7a9fe4ecf63c864aa19d` |
-| `CounterFin_0.2.0_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.87 MiB | `1fb8126693d1ebc28f372ecd8e29447ce78c0656514a915a9324b01af5a761df` |
-| `CounterFin_0.2.0_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 4.09 MiB | `27854a064bdd8bf3e492353809fcf062a332849ec5e014f5adcb8ff472746d5a` |
+| `DebtShark_0.2.0_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed DMG | 6.87 MiB | `51b787528127ee74d766b264b33dace6fd9d5e523d456bd18e1768b17ce50aac` |
+| `DebtShark_aarch64.app.tar.gz` | macOS Apple Silicon | App Bundle Archive | 5.86 MiB | `7841f1b51fcb791cf18a933aab2fc59c5c80e6dea32ef93085bb3027e0502b3c` |
+| `DebtShark_0.2.0_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.95 MiB | `cd6989dd3fe7e9397feeff4b88233cb79733cebc55bee88d9abcc98d0be86565` |
+| `DebtShark_0.2.0_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.95 MiB | `a7a3c1bbe15eb8f06ba1360bc1ea589c1f409e72826c7a9fe4ecf63c864aa19d` |
+| `DebtShark_0.2.0_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.87 MiB | `1fb8126693d1ebc28f372ecd8e29447ce78c0656514a915a9324b01af5a761df` |
+| `DebtShark_0.2.0_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 4.09 MiB | `27854a064bdd8bf3e492353809fcf062a332849ec5e014f5adcb8ff472746d5a` |
 
 ---
 
-## CounterFin v0.1.4 — Production Rebranding, Responsive Workbench Actions, Direct-to-Downloads Export & UI Security Hardening
+## DebtShark v0.1.4 — Production Rebranding, Responsive Workbench Actions, Direct-to-Downloads Export & UI Security Hardening
 
 **Release Date:** October 16, 2026  
 **Publisher:** Bored Polymath Studios  
@@ -61,8 +61,8 @@
 
 ### 🚀 What's New in v0.1.4
 
-#### 1. Official CounterFin Brand & Visual Identity
-- **Complete Application Rebrand:** Full rebranding across the entire codebase, documentation, metadata, website, and build manifests from SettleMint to **CounterFin**.
+#### 1. Official DebtShark Brand & Visual Identity
+- **Complete Application Rebrand:** Full rebranding across the entire codebase, documentation, metadata, website, and build manifests from SettleMint to **DebtShark**.
 - **Refined Emblem & App Icons:** Adopted Option B brand identity with high-resolution app icons cropped cleanly to the emblem boundary, eliminating distracting margins and enhancing dock/taskbar presence.
 - **Brand Visual Assets:** Deployed custom banners for repository documentation, OpenGraph social sharing previews, interactive app tour screenshots, and lossless WebP imagery across all display formats.
 
@@ -93,12 +93,12 @@
 
 | Artifact Name | Target Platform / Architecture | Format | Size | SHA-256 Checksum |
 |---|---|---|---|---|
-| `CounterFin_0.1.4_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed & Notarized DMG | 8.26 MiB | `8e9b893e359992eb082a5a029ab53a443e96b3d6ac190a501c3b6c61c97262b0` |
-| `CounterFin_0.1.4_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.95 MiB | `cd6989dd3fe7e9397feeff4b88233cb79733cebc55bee88d9abcc98d0be86565` |
-| `CounterFin_0.1.4_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.95 MiB | `a7a3c1bbe15eb8f06ba1360bc1ea589c1f409e72826c7a9fe4ecf63c864aa19d` |
-| `CounterFin_0.1.4_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.87 MiB | `1fb8126693d1ebc28f372ecd8e29447ce78c0656514a915a9324b01af5a761df` |
-| `CounterFin_0.1.4_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 4.09 MiB | `27854a064bdd8bf3e492353809fcf062a332849ec5e014f5adcb8ff472746d5a` |
-| `CounterFin_aarch64.app.tar.gz` | macOS Apple Silicon | Signed App Bundle | 5.81 MiB | `7526deed7ca7754c208ac03e86b84d202bb49f3f3d46681f2900752d848d6d58` |
+| `DebtShark_0.1.4_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed & Notarized DMG | 8.26 MiB | `8e9b893e359992eb082a5a029ab53a443e96b3d6ac190a501c3b6c61c97262b0` |
+| `DebtShark_0.1.4_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.95 MiB | `cd6989dd3fe7e9397feeff4b88233cb79733cebc55bee88d9abcc98d0be86565` |
+| `DebtShark_0.1.4_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.95 MiB | `a7a3c1bbe15eb8f06ba1360bc1ea589c1f409e72826c7a9fe4ecf63c864aa19d` |
+| `DebtShark_0.1.4_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.87 MiB | `1fb8126693d1ebc28f372ecd8e29447ce78c0656514a915a9324b01af5a761df` |
+| `DebtShark_0.1.4_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 4.09 MiB | `27854a064bdd8bf3e492353809fcf062a332849ec5e014f5adcb8ff472746d5a` |
+| `DebtShark_aarch64.app.tar.gz` | macOS Apple Silicon | Signed App Bundle | 5.81 MiB | `7526deed7ca7754c208ac03e86b84d202bb49f3f3d46681f2900752d848d6d58` |
 
 ---
 

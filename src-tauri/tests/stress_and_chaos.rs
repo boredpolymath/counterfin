@@ -1,7 +1,7 @@
 use chrono::Utc;
-use counterfin_lib::db::schema::CREATE_TABLES_SQL;
-use counterfin_lib::engine::templates::TemplateEngine;
-use counterfin_lib::engine::vault::EvidenceVault;
+use debtshark_lib::db::schema::CREATE_TABLES_SQL;
+use debtshark_lib::engine::templates::TemplateEngine;
+use debtshark_lib::engine::vault::EvidenceVault;
 use rusqlite::Connection;
 use std::collections::HashMap;
 use std::fs::{self, File};

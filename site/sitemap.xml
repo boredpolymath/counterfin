@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://boredpolymath.github.io/counterfin/</loc>
+    <loc>https://boredpolymath.github.io/debtshark/</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://boredpolymath.github.io/counterfin/llms.txt</loc>
+    <loc>https://boredpolymath.github.io/debtshark/llms.txt</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://boredpolymath.github.io/counterfin/llms-full.txt</loc>
+    <loc>https://boredpolymath.github.io/debtshark/llms-full.txt</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://boredpolymath.github.io/counterfin/robots.txt</loc>
+    <loc>https://boredpolymath.github.io/debtshark/robots.txt</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://boredpolymath.github.io/counterfin/site.webmanifest</loc>
+    <loc>https://boredpolymath.github.io/debtshark/site.webmanifest</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://boredpolymath.github.io/counterfin/.well-known/security.txt</loc>
+    <loc>https://boredpolymath.github.io/debtshark/.well-known/security.txt</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://boredpolymath.github.io/counterfin/humans.txt</loc>
+    <loc>https://boredpolymath.github.io/debtshark/humans.txt</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>

@@ -1,9 +1,9 @@
 use chrono::{NaiveDate, Utc};
-use counterfin_lib::db::schema::CREATE_TABLES_SQL;
-use counterfin_lib::engine::licensing::LicensingEngine;
-use counterfin_lib::engine::sol::SolEngine;
-use counterfin_lib::engine::templates::TemplateEngine;
-use counterfin_lib::models::case::DebtType;
+use debtshark_lib::db::schema::CREATE_TABLES_SQL;
+use debtshark_lib::engine::licensing::LicensingEngine;
+use debtshark_lib::engine::sol::SolEngine;
+use debtshark_lib::engine::templates::TemplateEngine;
+use debtshark_lib::models::case::DebtType;
 use rusqlite::Connection;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
@@ -13,7 +13,7 @@ use uuid::Uuid;
 #[test]
 fn test_live_production_benchmarks() {
     println!("\n========================================================");
-    println!("     COUNTERFIN v1.0 LIVE SYSTEM BENCHMARK SUITE       ");
+    println!("     DEBTSHARK v1.0 LIVE SYSTEM BENCHMARK SUITE         ");
     println!("========================================================");
 
     // ---------------------------------------------------------

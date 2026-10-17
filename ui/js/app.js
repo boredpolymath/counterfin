@@ -47,12 +47,12 @@ import {
   handleLettersClick
 } from './components/event-handlers.js';
 
-class CounterFinApp {
+class DebtSharkApp {
   constructor() {
-    this.PROFILE_STORAGE_SLOT = "counterfin_user_profile_v1";
-    this.DEMO_MODE_STORAGE_SLOT = "counterfin_demo_mode";
+    this.PROFILE_STORAGE_SLOT = "debtshark_user_profile_v1";
+    this.DEMO_MODE_STORAGE_SLOT = "debtshark_demo_mode";
 
-    const demoStored = getStorageItem(this.DEMO_MODE_STORAGE_SLOT) ?? getStorageItem("settlemint_demo_mode");
+    const demoStored = getStorageItem(this.DEMO_MODE_STORAGE_SLOT) ?? getStorageItem("counterfin_demo_mode") ?? getStorageItem("settlemint_demo_mode");
     this.isDemoMode = demoStored === "true";
     this.loadUserProfile();
 
@@ -78,11 +78,13 @@ class CounterFinApp {
     this.initBackendData();
 
     if (typeof window !== 'undefined') {
-      window.addEventListener("counterfin:toast", (e) => {
+      const toastHandler = (e) => {
         if (e.detail) {
           this.showToast(e.detail.title, e.detail.message, e.detail.type);
         }
-      });
+      };
+      window.addEventListener("debtshark:toast", toastHandler);
+      window.addEventListener("counterfin:toast", toastHandler);
     }
   }
 
@@ -125,8 +127,9 @@ class CounterFinApp {
 
   async clearAllData() {
     removeStorageItem(this.DEMO_MODE_STORAGE_SLOT);
-    removeStorageItem("settlemint_demo_mode");
+    removeStorageItem("debtshark_demo_mode");
     removeStorageItem("counterfin_demo_mode");
+    removeStorageItem("settlemint_demo_mode");
     this.isDemoMode = false;
     if (ipc.isTauri()) {
       try {
@@ -338,7 +341,7 @@ class CounterFinApp {
           break;
       }
     } catch (err) {
-      console.error("[CounterFin] Render loop error in view:", this.currentView, err);
+      console.error("[DebtShark] Render loop error in view:", this.currentView, err);
     }
   }
 
@@ -397,8 +400,8 @@ class CounterFinApp {
 function bootstrapApp() {
   if (typeof window !== "undefined" && !window.app) {
     if (typeof document !== "undefined" && document.getElementById && document.getElementById("viewDashboard")) {
-      window.app = new CounterFinApp();
-      console.info("CounterFin Consumer Debt Protection Dashboard Initialized.");
+      window.app = new DebtSharkApp();
+      console.info("DebtShark Consumer Debt Protection Dashboard Initialized.");
     }
   }
 }
@@ -411,4 +414,4 @@ if (typeof window !== "undefined") {
   }
 }
 
-export { CounterFinApp, CounterFinApp as SettleMintApp };
+export { DebtSharkApp, DebtSharkApp as CounterFinApp, DebtSharkApp as SettleMintApp };

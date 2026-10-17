@@ -1,6 +1,6 @@
-# CounterFin Robots.txt
-# Domain: https://boredpolymath.github.io/counterfin/
-# Machine-readable AI Guidance: https://boredpolymath.github.io/counterfin/llms.txt
+# DebtShark Robots.txt
+# Domain: https://boredpolymath.github.io/debtshark/
+# Machine-readable AI Guidance: https://boredpolymath.github.io/debtshark/llms.txt
 
 # ==============================================================================
 # AI Assistants & Large Language Model Crawlers
@@ -41,4 +41,4 @@ Crawl-delay: 1
 # ==============================================================================
 # Sitemaps
 # ==============================================================================
-Sitemap: https://boredpolymath.github.io/counterfin/sitemap.xml
+Sitemap: https://boredpolymath.github.io/debtshark/sitemap.xml

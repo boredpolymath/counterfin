@@ -18,7 +18,7 @@ export const DEFAULT_USER_PROFILE = {
 };
 
 export function loadUserProfileFromStorage(storageSlot) {
-  const raw = getStorageItem(storageSlot) || getStorageItem("settlemint_user_profile_v1");
+  const raw = getStorageItem(storageSlot) || getStorageItem("counterfin_user_profile_v1") || getStorageItem("settlemint_user_profile_v1");
   if (raw) {
     try {
       return JSON.parse(raw);

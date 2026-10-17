@@ -663,7 +663,7 @@ test('System Tray Integration: handles open-quick-log across desktop environment
   assert.strictEqual(quickLogOpened, true, 'Tray quick-log event should open quick log modal');
 });
 
-test('CounterFin Letter Studio: renderLetterPaperContent renders all dispute templates', async () => {
+test('DebtShark Letter Studio: renderLetterPaperContent renders all dispute templates', async () => {
   const { renderLetterPaperContent } = await import('../js/views/letter-view.js');
   const activeCase = INITIAL_CASES[0];
   const user = { name: 'Alex Advocate', address: '100 Main St', city: 'Albany', state: 'NY', zip: '12207' };
@@ -687,8 +687,8 @@ test('CounterFin Letter Studio: renderLetterPaperContent renders all dispute tem
 });
 
 test('UI Rendering Loop & Event Delegation: container delegation handles view actions without silent failure', async () => {
-  const { CounterFinApp } = await import('../js/app.js');
-  const app = new CounterFinApp();
+  const { DebtSharkApp, CounterFinApp } = await import('../js/app.js');
+  const app = new DebtSharkApp();
 
   let newDisputeOpened = false;
   let userProfileOpened = false;

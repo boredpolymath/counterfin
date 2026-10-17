@@ -301,10 +301,9 @@ pub struct EvidenceVault;
 
 impl EvidenceVault {
     /// Resolve default application data directory conforming to OS standards:
-    /// - macOS: ~/Library/Application Support/SettleMint
-    /// - macOS: ~/Library/Application Support/CounterFin
-    /// - Windows: %APPDATA%/CounterFin
-    /// - Linux: ~/.config/CounterFin (or $XDG_CONFIG_HOME/CounterFin)
+    /// - macOS: ~/Library/Application Support/DebtShark (with CounterFin and SettleMint fallbacks)
+    /// - Windows: %APPDATA%/DebtShark
+    /// - Linux: ~/.config/DebtShark (or $XDG_CONFIG_HOME/DebtShark)
     pub fn resolve_os_sandbox_dir() -> PathBuf {
         #[cfg(target_os = "macos")]
         {
@@ -312,13 +311,17 @@ impl EvidenceVault {
                 let base = PathBuf::from(home)
                     .join("Library")
                     .join("Application Support");
-                if base.join("CounterFin").exists() || !base.join("SettleMint").exists() {
+                if base.join("DebtShark").exists() {
+                    base.join("DebtShark")
+                } else if base.join("CounterFin").exists() {
                     base.join("CounterFin")
-                } else {
+                } else if base.join("SettleMint").exists() {
                     base.join("SettleMint")
+                } else {
+                    base.join("DebtShark")
                 }
             } else {
-                PathBuf::from("./counterfin_sandbox")
+                PathBuf::from("./debtshark_sandbox")
             }
         }
 
@@ -331,10 +334,14 @@ impl EvidenceVault {
             } else {
                 PathBuf::from(".")
             };
-            if base.join("CounterFin").exists() || !base.join("SettleMint").exists() {
+            if base.join("DebtShark").exists() {
+                base.join("DebtShark")
+            } else if base.join("CounterFin").exists() {
                 base.join("CounterFin")
-            } else {
+            } else if base.join("SettleMint").exists() {
                 base.join("SettleMint")
+            } else {
+                base.join("DebtShark")
             }
         }
 

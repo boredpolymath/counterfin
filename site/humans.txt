@@ -1,6 +1,6 @@
 /* TEAM */
 Publisher: Bored Polymath Studios
-Repository: https://github.com/boredpolymath/counterfin
+Repository: https://github.com/boredpolymath/debtshark
 Location: Air-gapped / Local-First
 
 /* SITE */

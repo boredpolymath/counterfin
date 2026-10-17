@@ -8,7 +8,7 @@ import { ipc } from '../ipc.js';
 export class DisclaimerController {
   constructor(app) {
     this.app = app;
-    this.DISCLAIMER_STORAGE_SLOT = "counterfin_legal_disclaimer_agreed_v1";
+    this.DISCLAIMER_STORAGE_SLOT = "debtshark_legal_disclaimer_agreed_v1";
     this.hasAgreedDisclaimer = false;
 
     this.initElements();
@@ -59,6 +59,8 @@ export class DisclaimerController {
       this.resetDisclaimerBtn.addEventListener("click", () => {
         try {
           localStorage.removeItem(this.DISCLAIMER_STORAGE_SLOT);
+          localStorage.removeItem("counterfin_legal_disclaimer_agreed_v1");
+          localStorage.removeItem("settlemint_legal_disclaimer_agreed_v1");
         } catch (_e) {
           // LocalStorage fallback handled gracefully
         }
@@ -142,7 +144,9 @@ export class DisclaimerController {
 
   getStoredDisclaimerAgreement() {
     try {
-      const raw = localStorage.getItem(this.DISCLAIMER_STORAGE_SLOT) || localStorage.getItem("settlemint_legal_disclaimer_agreed_v1");
+      const raw = localStorage.getItem(this.DISCLAIMER_STORAGE_SLOT)
+        || localStorage.getItem("counterfin_legal_disclaimer_agreed_v1")
+        || localStorage.getItem("settlemint_legal_disclaimer_agreed_v1");
       if (!raw) return null;
       return JSON.parse(raw);
     } catch (_e) {
@@ -270,7 +274,7 @@ export class DisclaimerController {
     setTimeout(() => {
       this.closeDialog(this.legalDisclaimerModal);
       ipc.sendNotification(
-        "CounterFin Console Ready",
+        "DebtShark Console Ready",
         "Statutory compliance agreement acknowledged. All self-advocacy modules unlocked."
       );
     }, 250);

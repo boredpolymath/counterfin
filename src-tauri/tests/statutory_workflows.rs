@@ -1,21 +1,21 @@
 use chrono::{Duration as ChronoDuration, NaiveDate, Utc};
-use counterfin_lib::db::DatabaseManager;
-use counterfin_lib::engine::fdcpa::FdcpaEngine;
-use counterfin_lib::engine::medical::{
+use debtshark_lib::db::DatabaseManager;
+use debtshark_lib::engine::fdcpa::FdcpaEngine;
+use debtshark_lib::engine::medical::{
     DisputedMedicalClaim, MedicalDebtEngine, MedicalFacilityType, MedicalServiceType,
 };
-use counterfin_lib::engine::monitor::{BackgroundMonitor, UspsDeliveryStatus};
-use counterfin_lib::engine::templates::{DocumentExporter, ExportFormat, TemplateEngine};
-use counterfin_lib::engine::ucc::{
+use debtshark_lib::engine::monitor::{BackgroundMonitor, UspsDeliveryStatus};
+use debtshark_lib::engine::templates::{DocumentExporter, ExportFormat, TemplateEngine};
+use debtshark_lib::engine::ucc::{
     DispositionType, PostSaleAccounting, PreSaleNotice, UccArticle9Engine,
 };
-use counterfin_lib::engine::vault::EvidenceVault;
-use counterfin_lib::models::case::{Case, CaseStatus, DebtType};
-use counterfin_lib::models::credit::{Bureau, CreditTradeLine, DisputeRemarkStatus};
-use counterfin_lib::models::deadline::{Deadline, DeadlineType};
-use counterfin_lib::models::document::{Document, DocumentType};
-use counterfin_lib::models::interaction::{Channel, Direction, Interaction};
-use counterfin_lib::models::violation::{FdcpaViolationType, Violation};
+use debtshark_lib::engine::vault::EvidenceVault;
+use debtshark_lib::models::case::{Case, CaseStatus, DebtType};
+use debtshark_lib::models::credit::{Bureau, CreditTradeLine, DisputeRemarkStatus};
+use debtshark_lib::models::deadline::{Deadline, DeadlineType};
+use debtshark_lib::models::document::{Document, DocumentType};
+use debtshark_lib::models::interaction::{Channel, Direction, Interaction};
+use debtshark_lib::models::violation::{FdcpaViolationType, Violation};
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::thread;

@@ -214,7 +214,7 @@ export const ipc = {
   async sendNotification(title, body, type = 'info') {
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
       try {
-        window.dispatchEvent(new CustomEvent('counterfin:toast', {
+        window.dispatchEvent(new CustomEvent('debtshark:toast', {
           detail: { title, message: body, type }
         }));
       } catch (_e) {

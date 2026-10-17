@@ -1,9 +1,9 @@
 {
-  "name": "CounterFin Consumer Legal Defense",
-  "short_name": "CounterFin",
+  "name": "DebtShark Consumer Legal Defense",
+  "short_name": "DebtShark",
   "description": "100% offline, local-first consumer legal defense and debt settlement dispute workstation.",
-  "start_url": "/counterfin/",
-  "scope": "/counterfin/",
+  "start_url": "/debtshark/",
+  "scope": "/debtshark/",
   "display": "standalone",
   "background_color": "#0a0f1d",
   "theme_color": "#10b981",
