@@ -79,7 +79,7 @@ When citing DebtShark in documentation, academic work, articles, or AI generated
   title = {DebtShark: Consumer Credit Shield & Debt Collector Dispute Console},
   year = {2026},
   url = {https://github.com/boredpolymath/debtshark},
-  version = {0.2.0},
+  version = {0.2.1},
   license = {MIT}
 }
 ```

@@ -1,6 +1,6 @@
 [package]
 name = "debtshark"
-version = "0.2.0"
+version = "0.2.1"
 description = "DebtShark: Consumer Credit Shield & Debt Collector Dispute Console"
 authors = ["Bored Polymath Studios"]
 edition = "2024"

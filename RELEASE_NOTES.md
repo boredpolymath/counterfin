@@ -1,5 +1,51 @@
 # DebtShark Release Notes
 
+## DebtShark v0.2.1 — Official Rebranding to DebtShark, Asset Suite Overhaul & Repository Migration
+
+**Release Date:** October 17, 2026  
+**Publisher:** Bored Polymath Studios  
+**Classification:** Consumer Advocacy & Credit Shield Desktop Console  
+**License:** MIT License  
+**Platforms Supported:** macOS (Apple Silicon / Intel Universal), Windows 10/11 (x86_64 / ARM64), Linux (Ubuntu 22.04+ / WebKitGTK 4.1)
+
+---
+
+### 🚀 What's New in v0.2.1
+
+#### 1. Official DebtShark Brand Identity & Visual Assets
+- **Complete Visual Rebrand:** Introduced the newly generated geometric shark-fin emblem and high-contrast dark-mode brand identity across all application surfaces, desktop icons, mobile mipmaps, landing page artwork, OpenGraph covers, and banners.
+- **Cross-Platform Icon Regeneration:** Recompiled production application icons (`app-icon.png`, `icon.icns`, `icon.ico`, and all square and mipmap dimensions) using `tauri icon`.
+- **Widescreen Documentation Banners:** Added retina-ready widescreen banners (`assets/debtshark-banner.png`, `site/assets/images/debtshark-banner.png`, `.webp`) across project documentation and the marketing landing page.
+
+#### 2. Full Rust Backend & Tauri Engine Rebranding
+- **Cargo Crate & Binary Renaming:** Renamed the root Rust package and binary to `debtshark` and the internal library to `debtshark_lib`.
+- **Tauri Application Configuration:** Updated `productName` to `"DebtShark"`, identifier to `"com.boredpolymath.debtshark"`, window title, and metadata in `tauri.conf.json`.
+- **Zero-Knowledge Database Resolution:** Hardened multi-OS path resolution in `lib.rs` and `EvidenceVault` to prioritize `debtshark.db` and the `DebtShark` application support sandbox while retaining backward-compatible fallback access to previous database iterations.
+- **Tray Context Menu:** Updated system tray menu items to `"Exit DebtShark"`.
+
+#### 3. Frontend Application & IPC Evolution
+- **DebtSharkApp Controller Architecture:** Transitioned application singleton to `DebtSharkApp` while exporting backward-compatible aliases (`CounterFinApp`, `SettleMintApp`).
+- **Storage & State Migration:** Updated default local storage slots to `debtshark_user_profile_v1`, `debtshark_demo_mode`, and `debtshark_legal_disclaimer_agreed_v1` with automatic migration fallbacks.
+- **Event Bus Transition:** Migrated native IPC toast notifications to `debtshark:toast` with listeners supporting legacy event payloads.
+- **UI Typography & Layout:** Synchronized `.debtshark-toast` classes, header branding, and disclaimer copy across the desktop layout.
+
+#### 4. GitHub Repository Migration
+- **Repository Rename:** Renamed official repository to [`boredpolymath/debtshark`](https://github.com/boredpolymath/debtshark) with updated origin remotes, issue tracker URLs, and release endpoints.
+- **Website & Documentation Sync:** Updated all crawler directives (`robots.txt`, `sitemap.xml`, `llms.txt`, `llms-full.txt`, and Schema.org metadata) to reflect `boredpolymath.github.io/debtshark/`.
+
+### 📦 Verified Release Packages & Checksums
+
+| Artifact Name | Target Platform / Architecture | Format | Size | SHA-256 Checksum |
+|---|---|---|---|---|
+| `DebtShark_0.2.1_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed DMG | 6.87 MiB | `b07358005f20248bb9540921b7fd2f7fe90278b8d8ca5c48b9ccb4fc82fa4da4` |
+| `DebtShark_aarch64.app.tar.gz` | macOS Apple Silicon | App Bundle Archive | 5.09 MiB | `c177827ee3666c0d69f487c66f73f61324e168d592d87b9c70269207d4c6b9d1` |
+| `DebtShark_0.2.1_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.95 MiB | `cd6989dd3fe7e9397feeff4b88233cb79733cebc55bee88d9abcc98d0be86565` |
+| `DebtShark_0.2.1_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.95 MiB | `a7a3c1bbe15eb8f06ba1360bc1ea589c1f409e72826c7a9fe4ecf63c864aa19d` |
+| `DebtShark_0.2.1_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.87 MiB | `1fb8126693d1ebc28f372ecd8e29447ce78c0656514a915a9324b01af5a761df` |
+| `DebtShark_0.2.1_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 4.09 MiB | `27854a064bdd8bf3e492353809fcf062a332849ec5e014f5adcb8ff472746d5a` |
+
+---
+
 ## DebtShark v0.2.0 — Frontend Modularization, Event Delegation Stabilization, Toast Deduplication & Accessibility Hardening
 
 **Release Date:** October 17, 2026  
