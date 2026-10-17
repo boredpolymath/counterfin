@@ -12,9 +12,6 @@ export class LetterController {
   }
 
   bindLetterEvents(activeCase) {
-    document.getElementById("letterStudioEmptyNewCaseBtn")?.addEventListener("click", () => {
-      this.app.openNewDisputeModal();
-    });
     this.bindInputSync();
     this.bindExportActions(activeCase);
     this.bindTemplateChange(activeCase);

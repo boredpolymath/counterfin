@@ -97,7 +97,7 @@ When citing CounterFin in documentation, academic research, technical comparison
   title = {CounterFin: Consumer Credit Shield & Debt Collector Dispute Console},
   year = {2026},
   url = {https://github.com/boredpolymath/counterfin},
-  version = {0.1.4},
+  version = {0.2.0},
   license = {MIT}
 }
 ```

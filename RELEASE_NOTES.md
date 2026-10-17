@@ -1,5 +1,54 @@
 # CounterFin Release Notes
 
+## CounterFin v0.2.0 — Frontend Modularization, Event Delegation Stabilization, Toast Deduplication & Accessibility Hardening
+
+**Release Date:** October 17, 2026  
+**Publisher:** Bored Polymath Studios  
+**Classification:** Consumer Advocacy & Credit Shield Desktop Console  
+**License:** MIT License  
+**Platforms Supported:** macOS (Apple Silicon / Intel Universal), Windows 10/11 (x86_64 / ARM64), Linux (Ubuntu 22.04+ / WebKitGTK 4.1)
+
+---
+
+### 🚀 What's New in v0.2.0
+
+#### 1. Frontend Architectural Modularization & Clean Separation of Concerns
+- **Modular Component Subsystems:** Decoupled monolithic controller logic into focused, single-responsibility ES modules:
+  - `components/event-handlers.js`: Centralized event delegation for dashboard navigation, card expansion/collapsing, interactions, evidence, credit tradelines, and dispute letters.
+  - `components/toast.js`: Standalone, non-intrusive floating notification system with automated lifecycle management and DOM cleanup.
+  - `state/backend-sync.js`: Encapsulated SQLite case and interaction synchronization with backend Tauri IPC and native system events.
+  - `state/user-profile.js`: Self-contained user identity, initials formatting, local storage persistence, and sidebar avatar synchronization.
+  - `utils/dom.js` & `utils/storage.js`: Sanitized view injection with `setSafeViewContent` and fail-safe local storage abstraction.
+
+#### 2. Event Delegation Stabilization & Duplicate Listener Elimination
+- **Container-Level Event Delegation:** Replaced redundant element-level `addEventListener` calls inside `renderDashboardView`, `renderInteractionsView`, `renderEvidenceView`, and `renderCreditView` with robust delegated event routing.
+- **Elimination of Multi-Firing Callbacks:** Fixed duplicate callback executions where action buttons were triggering multiple times due to direct element listeners bubbling up into parent view handlers.
+
+#### 3. Toast Notification Storm Fix & Deduplication Engine
+- **Single-Flight Notification Pipeline:** Resolved the multi-toast storm issue where actions like "Clear Cases" and "Load Sample Dossiers" generated four simultaneous toast popups due to simultaneous direct and delegated event handling paired with duplicate `showToast` and `ipc.sendNotification` invocations.
+- **High-Performance Deduplication Cache:** Implemented a 600ms deduplication window in `showToast` that automatically filters rapid duplicate notification payloads while allowing distinct alerts to display cleanly.
+- **Typed Native Notifications:** Extended `ipc.sendNotification(title, body, type)` to preserve visual status types (`info`, `success`, `error`) across the custom event bridge.
+
+#### 4. WCAG AA Accessibility & SVG Standards
+- **Screen Reader & SVG Compliance:** Added semantic `<title>` elements and explicit `aria-hidden="true"` / `aria-label` attributes to toast icons, close buttons, and modal dialog badges.
+- **Accessible Notification Dismissal:** Enhanced keyboard navigation and focus management across notification close triggers and backdrop clicks.
+
+#### 5. Comprehensive Unit Test Coverage
+- **Complete Test Suite Passing (71/71 Tests):** Expanded automated test suite with coverage for modular components, toast deduplication, event delegation routing, DOM sanitization, user profile formatting, and IPC degradation fallbacks.
+
+### 📦 Verified Release Packages & Checksums
+
+| Artifact Name | Target Platform / Architecture | Format | Size | SHA-256 Checksum |
+|---|---|---|---|---|
+| `CounterFin_0.2.0_aarch64.dmg` | macOS Apple Silicon (M1/M2/M3/M4) | Signed DMG | 8.30 MiB | `15d16fbb07fe760d4fcdfaf95ee9b32bed1acbbcb0b6502e99fa774a76628ff6` |
+| `CounterFin_aarch64.app.tar.gz` | macOS Apple Silicon | App Bundle Archive | 5.86 MiB | `7841f1b51fcb791cf18a933aab2fc59c5c80e6dea32ef93085bb3027e0502b3c` |
+| `CounterFin_0.2.0_amd64.AppImage` | Linux x86_64 (glibc 2.31+) | Standalone AppImage | 78.95 MiB | `cd6989dd3fe7e9397feeff4b88233cb79733cebc55bee88d9abcc98d0be86565` |
+| `CounterFin_0.2.0_amd64.deb` | Linux Debian / Ubuntu | Debian Package | 3.95 MiB | `a7a3c1bbe15eb8f06ba1360bc1ea589c1f409e72826c7a9fe4ecf63c864aa19d` |
+| `CounterFin_0.2.0_x64-setup.exe` | Windows 10/11 x86_64 | NSIS Installer | 2.87 MiB | `1fb8126693d1ebc28f372ecd8e29447ce78c0656514a915a9324b01af5a761df` |
+| `CounterFin_0.2.0_x64_en-US.msi` | Windows 10/11 x86_64 | MSI Enterprise Installer | 4.09 MiB | `27854a064bdd8bf3e492353809fcf062a332849ec5e014f5adcb8ff472746d5a` |
+
+---
+
 ## CounterFin v0.1.4 — Production Rebranding, Responsive Workbench Actions, Direct-to-Downloads Export & UI Security Hardening
 
 **Release Date:** October 16, 2026  

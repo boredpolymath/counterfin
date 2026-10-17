@@ -211,11 +211,11 @@ export const ipc = {
   // -------------------------------------------------------------------------
   // Native OS Notifications & System Events
   // -------------------------------------------------------------------------
-  async sendNotification(title, body) {
+  async sendNotification(title, body, type = 'info') {
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
       try {
         window.dispatchEvent(new CustomEvent('counterfin:toast', {
-          detail: { title, message: body, type: 'info' }
+          detail: { title, message: body, type }
         }));
       } catch (_e) {
         // Safe fallback in test environments

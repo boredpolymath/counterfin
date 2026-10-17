@@ -120,8 +120,7 @@ class CounterFinApp {
     this.activeCaseId = this.cases[0]?.id || null;
     this.expandedCaseIds = new Set(this.activeCaseId ? [this.activeCaseId] : []);
     this.render();
-    this.showToast("Demo Mode Enabled", "Pre-loaded 4 sample consumer debt defense dossiers.", "info");
-    ipc.sendNotification("Demo Mode Enabled", "Pre-loaded 4 sample consumer debt defense dossiers.");
+    ipc.sendNotification("Demo Mode Enabled", "Pre-loaded 4 sample consumer debt defense dossiers.", "info");
   }
 
   async clearAllData() {
@@ -143,8 +142,7 @@ class CounterFinApp {
     this.activeCaseId = null;
     this.expandedCaseIds.clear();
     this.render();
-    this.showToast("Workspace Cleared", "All cases and records cleared. Ready for new disputes.", "success");
-    ipc.sendNotification("Workspace Cleared", "Local cases reset. Ready for new consumer disputes.");
+    ipc.sendNotification("Workspace Cleared", "All cases and records cleared. Ready for new disputes.", "success");
   }
 
   showToast(title, message, type = "info") {
@@ -353,76 +351,18 @@ class CounterFinApp {
     this.setSafeViewContent(this.viewDashboard, renderDashboard(activeCase, filteredCases, this.expandedCaseIds, this.user, this.isDemoMode));
     const filterEl = document.getElementById("disputeFilterSelect");
     if (filterEl) filterEl.value = this.disputeFilter;
-
-    document.getElementById("firstRunNewDisputeBtn")?.addEventListener("click", () => this.openNewDisputeModal());
-    document.getElementById("firstRunProfileBtn")?.addEventListener("click", () => this.openUserProfileModal());
-    document.getElementById("firstRunDemoBtn")?.addEventListener("click", () => this.loadDemoData());
-    document.getElementById("demoBannerNewDisputeBtn")?.addEventListener("click", () => this.openNewDisputeModal());
-    document.getElementById("demoBannerClearBtn")?.addEventListener("click", () => this.clearAllData());
   }
 
   renderInteractionsView(activeCase) {
     this.setSafeViewContent(this.viewInteractions, renderInteractions(this.interactions, activeCase));
-    document.getElementById("interactionEmptyNewCaseBtn")?.addEventListener("click", () => this.openNewDisputeModal());
-    document.getElementById("addInteractionLogBtn")?.addEventListener("click", () => {
-      this.modalController.openQuickLogModal(activeCase?.id);
-    });
   }
 
   renderEvidenceView(activeCase) {
     this.setSafeViewContent(this.viewEvidence, renderEvidenceVault(this.evidence, activeCase));
-    document.getElementById("evidenceEmptyNewCaseBtn")?.addEventListener("click", () => this.openNewDisputeModal());
-    document.getElementById("ingestEvidenceBtn")?.addEventListener("click", () => {
-      this.modalController.openIngestEvidenceModal(activeCase?.id);
-    });
-    document.getElementById("emptyIngestEvidenceBtn")?.addEventListener("click", () => {
-      this.modalController.openIngestEvidenceModal(activeCase?.id);
-    });
-
-    if (this.viewEvidence) {
-      this.viewEvidence.querySelectorAll(".vault-item-card").forEach(card => {
-        const inspectBtn = card.querySelector("button");
-        const title = card.querySelector("[title]")?.getAttribute("title") || "Evidence Artifact";
-        const hash = card.querySelector(".vault-hash-box")?.textContent?.replace("SHA-256:", "").trim() || "";
-        const bates = card.querySelector(".status-pill-mint")?.textContent?.trim() || "";
-        inspectBtn?.addEventListener("click", () => {
-          if (hash && navigator.clipboard?.writeText) {
-            navigator.clipboard.writeText(hash);
-          }
-          this.showToast("Artifact Inspected", `${bates} • ${title} (SHA-256 digest copied)`, "info");
-        });
-      });
-    }
   }
 
   renderCreditView(activeCase) {
     this.setSafeViewContent(this.viewCredit, renderCreditAudit(this.tradelines, activeCase));
-    document.getElementById("creditEmptyNewCaseBtn")?.addEventListener("click", () => this.openNewDisputeModal());
-    document.getElementById("importCreditReportBtn")?.addEventListener("click", () => {
-      this.modalController.openIngestEvidenceModal(activeCase?.id);
-      if (this.modalController.evidenceDocType) {
-        this.modalController.evidenceDocType.value = "credit_report";
-      }
-    });
-
-    if (this.viewCredit) {
-      this.viewCredit.querySelectorAll("button").forEach(btn => {
-        if (btn.textContent.includes("Generate CRA Dispute Packet")) {
-          btn.addEventListener("click", () => {
-            this.switchView("letters");
-            const templateSelect = document.getElementById("templateSelect");
-            if (templateSelect) {
-              templateSelect.value = "cra_dispute";
-              templateSelect.dispatchEvent(new Event("change"));
-            }
-          });
-        } else if (btn.textContent.includes("Diff Historical Snapshot")) {
-          btn.addEventListener("click", () => {
-            this.showToast("Tradeline Delta Audit", "Historical diff: Account verified with zero undetected alterations in current reporting cycle.", "info");
-          });
-        }
-      });
-    }
   }
 
   renderLettersView(activeCase) {

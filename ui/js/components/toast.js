@@ -3,8 +3,26 @@
  * Renders non-intrusive notifications with auto-dismissal
  */
 
+const recentToasts = new Map();
+const DEDUPE_WINDOW_MS = 600;
+
 export function showToast(title, message, type = "info") {
-  if (typeof document === 'undefined') return;
+  if (typeof document === 'undefined') return false;
+
+  const dedupeKey = `${type}:${title}:${message}`;
+  const now = Date.now();
+  if (recentToasts.has(dedupeKey) && (now - recentToasts.get(dedupeKey) < DEDUPE_WINDOW_MS)) {
+    return false;
+  }
+  recentToasts.set(dedupeKey, now);
+
+  // Periodic cleanup of older keys
+  for (const [key, timestamp] of recentToasts.entries()) {
+    if (now - timestamp > 10000) {
+      recentToasts.delete(key);
+    }
+  }
+
   let container = document.getElementById("toastContainer");
   if (!container) {
     container = document.createElement("div");
@@ -61,4 +79,5 @@ export function showToast(title, message, type = "info") {
     container.appendChild(toast);
   }
   setTimeout(removeToast, 4000);
+  return true;
 }

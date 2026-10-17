@@ -91,6 +91,18 @@ test('Toast Component: showToast creates notifications safely in headless DOM', 
   });
 });
 
+test('Toast Component: deduplicates identical rapid notifications', () => {
+  const first = showToast('Rapid Duplicate', 'Same Message', 'info');
+  const second = showToast('Rapid Duplicate', 'Same Message', 'info');
+  const third = showToast('Rapid Duplicate', 'Same Message', 'info');
+  const fourth = showToast('Rapid Duplicate', 'Same Message', 'info');
+
+  assert.strictEqual(first, true, 'First toast should be created');
+  assert.strictEqual(second, false, 'Second rapid duplicate toast should be suppressed');
+  assert.strictEqual(third, false, 'Third rapid duplicate toast should be suppressed');
+  assert.strictEqual(fourth, false, 'Fourth rapid duplicate toast should be suppressed');
+});
+
 test('UserProfile Module: handles formatting, loading defaults, and saving', () => {
   const formattedEmpty = formatUserProfile({ name: '', state: 'CA' });
   assert.strictEqual(formattedEmpty.name, 'Consumer Advocate');
