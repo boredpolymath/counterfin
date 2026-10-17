@@ -14,10 +14,6 @@
   <a href="#getting-started"><img src="https://img.shields.io/badge/Platform-macOS%20|%20Windows%20|%20Linux-lightgrey.svg" alt="Platform: macOS | Windows | Linux" /></a>
 </p>
 
-<p align="center">
-  <a href="https://vibedoctor.io"><img src="https://vibedoctor.io/api/badges/a33595b8-5f22-42e9-9b0e-4a0f05b49ad8" alt="Checked by VibeDoctor" /></a>
-</p>
-
 > **CounterFin** is a free, open-source, local-first desktop app that empowers consumers to defend against debt collectors. Whether dealing with credit card debt, hospital bills, auto loan deficiencies, or personal loans, CounterFin helps you organize notices, track statutory deadlines, catch illegal collection practices, and generate formal dispute letters—all without your data ever leaving your computer.
 >
 > 🌐 **Visit the official website:** [https://boredpolymath.github.io/counterfin/](https://boredpolymath.github.io/counterfin/)
